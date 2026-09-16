@@ -1,11 +1,7 @@
-# Test your FastAPI endpoints
-
-GET http://127.0.0.1:8000/
+### Application liveness
+GET http://127.0.0.1:8000/api/v1/health
 Accept: application/json
 
-###
-
-GET http://127.0.0.1:8000/hello/User
+### Version 1 OpenAPI schema (when APP_DOCS_ENABLED=true)
+GET http://127.0.0.1:8000/api/v1/openapi.json
 Accept: application/json
-
-###
