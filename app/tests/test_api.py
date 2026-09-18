@@ -22,7 +22,9 @@ def test_metadata_and_versioned_schema(client: TestClient, settings: Settings) -
     assert schema["info"]["title"] == settings.name
     assert schema["info"]["version"] == settings.version
     assert schema["info"]["description"] == settings.description
-    assert set(schema["paths"]) == {"/api/v1/health", "/api/v1/health/db"}
+    assert set(schema["paths"]) == {
+        "/api/v1/health", "/api/v1/health/db", "/api/v1/auth/login", "/api/v1/auth/me"
+    }
     assert client.get("/docs").status_code == 200
 
 

@@ -2,10 +2,13 @@
 
 from fastapi import APIRouter, HTTPException, status
 
+from app.api.v1.auth import router as auth_router
+
 from app.database.session import DatabaseSession, check_database_connection
 from app.schemas.health import DatabaseHealthResponse, HealthResponse
 
 router = APIRouter()
+router.include_router(auth_router)
 
 
 @router.get("/health", response_model=HealthResponse, tags=["health"])

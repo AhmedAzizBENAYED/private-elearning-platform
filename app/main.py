@@ -5,6 +5,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from anyio import CapacityLimiter
 
 from app.api.v1.router import router as api_v1_router
 from app.core.config import Settings, get_settings
@@ -23,6 +24,8 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
     engine = create_database_engine(application.state.settings)
     application.state.database_engine = engine
     application.state.database_session_factory = create_session_factory(engine)
+    # Each Argon2 job uses 64 MiB; bound concurrent hashing per worker.
+    application.state.password_limiter = CapacityLimiter(2)
     logger.info(
         "Application started",
         extra={"environment": application.state.settings.environment},

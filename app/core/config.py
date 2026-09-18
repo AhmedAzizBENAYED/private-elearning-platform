@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import ArgumentError
@@ -31,6 +31,24 @@ class Settings(BaseSettings):
     )
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     docs_enabled: bool = True
+
+    jwt_secret_key: SecretStr = Field(validation_alias="JWT_SECRET_KEY", repr=False)
+    jwt_algorithm: Literal["HS256", "HS384", "HS512"] = Field(
+        default="HS256", validation_alias="JWT_ALGORITHM"
+    )
+    access_token_expire_minutes: int = Field(
+        default=15, ge=1, le=60, validation_alias="ACCESS_TOKEN_EXPIRE_MINUTES"
+    )
+    refresh_token_expire_days: int = Field(
+        default=7, ge=1, le=90, validation_alias="REFRESH_TOKEN_EXPIRE_DAYS"
+    )
+
+    @model_validator(mode="after")
+    def validate_jwt_key(self) -> "Settings":
+        minimum_bytes = {"HS256": 32, "HS384": 48, "HS512": 64}[self.jwt_algorithm]
+        if len(self.jwt_secret_key.get_secret_value().encode("utf-8")) < minimum_bytes:
+            raise ValueError(f"JWT_SECRET_KEY must contain at least {minimum_bytes} bytes")
+        return self
 
     # Explicit aliases keep database variables independent of the APP_ prefix.
     database_url: SecretStr = Field(validation_alias="DATABASE_URL", repr=False)

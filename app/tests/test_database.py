@@ -139,6 +139,6 @@ async def test_database_health_does_not_swallow_cancellation() -> None:
         await database.check_database_connection(session)
 
 
-def test_foundation_defines_no_tables() -> None:
+def test_identity_model_is_registered() -> None:
     load_models()
-    assert not Base.metadata.tables
+    assert set(Base.metadata.tables) == {"users"}

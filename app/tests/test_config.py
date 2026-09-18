@@ -8,6 +8,28 @@ from pydantic import ValidationError
 from app.core.config import Settings, get_settings
 
 
+@pytest.mark.parametrize("key,value", [
+    ("JWT_SECRET_KEY", "short"), ("JWT_ALGORITHM", "none"),
+    ("JWT_ALGORITHM", "RS256"), ("ACCESS_TOKEN_EXPIRE_MINUTES", "0"),
+    ("ACCESS_TOKEN_EXPIRE_MINUTES", "61"), ("REFRESH_TOKEN_EXPIRE_DAYS", "0"),
+    ("REFRESH_TOKEN_EXPIRE_DAYS", "91"),
+])
+def test_jwt_configuration_is_validated(monkeypatch: pytest.MonkeyPatch, key: str, value: str) -> None:
+    monkeypatch.setenv(key, value)
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
+def test_jwt_secret_required_and_redacted(monkeypatch: pytest.MonkeyPatch) -> None:
+    settings = Settings(_env_file=None)
+    secret = settings.jwt_secret_key.get_secret_value()
+    assert secret not in repr(settings)
+    assert secret not in settings.model_dump_json()
+    monkeypatch.delenv("JWT_SECRET_KEY")
+    with pytest.raises(ValidationError, match="JWT_SECRET_KEY"):
+        Settings(_env_file=None)
+
+
 def test_dotenv_loading_and_environment_precedence(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

@@ -67,4 +67,7 @@ def test_revision_template_and_offline_sql(
     assert "COMMIT;" in sql
     assert secret not in sql
     assert '"timestamp"' not in sql
-    assert not Base.metadata.tables
+    assert set(Base.metadata.tables) == {"users"}
+    assert "CREATE TABLE users" in sql
+    assert "CREATE UNIQUE INDEX ix_users_email" in sql
+    assert "CREATE TRIGGER users_updated_at" in sql

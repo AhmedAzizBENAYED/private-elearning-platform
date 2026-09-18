@@ -3,8 +3,12 @@
 A FastAPI backend foundation with a modular monolith layout. The application runs
 as one deployable service, with explicit boundaries for HTTP, business use cases,
 and persistence. PostgreSQL infrastructure uses SQLAlchemy 2.0 async sessions and
-Alembic migrations. Authentication, business logic, and business models are
-intentionally deferred. Application startup creates no tables.
+Alembic migrations. The IAM foundation provides user identities, Argon2id password
+hashing, JWT login, current-user lookup, and reusable role checks. User administration
+and learning features remain deferred. Application startup creates no tables.
+
+See [IAM setup, security decisions, and testing](docs/iam.md). Existing environments
+must add a generated `JWT_SECRET_KEY` before starting FastAPI or running Alembic.
 
 ## Layout and file responsibilities
 
@@ -276,8 +280,9 @@ launchers. With an activated environment, `alembic ...` is equivalent.
 .\.venv\Scripts\python.exe -m alembic upgrade head
 ```
 
-There are currently no revision files, so `upgrade head` applies no application
-schema changes. Alembic may initialize its own `alembic_version` tracking table.
+The committed revision `c71a92e045bd` follows the initial baseline and creates the
+users table, email index, constraints, and update timestamp trigger. Apply it with
+`upgrade head`; do not generate a second migration for the same table.
 
 When a future feature adds a model, inherit `Base` from `app.database.base` and
 put its module anywhere under `app/models/` (use `__init__.py` in nested packages).
@@ -293,7 +298,7 @@ Then generate, review, and apply a migration:
 
 Autogeneration compares discovered metadata with the connected database. It needs
 a running database and human review, particularly for renames and destructive
-changes. No baseline or empty migration needs to be committed now.
+changes. Review custom trigger changes manually; autogeneration does not track them.
 
 Offline SQL generation uses existing revisions and does not contact PostgreSQL:
 
@@ -308,8 +313,9 @@ without ConfigParser interpolation issues.
 ## Database verification
 
 `python -m pytest` runs isolated tests for settings, sessions, error responses,
-timeouts, model discovery, and offline migration rendering. They do not create
-database tables. One live connectivity test is skipped unless you explicitly set
+timeouts, authentication, role checks, model discovery, and offline migration rendering.
+Authentication tests create tables only in an ephemeral in-memory SQLite database.
+One live connectivity test is skipped unless you explicitly set
 `TEST_DATABASE_URL` in the test process environment to a PostgreSQL asyncpg URL.
 After setting it, run `python -m pytest -m integration`. This live test only
 executes the health probe. Run `docker compose config --quiet` and the migration
@@ -354,5 +360,5 @@ future workloads. Assess asyncpg prepared-statement settings before introducing
 an external pooler. Use liveness to detect a dead app and the DB endpoint to decide
 whether it can currently reach PostgreSQL; a probe cannot guarantee future requests.
 
-Business models, authentication, business logic, and production deployment
-infrastructure remain future work.
+User administration, learning features, and production deployment infrastructure
+remain future work.

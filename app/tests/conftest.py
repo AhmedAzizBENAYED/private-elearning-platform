@@ -15,9 +15,13 @@ TEST_DATABASE_URL = "postgresql+asyncpg://test:test@127.0.0.1:1/test"
 @pytest.fixture(autouse=True)
 def clean_environment(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     for key in os.environ:
-        if key.upper().startswith(("APP_", "DATABASE_", "POSTGRES_")):
+        if key.upper().startswith(("APP_", "DATABASE_", "POSTGRES_", "JWT_", "ACCESS_TOKEN_", "REFRESH_TOKEN_")):
             monkeypatch.delenv(key)
     monkeypatch.setenv("DATABASE_URL", TEST_DATABASE_URL)
+    monkeypatch.setenv("JWT_SECRET_KEY", "test-only-signing-key-never-use-in-production-" * 2)
+    monkeypatch.setenv("JWT_ALGORITHM", "HS256")
+    monkeypatch.setenv("ACCESS_TOKEN_EXPIRE_MINUTES", "15")
+    monkeypatch.setenv("REFRESH_TOKEN_EXPIRE_DAYS", "7")
     get_settings.cache_clear()
     yield
     get_settings.cache_clear()
