@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     docs_enabled: bool = True
     activation_token_expire_minutes: int = Field(default=30, ge=1, le=60)
+    video_completion_tolerance_seconds: int = Field(default=2, ge=0, le=10)
 
     jwt_secret_key: SecretStr = Field(validation_alias="JWT_SECRET_KEY", repr=False)
     jwt_algorithm: Literal["HS256", "HS384", "HS512"] = Field(

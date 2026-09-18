@@ -34,6 +34,9 @@ def test_metadata_and_versioned_schema(client: TestClient, settings: Settings) -
         "/api/v1/courses", "/api/v1/courses/{course_id}",
         "/api/v1/courses/{course_id}/modules", "/api/v1/modules/{module_id}/lessons",
         "/api/v1/lessons/{lesson_id}",
+        "/api/v1/courses/{course_id}/enroll", "/api/v1/me/enrollments",
+        "/api/v1/courses/{course_id}/enrollment", "/api/v1/courses/{course_id}/progress",
+        "/api/v1/lessons/{lesson_id}/progress",
     }
     assert client.get("/docs").status_code == 200
 

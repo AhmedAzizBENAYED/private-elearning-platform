@@ -67,7 +67,7 @@ def test_revision_template_and_offline_sql(
     assert "COMMIT;" in sql
     assert secret not in sql
     assert '"timestamp"' not in sql
-    assert set(Base.metadata.tables) == {"users", "courses", "modules", "lessons"}
+    assert set(Base.metadata.tables) == {"users", "courses", "modules", "lessons", "enrollments", "progress"}
     assert "CREATE TABLE users" in sql
     assert "CREATE UNIQUE INDEX ix_users_email" in sql
     assert "CREATE TRIGGER users_updated_at" in sql
@@ -83,6 +83,24 @@ def test_revision_template_and_offline_sql(
     assert "REFERENCES users (id) ON DELETE RESTRICT" in sql
     assert "REFERENCES courses (id) ON DELETE RESTRICT" in sql
     assert "REFERENCES modules (id) ON DELETE CASCADE" in sql
+    assert "CREATE TABLE enrollments" in sql
+    assert "CREATE TABLE progress" in sql
+    assert "UNIQUE (user_id, course_id)" in sql
+    assert "UNIQUE (user_id, lesson_id)" in sql
+    assert "REFERENCES lessons (id) ON DELETE RESTRICT" in sql
+    assert "CHECK (watched_seconds >= 0)" in sql
+    assert "CREATE TRIGGER progress_updated_at" in sql
+
+
+def test_enrollment_progress_migration_downgrade_sql() -> None:
+    output = io.StringIO()
+    config = Config(str(PROJECT_ROOT / "alembic.ini"), output_buffer=output)
+    command.downgrade(config, "a04d36e281cb:f93c25d170ba", sql=True)
+    sql = output.getvalue()
+    assert "DROP TRIGGER progress_updated_at" in sql
+    assert "DROP FUNCTION set_progress_updated_at()" in sql
+    assert "DROP TABLE progress" in sql and "DROP TABLE enrollments" in sql
+    assert "DROP TABLE courses" not in sql and "DROP TABLE users" not in sql
 
 
 def test_catalog_migration_downgrade_sql() -> None:

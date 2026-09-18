@@ -8,6 +8,7 @@ from app.api.v1.admin.courses import router as admin_courses_router
 from app.api.v1.admin.modules import router as admin_modules_router
 from app.api.v1.admin.lessons import router as admin_lessons_router
 from app.api.v1.courses import router as catalog_router
+from app.api.v1.enrollments import router as enrollments_router
 
 from app.database.session import DatabaseSession, check_database_connection
 from app.schemas.health import DatabaseHealthResponse, HealthResponse
@@ -19,6 +20,7 @@ router.include_router(admin_courses_router)
 router.include_router(admin_modules_router)
 router.include_router(admin_lessons_router)
 router.include_router(catalog_router)
+router.include_router(enrollments_router)
 
 
 @router.get("/health", response_model=HealthResponse, tags=["health"])

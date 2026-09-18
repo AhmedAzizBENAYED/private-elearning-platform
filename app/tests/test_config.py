@@ -27,6 +27,13 @@ def test_activation_lifetime_is_bounded(monkeypatch: pytest.MonkeyPatch, value: 
         Settings(_env_file=None)
 
 
+@pytest.mark.parametrize("value", ["-1", "11"])
+def test_video_completion_tolerance_is_bounded(monkeypatch: pytest.MonkeyPatch, value: str) -> None:
+    monkeypatch.setenv("APP_VIDEO_COMPLETION_TOLERANCE_SECONDS", value)
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
 def test_jwt_secret_required_and_redacted(monkeypatch: pytest.MonkeyPatch) -> None:
     settings = Settings(_env_file=None)
     secret = settings.jwt_secret_key.get_secret_value()
