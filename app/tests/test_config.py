@@ -20,6 +20,13 @@ def test_jwt_configuration_is_validated(monkeypatch: pytest.MonkeyPatch, key: st
         Settings(_env_file=None)
 
 
+@pytest.mark.parametrize("value", ["0", "61"])
+def test_activation_lifetime_is_bounded(monkeypatch: pytest.MonkeyPatch, value: str) -> None:
+    monkeypatch.setenv("APP_ACTIVATION_TOKEN_EXPIRE_MINUTES", value)
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
 def test_jwt_secret_required_and_redacted(monkeypatch: pytest.MonkeyPatch) -> None:
     settings = Settings(_env_file=None)
     secret = settings.jwt_secret_key.get_secret_value()

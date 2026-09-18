@@ -71,3 +71,17 @@ def test_revision_template_and_offline_sql(
     assert "CREATE TABLE users" in sql
     assert "CREATE UNIQUE INDEX ix_users_email" in sql
     assert "CREATE TRIGGER users_updated_at" in sql
+    assert "ADD COLUMN activation_token_hash VARCHAR(64)" in sql
+    assert "ADD COLUMN activation_expires_at TIMESTAMP WITH TIME ZONE" in sql
+    assert "UNIQUE (activation_token_hash)" in sql
+
+
+def test_activation_migration_downgrade_sql() -> None:
+    output = io.StringIO()
+    config = Config(str(PROJECT_ROOT / "alembic.ini"), output_buffer=output)
+    command.downgrade(config, "e82b14c069af:c71a92e045bd", sql=True)
+    sql = output.getvalue()
+    assert "DROP CONSTRAINT uq_users_activation_token_hash" in sql
+    assert "DROP COLUMN activation_expires_at" in sql
+    assert "DROP COLUMN activation_token_hash" in sql
+    assert "DROP TABLE users" not in sql

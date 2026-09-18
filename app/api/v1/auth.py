@@ -5,8 +5,24 @@ from fastapi import APIRouter, Response
 from app.core.dependencies import AuthServiceDependency, CurrentUser, unauthorized
 from app.schemas.auth import LoginRequest, TokenResponse, UserResponse
 from app.services.auth_service import AuthenticationError
+from app.core.dependencies import MemberServiceDependency
+from app.schemas.member import PasswordSetup
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
+
+
+@router.post(
+    "/setup-password", status_code=204,
+    responses={400: {"description": "Invalid, expired, consumed token or inactive account"},
+               503: {"description": "Member storage unavailable"}},
+)
+async def setup_password(payload: PasswordSetup, service: MemberServiceDependency) -> Response:
+    """Set an invited member's initial password using a one-time activation token.
+
+    No account is created by this endpoint. Send the token in the body, never a URL.
+    """
+    await service.setup_password(payload.token.get_secret_value(), payload.password.get_secret_value())
+    return Response(status_code=204, headers={"Cache-Control": "no-store"})
 
 
 @router.post("/login", response_model=TokenResponse)

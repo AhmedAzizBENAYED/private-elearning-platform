@@ -12,6 +12,19 @@ from starlette.exceptions import HTTPException
 logger = logging.getLogger(__name__)
 
 
+class BusinessError(Exception):
+    """An expected domain failure with a safe public explanation."""
+
+    def __init__(self, status_code: int, detail: str) -> None:
+        super().__init__(detail)
+        self.status_code = status_code
+        self.detail = detail
+
+
+async def business_exception_handler(_request: Request, exc: BusinessError) -> JSONResponse:
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+
 async def validation_exception_handler(
     _request: Request, exc: RequestValidationError
 ) -> JSONResponse:
@@ -45,5 +58,6 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 def register_exception_handlers(application: FastAPI) -> None:
     # Reuse FastAPI's HTTP handler to preserve headers and bodyless status codes.
     application.add_exception_handler(HTTPException, http_exception_handler)
+    application.add_exception_handler(BusinessError, business_exception_handler)
     application.add_exception_handler(RequestValidationError, validation_exception_handler)
     application.add_exception_handler(Exception, unhandled_exception_handler)

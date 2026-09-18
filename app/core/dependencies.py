@@ -10,6 +10,8 @@ from app.database.session import DatabaseSession
 from app.models.user import User, UserRole
 from app.repositories.user_repository import UserRepository
 from app.services.auth_service import AuthenticationError, AuthService
+from app.repositories.member_repository import MemberRepository
+from app.services.member_service import MemberService
 
 bearer = HTTPBearer(auto_error=False)
 
@@ -21,6 +23,17 @@ def get_auth_service(request: Request, session: DatabaseSession) -> AuthService:
 
 
 AuthServiceDependency = Annotated[AuthService, Depends(get_auth_service)]
+
+
+def get_member_service(request: Request, session: DatabaseSession) -> MemberService:
+    return MemberService(
+        request.app.state.settings, MemberRepository(session),
+        request.app.state.password_limiter,
+        getattr(request.app.state, "activation_delivery", None),
+    )
+
+
+MemberServiceDependency = Annotated[MemberService, Depends(get_member_service)]
 
 
 def unauthorized(detail: str = "Invalid authentication credentials") -> HTTPException:

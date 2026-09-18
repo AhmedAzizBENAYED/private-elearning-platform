@@ -27,6 +27,8 @@ class User(Base):
     id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
     hashed_password: Mapped[str] = mapped_column(String(512))
+    activation_token_hash: Mapped[str | None] = mapped_column(String(64), unique=True)
+    activation_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     first_name: Mapped[str] = mapped_column(String(100))
     last_name: Mapped[str] = mapped_column(String(100))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"))
