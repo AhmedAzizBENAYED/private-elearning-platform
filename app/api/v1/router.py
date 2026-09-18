@@ -4,6 +4,10 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.api.v1.auth import router as auth_router
 from app.api.v1.admin.members import router as members_router
+from app.api.v1.admin.courses import router as admin_courses_router
+from app.api.v1.admin.modules import router as admin_modules_router
+from app.api.v1.admin.lessons import router as admin_lessons_router
+from app.api.v1.courses import router as catalog_router
 
 from app.database.session import DatabaseSession, check_database_connection
 from app.schemas.health import DatabaseHealthResponse, HealthResponse
@@ -11,6 +15,10 @@ from app.schemas.health import DatabaseHealthResponse, HealthResponse
 router = APIRouter()
 router.include_router(auth_router)
 router.include_router(members_router)
+router.include_router(admin_courses_router)
+router.include_router(admin_modules_router)
+router.include_router(admin_lessons_router)
+router.include_router(catalog_router)
 
 
 @router.get("/health", response_model=HealthResponse, tags=["health"])

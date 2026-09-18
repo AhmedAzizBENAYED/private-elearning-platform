@@ -27,6 +27,13 @@ def test_metadata_and_versioned_schema(client: TestClient, settings: Settings) -
         "/api/v1/auth/setup-password", "/api/v1/admin/members",
         "/api/v1/admin/members/{member_id}", "/api/v1/admin/members/{member_id}/status",
         "/api/v1/admin/members/{member_id}/activation",
+        "/api/v1/admin/courses", "/api/v1/admin/courses/{course_id}",
+        "/api/v1/admin/courses/{course_id}/publish", "/api/v1/admin/courses/{course_id}/archive",
+        "/api/v1/admin/courses/{course_id}/modules", "/api/v1/admin/modules/{module_id}",
+        "/api/v1/admin/modules/{module_id}/lessons", "/api/v1/admin/lessons/{lesson_id}",
+        "/api/v1/courses", "/api/v1/courses/{course_id}",
+        "/api/v1/courses/{course_id}/modules", "/api/v1/modules/{module_id}/lessons",
+        "/api/v1/lessons/{lesson_id}",
     }
     assert client.get("/docs").status_code == 200
 

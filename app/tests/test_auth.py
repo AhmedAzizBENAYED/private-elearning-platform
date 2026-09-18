@@ -18,6 +18,7 @@ from app.core.security import hash_password, verify_password
 from app.database.base import Base
 from app.database.session import get_db_session
 from app.models.user import User, UserRole
+from app.models import load_models
 
 PASSWORD = "test-password-with-enough-entropy"
 EMAIL = "member@example.com"
@@ -30,6 +31,7 @@ def password_hash() -> str:
 
 @pytest.fixture
 async def auth_session(password_hash: str) -> AsyncIterator[AsyncSession]:
+    load_models()
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
