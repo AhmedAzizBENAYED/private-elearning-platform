@@ -10,13 +10,19 @@ from app.api.v1.router import router as api_v1_router
 from app.core.config import Settings, get_settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import configure_logging
+from app.database.session import create_database_engine, create_session_factory
+from app.models import load_models
 
 logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(application: FastAPI) -> AsyncIterator[None]:
-    """Own application-wide resources and their cleanup as the backend grows."""
+    """Own the pool for this application/worker and release it during shutdown."""
+    load_models()
+    engine = create_database_engine(application.state.settings)
+    application.state.database_engine = engine
+    application.state.database_session_factory = create_session_factory(engine)
     logger.info(
         "Application started",
         extra={"environment": application.state.settings.environment},
@@ -24,6 +30,7 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
     try:
         yield
     finally:
+        await engine.dispose()
         logger.info("Application stopped")
 
 
@@ -42,7 +49,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         redoc_url="/redoc" if settings.docs_enabled else None,
         openapi_url="/api/v1/openapi.json" if settings.docs_enabled else None,
         openapi_tags=[
-            {"name": "health", "description": "Application liveness checks."},
+            {"name": "health", "description": "Application and database health checks."},
         ],
     )
     application.state.settings = settings

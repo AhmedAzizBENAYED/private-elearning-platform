@@ -1,1 +1,1 @@
-"""Infrastructure boundary reserved for future persistence support."""
+"""PostgreSQL engine, session lifecycle, and shared ORM metadata."""

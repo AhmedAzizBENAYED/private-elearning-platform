@@ -7,15 +7,25 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.core.config import Settings
-from app.main import create_app
+from app.core.config import Settings, get_settings
+
+TEST_DATABASE_URL = "postgresql+asyncpg://test:test@127.0.0.1:1/test"
 
 
 @pytest.fixture(autouse=True)
-def clean_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+def clean_environment(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     for key in os.environ:
-        if key.upper().startswith("APP_"):
+        if key.upper().startswith(("APP_", "DATABASE_", "POSTGRES_")):
             monkeypatch.delenv(key)
+    monkeypatch.setenv("DATABASE_URL", TEST_DATABASE_URL)
+    get_settings.cache_clear()
+    yield
+    get_settings.cache_clear()
+
+
+@pytest.fixture
+def anyio_backend() -> str:
+    return "asyncio"
 
 
 @pytest.fixture
@@ -25,6 +35,8 @@ def settings() -> Settings:
 
 @pytest.fixture
 def application(settings: Settings) -> FastAPI:
+    from app.main import create_app
+
     return create_app(settings)
 
 

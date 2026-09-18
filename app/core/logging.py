@@ -38,7 +38,7 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(payload, ensure_ascii=True, default=str)
 
 
-def configure_logging(level: str = "INFO") -> None:
+def configure_logging(level: str = "INFO", *, stream: str = "ext://sys.stdout") -> None:
     """Replace server handlers to avoid duplicate or mixed-format worker logs."""
     dictConfig(
         {
@@ -50,7 +50,7 @@ def configure_logging(level: str = "INFO") -> None:
                     "class": "logging.StreamHandler",
                     "level": level,
                     "formatter": "json",
-                    "stream": "ext://sys.stdout",
+                    "stream": stream,
                 },
             },
             "root": {"handlers": ["console"], "level": level},

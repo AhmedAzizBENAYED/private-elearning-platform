@@ -2,8 +2,9 @@
 
 A FastAPI backend foundation with a modular monolith layout. The application runs
 as one deployable service, with explicit boundaries for HTTP, business use cases,
-and persistence. Authentication, business features, and database integration are
-intentionally deferred.
+and persistence. PostgreSQL infrastructure uses SQLAlchemy 2.0 async sessions and
+Alembic migrations. Authentication, business logic, and business models are
+intentionally deferred. Application startup creates no tables.
 
 ## Layout and file responsibilities
 
@@ -29,34 +30,52 @@ app/
         conftest.py
         test_api.py
         test_config.py
+        test_database.py
+        test_database_integration.py
         test_exceptions.py
         test_logging.py
+        test_migrations.py
+alembic/
+    env.py
+    script.py.mako
+    versions/
+alembic.ini
+docker-compose.yml
 ```
 
 Every package also contains an `__init__.py` with a short description of its role.
 
 | File | Responsibility |
 | --- | --- |
-| `app/main.py` | Composition root: `create_app()`, application metadata, lifespan events, handler registration, and the `/api/v1` prefix. Exposes `app` for Uvicorn. |
-| `app/core/config.py` | Immutable, validated `pydantic-settings` configuration; project-root `.env` discovery; cached settings accessor. |
-| `app/core/logging.py` | Standard-library JSON formatter and shared application/Uvicorn logging configuration. Writes to stdout for a process manager or log collector. |
+| `app/main.py` | Composition root and application lifespan: discovers models, creates one engine/session factory per application worker, and disposes the engine on shutdown. Also registers metadata, handlers, and versioned routes. |
+| `app/core/config.py` | Validated, cached settings including required secret `DATABASE_URL`, asyncpg URL validation, and bounded pool/connection settings. Loads the project-root `.env`. |
+| `app/core/logging.py` | Shared JSON logging. Application logs use stdout; Alembic uses stderr to keep offline SQL output clean. |
 | `app/core/exceptions.py` | Registers HTTP, validation, and unexpected-error handlers. Preserves standard HTTP headers and returns generic JSON for unexpected failures. |
-| `app/api/v1/router.py` | Version 1 routing entry point and the health endpoint. Include future feature routers here. |
-| `app/database/session.py` | Documented location for a future engine and session dependency; currently creates no connections. |
-| `app/database/base.py` | Documented location for future shared ORM metadata; currently defines no ORM base or tables. |
-| `app/models/__init__.py` | Reserves the persistence-model package; no database models yet. |
-| `app/schemas/health.py` | Typed response contract for health checks. |
+| `app/api/v1/router.py` | Liveness and database health routes under `/api/v1`; maps an unavailable database to HTTP 503. |
+| `app/database/__init__.py` | Documents the database infrastructure package. |
+| `app/database/session.py` | Async engine and session factory builders, request-scoped dependency injection, and a bounded read-only connectivity probe. |
+| `app/database/base.py` | Shared SQLAlchemy declarative `Base` and metadata naming conventions for future migrations. Defines no tables. |
+| `app/models/__init__.py` | Recursively imports future model modules through `load_models()` so their declarations enter `Base.metadata`. Contains no business models. |
+| `app/schemas/health.py` | Typed liveness and database connectivity response contracts. |
 | `app/services/__init__.py` | Reserves business use cases and documents their dependency boundary. |
 | `app/repositories/__init__.py` | Reserves persistence adapters and documents their responsibility. |
-| `app/tests/conftest.py` | Shared settings, application, and client fixtures; clears application environment variables between tests. |
+| `app/tests/conftest.py` | Isolated settings/application/client fixtures and the asyncio test backend; unit tests use a dummy URL without requiring PostgreSQL. |
 | `app/tests/test_api.py` | Health contract, API versioning, metadata, documentation control, and legacy import checks. |
-| `app/tests/test_config.py` | `.env` loading, environment precedence, validation, and settings caching. |
+| `app/tests/test_config.py` | Configuration precedence/caching, required database URL, driver validation, secret masking, interpolation, and pool limits. |
+| `app/tests/test_database.py` | Independent sessions, transaction cleanup, engine disposal, safe health responses, probe timeout/cancellation, and absence of application tables. |
+| `app/tests/test_database_integration.py` | Opt-in read-only health check against real PostgreSQL via `TEST_DATABASE_URL`. |
 | `app/tests/test_exceptions.py` | Error status/header preservation, validation input omission, and safe 500 responses. |
 | `app/tests/test_logging.py` | JSON formatting, timestamps, exception output, query omission, and duplicate/level checks. |
+| `app/tests/test_migrations.py` | Nested model discovery and a temporary no-op migration rendered as offline SQL. Creates no database tables or repository revisions. |
+| `alembic.ini` | Migration paths relative to the repository; contains no database URL or credentials. |
+| `alembic/env.py` | Loads shared settings and discovered metadata; supports async online migrations and offline SQL rendering. |
+| `alembic/script.py.mako` | Typed template for future revision files with `upgrade()` and `downgrade()`. |
+| `alembic/versions/.gitkeep` | Keeps the empty revision directory in Git until actual schema changes are introduced. |
+| `docker-compose.yml` | Development-only PostgreSQL 16 with environment-based credentials, loopback port binding, a named volume, and a readiness check. |
 | `main.py` | Small compatibility import for existing `main:app` run configurations. The starter greeting endpoints have been removed. |
-| `requirements.txt` | Runtime dependencies. |
+| `requirements.txt` | Runtime dependencies, including SQLAlchemy's asyncio extra, asyncpg, and Alembic. |
 | `requirements-dev.txt` | Runtime dependencies plus the HTTP test client and test runner. |
-| `pytest.ini` | Discovers tests under `app/tests`. |
+| `pytest.ini` | Test discovery and the opt-in integration marker. |
 | `.env.example` | Safe, tracked example configuration to copy locally. |
 | `.env` | Local configuration, ignored by Git. Environment variables override it. |
 | `.gitignore` | Excludes local environments, secrets, caches, build output, and new editor files. Previously tracked IDE files remain tracked. |
@@ -79,7 +98,8 @@ Every package also contains an `__init__.py` with a short description of its rol
   modules exist yet, so those boundaries are documented instead of invented.
 - **An application factory supports isolated tests.** `create_app(settings)`
   accepts explicit configuration; normal startup uses cached settings. Lifespan
-  provides the place to acquire and release future shared resources.
+  owns the database engine and session factory. Creating the engine does not open
+  connections; PostgreSQL can be temporarily unavailable without breaking liveness.
 - **Configuration fails early.** Invalid log levels or environment names prevent
   startup. `.env` is resolved relative to the project, regardless of the working
   directory. Restart the process after configuration changes.
@@ -93,19 +113,40 @@ Every package also contains an `__init__.py` with a short description of its rol
   strings. Exception traces remain in server logs; avoid putting secrets in
   exception messages or URL paths. Logging configuration is process-wide, so an
   application factory call replaces the process's root/server logging handlers.
-- **Database setup is deferred.** The health endpoint checks application liveness
-  only. It does not claim that a future database or external dependency is ready.
+- **Database concerns stay in infrastructure.** ORM declarations share one `Base`;
+  session/connection management belongs to `app.database`. No services or business
+  repositories are added merely to wrap the infrastructure health query.
+- **Transactions are explicit.** Each dependency call creates a fresh
+  `AsyncSession`. Closing it rolls back any unfinished transaction, including on
+  exceptions. The dependency never commits implicitly. Future use cases can use
+  `async with session.begin():` for a unit of work. A session must not be shared
+  across concurrent tasks. `expire_on_commit=False` avoids implicit attribute
+  refreshes, and `autoflush=False` leaves flush timing explicit.
+- **Migrations own schema changes.** Neither startup nor the health probe calls
+  `create_all()`. Alembic shares the application's URL and metadata but uses its
+  own short-lived async engine with `NullPool`. There are no initial revisions or
+  business tables in this foundation.
+- **Liveness and database connectivity are separate.** `GET /api/v1/health`
+  returns `{"status":"ok"}` without contacting PostgreSQL. `GET /api/v1/health/db`
+  executes `SELECT 1`, returning `{"database":"connected"}` or HTTP 503 with
+  `{"detail":"Database unavailable"}`. Its query/pool wait is bounded to five
+  seconds. This checks connectivity, not migration state or schema compatibility.
 
 The router and handler wiring follow the official
 [FastAPI multi-file application guidance](https://fastapi.tiangolo.com/tutorial/bigger-applications/)
 and [error handling guidance](https://fastapi.tiangolo.com/tutorial/handling-errors/).
 Configuration uses [Pydantic Settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/),
 and application lifecycle hooks use [FastAPI lifespan](https://fastapi.tiangolo.com/advanced/events/).
+Database lifecycle follows [SQLAlchemy's async guidance](https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html),
+and migrations use [Alembic's async recipe](https://alembic.sqlalchemy.org/en/latest/cookbook.html#using-asyncio-with-alembic).
 
 ## Configuration
 
 Configuration order is explicit constructor arguments, environment variables,
-project-root `.env`, then defaults. All application environment keys use `APP_`.
+project-root `.env`, then defaults. General application keys use `APP_`; database
+settings use the explicit `DATABASE_` names below. FastAPI and Alembic both read
+the same `Settings` class. The URL is represented as a secret and omitted from
+settings repr; validation error text does not print the submitted input.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -115,10 +156,34 @@ project-root `.env`, then defaults. All application environment keys use `APP_`.
 | `APP_ENVIRONMENT` | `development` | One of `development`, `test`, `staging`, `production`; included in startup logs. |
 | `APP_LOG_LEVEL` | `INFO` | One of `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`. |
 | `APP_DOCS_ENABLED` | `true` | Enables `/docs`, `/redoc`, and `/api/v1/openapi.json`. |
+| `DATABASE_URL` | **Required** | Full `postgresql+asyncpg://` URL, including host and database name. No default credentials. |
+| `DATABASE_POOL_SIZE` | `5` | Persistent connection pool size per worker, at least 1. |
+| `DATABASE_MAX_OVERFLOW` | `10` | Additional temporary connections per worker, at least 0. |
+| `DATABASE_POOL_TIMEOUT` | `30` | Positive seconds to wait for an available pooled connection. |
+| `DATABASE_CONNECT_TIMEOUT` | `5` | Positive seconds allowed for a new asyncpg connection. |
+
+The development Compose service additionally reads these variables from `.env`:
+
+| Variable | Requirement | Purpose |
+| --- | --- | --- |
+| `POSTGRES_USER` | Required | Initial development database role. |
+| `POSTGRES_PASSWORD` | Required | Initial development role password; replace the example value. |
+| `POSTGRES_DB` | Required | Database created on first initialization. |
+| `POSTGRES_PORT` | Optional, defaults to `5432` in Compose | Host port bound only to `127.0.0.1`. |
+
+For example, the URL format is
+`postgresql+asyncpg://user:password@localhost:5432/elearning` (example values only).
+`.env.example` interpolates the local `POSTGRES_*` values into `DATABASE_URL` using
+`${NAME}` expansion. Use URL-safe development credentials with that template.
+If a username/password contains characters such as `@`, `:`, `/`, `%`, or `$`,
+provide a complete URL with the credentials percent-encoded instead. Production
+should inject the full `DATABASE_URL` through the deployment's secret management;
+the `POSTGRES_*` variables are only needed by the local Compose database.
 
 `APP_ENVIRONMENT` labels the deployment; it does not automatically change other
 settings. Configure `APP_DOCS_ENABLED=false` explicitly if docs should be hidden.
-No secrets or database URL are needed at this stage.
+`DATABASE_URL` is required even if PostgreSQL is offline. Restart the application
+after changing configuration. Never commit `.env` or print the resolved URL.
 
 ## Run locally (PowerShell)
 
@@ -133,19 +198,41 @@ py -3.14 -m venv .venv
 
 # Creates .env only if one is not already present:
 if (!(Test-Path .env)) { Copy-Item .env.example .env }
+```
+
+Replace the example development password in `.env`. For an existing `.env`, merge
+the new database keys from `.env.example` without replacing your other settings.
+Install/start Docker Desktop with Linux containers, then initialize PostgreSQL:
+
+```powershell
+# Validate without printing the expanded credentials:
+docker compose config --quiet
+docker compose up -d --wait postgres
+docker compose ps postgres
 
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
 ```
+
+The named `postgres_data` volume persists across container restarts and
+`docker compose down`. The image uses `POSTGRES_*` initialization values only when
+the volume is empty; changing `.env` does not change an existing role's password.
+The Compose health check uses `pg_isready`; the API probe additionally performs a
+real authenticated query. See the [official PostgreSQL image documentation](https://hub.docker.com/_/postgres).
+No application tables or migrations are run by Compose.
 
 Visit `http://127.0.0.1:8000/docs` for Swagger UI. From another terminal:
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:8000/api/v1/health
+Invoke-RestMethod http://127.0.0.1:8000/api/v1/health/db
 .\.venv\Scripts\python.exe -m pytest
 ```
 
 The health response is HTTP 200 with `{"status":"ok"}`. There is no `/health`
 alias outside `/api/v1`.
+
+Stop the development database while retaining its data with `docker compose down`.
+Do not add `--volumes` unless you intend to delete the local database data.
 
 In PyCharm, select this project's `.venv\Scripts\python.exe` as the interpreter.
 Use a Python run configuration with module `uvicorn`, parameters
@@ -177,14 +264,68 @@ local interpreter itself fails, recreate `.venv` at its new location and reinsta
 the requirements. In general, recreate virtual environments when moving projects:
 [Python documents why virtual environments are not portable](https://docs.python.org/3/library/venv.html#how-venvs-work).
 
+## Alembic workflow
+
+Run from the project root after PostgreSQL is healthy and `DATABASE_URL` is set.
+The module commands below use the project interpreter and avoid stale Windows
+launchers. With an activated environment, `alembic ...` is equivalent.
+
+```powershell
+.\.venv\Scripts\python.exe -m alembic heads
+.\.venv\Scripts\python.exe -m alembic current
+.\.venv\Scripts\python.exe -m alembic upgrade head
+```
+
+There are currently no revision files, so `upgrade head` applies no application
+schema changes. Alembic may initialize its own `alembic_version` tracking table.
+
+When a future feature adds a model, inherit `Base` from `app.database.base` and
+put its module anywhere under `app/models/` (use `__init__.py` in nested packages).
+Both application startup and Alembic discover these modules automatically. Keep
+them free of network calls, application startup imports, and other side effects.
+Then generate, review, and apply a migration:
+
+```powershell
+.\.venv\Scripts\python.exe -m alembic revision --autogenerate -m "Describe the schema change"
+# Review the generated upgrade() and downgrade() before applying it.
+.\.venv\Scripts\python.exe -m alembic upgrade head
+```
+
+Autogeneration compares discovered metadata with the connected database. It needs
+a running database and human review, particularly for renames and destructive
+changes. No baseline or empty migration needs to be committed now.
+
+Offline SQL generation uses existing revisions and does not contact PostgreSQL:
+
+```powershell
+.\.venv\Scripts\python.exe -m alembic upgrade head --sql
+```
+
+Logs go to stderr so stdout contains SQL only. `alembic.ini` contains no URL;
+passing the URL directly from settings also preserves percent-encoded passwords
+without ConfigParser interpolation issues.
+
+## Database verification
+
+`python -m pytest` runs isolated tests for settings, sessions, error responses,
+timeouts, model discovery, and offline migration rendering. They do not create
+database tables. One live connectivity test is skipped unless you explicitly set
+`TEST_DATABASE_URL` in the test process environment to a PostgreSQL asyncpg URL.
+After setting it, run `python -m pytest -m integration`. This live test only
+executes the health probe. Run `docker compose config --quiet` and the migration
+commands against your development database to verify the full Docker workflow.
+
 ## Production process
 
-Install runtime dependencies and start Uvicorn without reload:
+Inject the production `DATABASE_URL` securely, install runtime dependencies, apply
+reviewed migrations as a separate deployment step, and start Uvicorn without reload:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 $env:APP_ENVIRONMENT = "production"
 $env:APP_DOCS_ENABLED = "false"
+# Run once per deployment, not once per worker:
+.\.venv\Scripts\python.exe -m alembic upgrade head
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
 ```
 
@@ -197,5 +338,21 @@ Terminate HTTPS at your ingress/reverse proxy and configure trusted proxy addres
 for that deployment. Reload and worker supervisor messages may use Uvicorn's own
 format; application-worker logs use JSON.
 
-This repository supplies the backend foundation. Database integration,
-authentication, and deployment infrastructure remain separate future work.
+Use a managed PostgreSQL service or a separately operated database in production;
+this Compose file is for local development. Use least-privilege runtime credentials
+and a separate migration role when needed; the official image's initial local
+role has elevated privileges. Configure database TLS/certificate verification for
+your provider and driver, backups with restore checks, and monitoring for connection
+usage, lock waits, and failed probes.
+
+Budget connections across all workers and replicas. With the defaults, two workers
+can open up to `2 * (5 + 10) = 30` application connections, plus migration/admin
+connections. `pool_pre_ping=True` replaces stale pooled connections; it does not
+retry failed transactions. Connection/pool timeouts do not impose a general SQL
+statement timeout, so set appropriate PostgreSQL statement and lock timeouts for
+future workloads. Assess asyncpg prepared-statement settings before introducing
+an external pooler. Use liveness to detect a dead app and the DB endpoint to decide
+whether it can currently reach PostgreSQL; a probe cannot guarantee future requests.
+
+Business models, authentication, business logic, and production deployment
+infrastructure remain future work.

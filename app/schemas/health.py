@@ -7,3 +7,7 @@ from pydantic import BaseModel
 
 class HealthResponse(BaseModel):
     status: Literal["ok"]
+
+
+class DatabaseHealthResponse(BaseModel):
+    database: Literal["connected"]

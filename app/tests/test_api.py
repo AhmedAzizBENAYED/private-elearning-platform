@@ -4,7 +4,6 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.core.config import Settings
-from app.main import create_app
 
 
 def test_health(client: TestClient) -> None:
@@ -23,7 +22,7 @@ def test_metadata_and_versioned_schema(client: TestClient, settings: Settings) -
     assert schema["info"]["title"] == settings.name
     assert schema["info"]["version"] == settings.version
     assert schema["info"]["description"] == settings.description
-    assert set(schema["paths"]) == {"/api/v1/health"}
+    assert set(schema["paths"]) == {"/api/v1/health", "/api/v1/health/db"}
     assert client.get("/docs").status_code == 200
 
 
@@ -36,6 +35,8 @@ def test_unknown_routes_use_json_errors(client: TestClient, path: str) -> None:
 
 
 def test_docs_can_be_disabled() -> None:
+    from app.main import create_app
+
     application = create_app(
         Settings(_env_file=None, environment="production", docs_enabled=False)
     )

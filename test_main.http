@@ -2,6 +2,10 @@
 GET http://127.0.0.1:8000/api/v1/health
 Accept: application/json
 
+### PostgreSQL connectivity (200 when connected, 503 when unavailable)
+GET http://127.0.0.1:8000/api/v1/health/db
+Accept: application/json
+
 ### Version 1 OpenAPI schema (when APP_DOCS_ENABLED=true)
 GET http://127.0.0.1:8000/api/v1/openapi.json
 Accept: application/json
