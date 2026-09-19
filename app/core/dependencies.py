@@ -1,9 +1,12 @@
 """Reusable authentication and authorization boundaries for FastAPI."""
 
 from collections.abc import Callable, Coroutine
+from dataclasses import dataclass
 from typing import Annotated, Any
 
-from fastapi import Depends, HTTPException, Request, status
+from uuid import UUID
+
+from fastapi import Depends, HTTPException, Query, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.database.session import DatabaseSession
@@ -56,6 +59,50 @@ async def get_current_user(
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+MEDIA_ROLES = (UserRole.MEMBER, UserRole.ADMIN)
+
+
+@dataclass(frozen=True, slots=True)
+class MediaAccess:
+    """Who is streaming, and which credential they presented."""
+
+    user: User
+    via_playback: bool
+
+
+async def get_media_access(
+    lesson_id: UUID,
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
+    service: AuthServiceDependency,
+    playback_token: Annotated[str | None, Query(
+        description="Short-lived, lesson-scoped token from the lesson resource endpoint.",
+    )] = None,
+) -> MediaAccess:
+    """Authenticate a media request by bearer header **or** playback token.
+
+    An HTML media element cannot send an ``Authorization`` header, so a browser
+    presents the lesson-scoped playback token instead. API clients keep using the
+    bearer header, which wins when both are supplied. Either way this establishes
+    *identity* only: enrollment and resource rules are enforced downstream,
+    unchanged.
+    """
+    try:
+        if credentials is not None:
+            user, via_playback = await service.current_user(credentials.credentials), False
+        elif playback_token:
+            user, via_playback = await service.playback_user(playback_token, lesson_id), True
+        else:
+            raise unauthorized()
+    except AuthenticationError:
+        raise unauthorized() from None
+    if user.role not in MEDIA_ROLES:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient privileges")
+    return MediaAccess(user=user, via_playback=via_playback)
+
+
+MediaUser = Annotated[MediaAccess, Depends(get_media_access)]
 
 
 def require_role(*roles: UserRole) -> Callable[..., Coroutine[Any, Any, User]]:

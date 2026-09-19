@@ -9,11 +9,14 @@ from app.api.v1.content_dependencies import CourseDependency, LessonDependency, 
 from app.database.session import DatabaseSession
 from app.models.user import User
 from app.repositories.enrollment_repository import EnrollmentRepository
+from app.repositories.learning_repository import LearningRepository
 from app.repositories.progress_repository import ProgressRepository
 from app.schemas.enrollment import EnrollmentResponse, EnrollmentSummary
+from app.schemas.learning import CourseContent
 from app.schemas.pagination import Page, Pagination
 from app.schemas.progress import CourseProgressResponse, ProgressResponse, ProgressUpdate
 from app.services.enrollment_service import EnrollmentService
+from app.services.learning_service import LearningService
 from app.services.progress_service import ProgressService
 
 LearningUser = Annotated[User, Depends(catalog_access)]
@@ -33,6 +36,14 @@ def get_progress_service(
 
 
 ProgressDependency = Annotated[ProgressService, Depends(get_progress_service)]
+
+
+def get_learning_service(session: DatabaseSession, enrollments: EnrollmentDependency) -> LearningService:
+    return LearningService(LearningRepository(session), ProgressRepository(session), enrollments)
+
+
+LearningDependency = Annotated[LearningService, Depends(get_learning_service)]
+
 
 router = APIRouter(dependencies=[Depends(catalog_access), Depends(no_cache)], responses={
     401: {"description": "Missing/invalid credentials or inactive account"},
@@ -80,3 +91,16 @@ async def update_video_progress(
 ) -> ProgressResponse:
     """Record maximum watched time, clamped to duration; completion and timestamps are server-calculated."""
     return await service.update(user.id, lesson_id, payload.watched_seconds)
+
+
+@router.get("/courses/{course_id}/content", response_model=CourseContent, tags=["course content"])
+async def course_content(course_id: UUID, user: LearningUser, service: LearningDependency) -> CourseContent:
+    """Return a whole course learning page in one request, for an enrolled member.
+
+    Modules, lessons, per-video progress and stored-file availability arrive
+    together, replacing one modules request plus one lessons request per module
+    plus one progress request per video. Enrollment is required, the progress is
+    the caller's own, and lesson content references are never included: files are
+    still fetched through ``GET /lessons/{lesson_id}/resource``.
+    """
+    return await service.course_content(user.id, course_id)

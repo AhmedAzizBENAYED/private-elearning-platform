@@ -24,7 +24,7 @@ def test_metadata_and_versioned_schema(client: TestClient, settings: Settings) -
     assert schema["info"]["description"] == settings.description
     assert set(schema["paths"]) == {
         "/api/v1/health", "/api/v1/health/db", "/api/v1/auth/login", "/api/v1/auth/me",
-        "/api/v1/auth/setup-password", "/api/v1/admin/members",
+        "/api/v1/auth/setup-password", "/api/v1/auth/refresh", "/api/v1/admin/members",
         "/api/v1/admin/members/{member_id}", "/api/v1/admin/members/{member_id}/status",
         "/api/v1/admin/members/{member_id}/activation",
         "/api/v1/admin/courses", "/api/v1/admin/courses/{course_id}",
@@ -36,7 +36,11 @@ def test_metadata_and_versioned_schema(client: TestClient, settings: Settings) -
         "/api/v1/lessons/{lesson_id}",
         "/api/v1/courses/{course_id}/enroll", "/api/v1/me/enrollments",
         "/api/v1/courses/{course_id}/enrollment", "/api/v1/courses/{course_id}/progress",
+        "/api/v1/courses/{course_id}/content",
         "/api/v1/lessons/{lesson_id}/progress",
+        "/api/v1/admin/lessons/{lesson_id}/resource", "/api/v1/lessons/{lesson_id}/resource",
+        "/api/v1/lessons/{lesson_id}/resource/content",
+        "/api/v1/admin/courses/{course_id}/resources",
     }
     assert client.get("/docs").status_code == 200
 
@@ -53,7 +57,13 @@ def test_docs_can_be_disabled() -> None:
     from app.main import create_app
 
     application = create_app(
-        Settings(_env_file=None, environment="production", docs_enabled=False)
+        # A production instance must name a durable storage provider and a
+        # non-loopback frontend origin.
+        Settings(_env_file=None, environment="production", docs_enabled=False,
+                 storage_provider="google_drive", google_drive_client_id="client",
+                 google_drive_client_secret="secret", google_drive_refresh_token="refresh",
+                 google_drive_root_folder_id="folder",
+                 cors_allowed_origins="https://app.example.com")
     )
     with TestClient(application) as client:
         for path in ("/docs", "/redoc", "/api/v1/openapi.json"):

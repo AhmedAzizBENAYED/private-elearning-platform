@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Response
 
 from app.core.dependencies import AuthServiceDependency, CurrentUser, unauthorized
-from app.schemas.auth import LoginRequest, TokenResponse, UserResponse
+from app.schemas.auth import AccessTokenResponse, LoginRequest, RefreshRequest, TokenResponse, UserResponse
 from app.services.auth_service import AuthenticationError
 from app.core.dependencies import MemberServiceDependency
 from app.schemas.member import PasswordSetup
@@ -25,7 +25,9 @@ async def setup_password(payload: PasswordSetup, service: MemberServiceDependenc
     return Response(status_code=204, headers={"Cache-Control": "no-store"})
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse, responses={
+    401: {"description": "Invalid email or password, or inactive account"},
+})
 async def login(payload: LoginRequest, response: Response, service: AuthServiceDependency) -> TokenResponse:
     response.headers["Cache-Control"] = "no-store"
     response.headers["Pragma"] = "no-cache"
@@ -35,7 +37,29 @@ async def login(payload: LoginRequest, response: Response, service: AuthServiceD
         raise unauthorized("Invalid email or password") from None
 
 
-@router.get("/me", response_model=UserResponse)
+@router.post("/refresh", response_model=AccessTokenResponse, responses={
+    401: {"description": "Missing, invalid, expired or wrong-type refresh token"},
+})
+async def refresh(
+    payload: RefreshRequest, response: Response, service: AuthServiceDependency,
+) -> AccessTokenResponse:
+    """Renew an access token without re-entering credentials.
+
+    Accepts only a token whose type is ``refresh``: access and playback tokens
+    are rejected. The refresh token itself is not rotated and its lifetime is
+    not extended, so the session still ends when it expires.
+    """
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["Pragma"] = "no-cache"
+    try:
+        return await service.refresh(payload.refresh_token.get_secret_value())
+    except AuthenticationError:
+        raise unauthorized() from None
+
+
+@router.get("/me", response_model=UserResponse, responses={
+    401: {"description": "Missing, invalid or expired access token, or inactive account"},
+})
 async def me(user: CurrentUser, response: Response) -> UserResponse:
     response.headers["Cache-Control"] = "no-store"
     return UserResponse.model_validate(user)

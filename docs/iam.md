@@ -32,6 +32,7 @@ Add these keys to `.env` or inject them through the deployment environment:
 | `JWT_ALGORITHM` | `HS256` | HS256, HS384, or HS512 only |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `15` | 1–60 minutes |
 | `REFRESH_TOKEN_EXPIRE_DAYS` | `7` | 1–90 days |
+| `PLAYBACK_TOKEN_EXPIRE_MINUTES` | `30` | 1–240 minutes |
 
 Generate a fresh secret locally and place it in `.env` or your secret manager;
 do not commit it or include it in logs:
@@ -55,8 +56,66 @@ a dedicated test-only key and never depend on real deployment credentials.
 5. `GET /api/v1/auth/me` requires `Authorization: Bearer <access_token>`.
    The service verifies the signature, configured algorithm, expiry, not-before,
    issued-at, UUID subject, UUID token identifier, role, and access-token type.
+
+   A third kind exists for media only: a **playback token** (`token_type:
+   "playback"`) additionally carries a `lesson_id` and authorizes streaming one
+   lesson's video for minutes. It is issued by the lesson resource endpoint, not
+   by login, and is rejected by every bearer-authenticated route because those
+   require the access type. Conversely an access or refresh token is rejected as
+   a playback token. See `docs/storage.md` for the playback flow.
 6. The dependency reloads the identity and rejects missing/inactive users. The
    response contains profile fields and timestamps, never the password hash.
+
+## Refreshing an access token
+
+`POST /api/v1/auth/refresh` renews a short-lived access token without asking for
+credentials again. It is the only endpoint that consumes a refresh token.
+
+Request — the token is the whole credential, so no `Authorization` header is
+used or read; unknown fields are rejected:
+
+```json
+{ "refresh_token": "<token from login>" }
+```
+
+Response, marked `Cache-Control: no-store` and `Pragma: no-cache`:
+
+```json
+{ "access_token": "<new token>", "token_type": "bearer" }
+```
+
+Validation reuses the same decoding path as every other token — configured
+signing key, algorithm allowlist, expiry, not-before, issued-at, and the
+required `sub`, `role`, `token_type`, `jti`, `iat`, `nbf`, `exp` claims — and
+additionally requires `token_type == "refresh"`. An access token, a playback
+token, an unsigned (`alg: none`) token, or one signed with another key is
+rejected. There is no second JWT implementation.
+
+**The identity is reloaded from PostgreSQL; the token is not trusted for it.**
+After the signature checks, the service loads the user by `sub` through the
+existing repository and requires that it still exists and is still active. The
+new access token is then signed with the **current database role**, never the
+`role` claim carried by the refresh token. So:
+
+- a deactivated account cannot refresh, from the next call onward;
+- a deleted account cannot refresh;
+- a promotion to ADMIN takes effect on the next refresh;
+- a demotion to MEMBER takes effect on the next refresh;
+- a tampered `role` claim grants nothing, because it is never read back.
+
+Expiry and rotation: the refresh token is **not** rotated and its lifetime is
+**not** extended, so a session ends exactly when the original refresh token
+reaches `REFRESH_TOKEN_EXPIRE_DAYS`. An expired refresh token returns 401 and the
+member logs in again. The flow is entirely stateless — no refresh-token table, no
+revocation list, no server-side session — which is a deliberate trade recorded
+under *Security decisions and limits* below.
+
+Errors follow the existing conventions: a structurally invalid body (absent,
+empty, wrong-typed or unknown fields) is a 422 validation error, and every
+authentication failure is a 401 carrying the generic
+`{"detail": "Invalid authentication credentials"}`. Nothing distinguishes an
+unknown subject from a deactivated one, so the endpoint cannot be used to probe
+which accounts exist.
 
 For future routes, use `CurrentUser` for authentication or
 `Depends(require_role(UserRole.ADMIN))` for authorization. Multiple supplied roles
@@ -66,6 +125,14 @@ to previously issued access tokens. Authenticated users with an insufficient rol
 receive HTTP 403.
 
 ## Security decisions and limits
+
+- Refresh is stateless: a refresh token stays valid until it expires and cannot
+  be revoked individually. A compromised refresh token is therefore usable for up
+  to `REFRESH_TOKEN_EXPIRE_DAYS`. Mitigations available today are deactivating the
+  account (which blocks refresh immediately, since the identity is reloaded on
+  every call) or rotating `JWT_SECRET_KEY`, which invalidates every outstanding
+  token. Per-token revocation would require server-side token state and is not
+  implemented.
 
 - Passwords use Argon2id with the RFC 9106 low-memory profile (64 MiB, three
   iterations, four lanes) and independent random salts. See the

@@ -15,6 +15,8 @@ from app.services.module_service import ModuleService
 
 _http_url = TypeAdapter(HttpUrl)
 _storage_reference = re.compile(r"^storage://[A-Za-z0-9][A-Za-z0-9._/-]*$")
+# Lesson kinds whose content is a stored-file reference rather than readable text.
+STORED_CONTENT_TYPES = frozenset({ContentType.VIDEO, ContentType.DOCUMENT})
 
 
 def validate_content(content_type: ContentType, content: str, duration_seconds: int | None) -> None:
@@ -67,7 +69,12 @@ class LessonService:
         return LessonResponse.model_validate(await self.require_lesson(lesson_id))
 
     async def catalog_get(self, lesson_id: UUID) -> CatalogLessonContent:
-        return CatalogLessonContent.model_validate(await self.require_lesson(lesson_id, published=True))
+        """Member lesson detail; stored-file references never leave this boundary."""
+        lesson = await self.require_lesson(lesson_id, published=True)
+        projection = CatalogLessonContent.model_validate(lesson)
+        if lesson.content_type in STORED_CONTENT_TYPES:
+            projection.content = None
+        return projection
 
     async def list(self, module_id: UUID, query: Pagination) -> Page[LessonResponse]:
         await self.modules.require_module(module_id)

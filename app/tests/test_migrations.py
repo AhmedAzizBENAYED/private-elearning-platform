@@ -67,7 +67,7 @@ def test_revision_template_and_offline_sql(
     assert "COMMIT;" in sql
     assert secret not in sql
     assert '"timestamp"' not in sql
-    assert set(Base.metadata.tables) == {"users", "courses", "modules", "lessons", "enrollments", "progress"}
+    assert set(Base.metadata.tables) == {"users", "courses", "modules", "lessons", "enrollments", "progress", "lesson_resources"}
     assert "CREATE TABLE users" in sql
     assert "CREATE UNIQUE INDEX ix_users_email" in sql
     assert "CREATE TRIGGER users_updated_at" in sql
@@ -90,6 +90,29 @@ def test_revision_template_and_offline_sql(
     assert "REFERENCES lessons (id) ON DELETE RESTRICT" in sql
     assert "CHECK (watched_seconds >= 0)" in sql
     assert "CREATE TRIGGER progress_updated_at" in sql
+    assert "CREATE TABLE lesson_resources" in sql
+    assert "CREATE UNIQUE" not in sql.split("CREATE TABLE lesson_resources")[1].split(";")[0]
+    assert "CONSTRAINT uq_lesson_resources_lesson_id UNIQUE (lesson_id)" in sql
+    assert "CONSTRAINT fk_lesson_resources_lesson_id_lessons FOREIGN KEY(lesson_id)" in sql
+    assert "CHECK (file_size_bytes > 0)" in sql
+    assert "CHECK (storage_provider IN ('memory', 'google_drive'))" in sql
+    assert "CREATE TRIGGER lesson_resources_updated_at" in sql
+    # The schema stays provider neutral: no vendor column names anywhere.
+    for vendor in ("google_file_id", "drive_id", "google_drive_file", "webViewLink"):
+        assert vendor not in sql
+
+
+def test_lesson_resource_migration_downgrade_sql() -> None:
+    output = io.StringIO()
+    config = Config(str(PROJECT_ROOT / "alembic.ini"), output_buffer=output)
+    command.downgrade(config, "af5e8bdeed63:a04d36e281cb", sql=True)
+    sql = output.getvalue()
+    assert "DROP TRIGGER lesson_resources_updated_at" in sql
+    assert "DROP FUNCTION set_lesson_resources_updated_at()" in sql
+    assert "DROP TABLE lesson_resources" in sql
+    # Earlier tickets' tables are untouched by this revision.
+    for table in ("progress", "enrollments", "lessons", "courses", "users"):
+        assert f"DROP TABLE {table}" not in sql
 
 
 def test_enrollment_progress_migration_downgrade_sql() -> None:

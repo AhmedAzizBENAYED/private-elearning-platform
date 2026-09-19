@@ -160,6 +160,7 @@ settings repr; validation error text does not print the submitted input.
 | `APP_ENVIRONMENT` | `development` | One of `development`, `test`, `staging`, `production`; included in startup logs. |
 | `APP_LOG_LEVEL` | `INFO` | One of `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`. |
 | `APP_DOCS_ENABLED` | `true` | Enables `/docs`, `/redoc`, and `/api/v1/openapi.json`. |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | Comma-separated browser origins allowed to call the API. Development default; production must set its own. |
 | `DATABASE_URL` | **Required** | Full `postgresql+asyncpg://` URL, including host and database name. No default credentials. |
 | `DATABASE_POOL_SIZE` | `5` | Persistent connection pool size per worker, at least 1. |
 | `DATABASE_MAX_OVERFLOW` | `10` | Additional temporary connections per worker, at least 0. |
@@ -184,8 +185,42 @@ provide a complete URL with the credentials percent-encoded instead. Production
 should inject the full `DATABASE_URL` through the deployment's secret management;
 the `POSTGRES_*` variables are only needed by the local Compose database.
 
-`APP_ENVIRONMENT` labels the deployment; it does not automatically change other
-settings. Configure `APP_DOCS_ENABLED=false` explicitly if docs should be hidden.
+`APP_ENVIRONMENT` mostly labels the deployment, but a few settings refuse unsafe
+production values outright: `STORAGE_PROVIDER=memory` and a loopback
+`CORS_ALLOWED_ORIGINS` both fail startup when `APP_ENVIRONMENT=production`.
+Configure `APP_DOCS_ENABLED=false` explicitly if docs should be hidden.
+
+### Cross-origin requests (CORS)
+
+`CORS_ALLOWED_ORIGINS` lists the browser origins allowed to call this API,
+comma separated. Entries must be an exact `scheme://host[:port]` — no path, no
+trailing slash, and no wildcard. `*` is rejected at startup: this API is
+private, and a wildcard would let any site read authenticated responses from a
+logged-in member's browser.
+
+```text
+# Development (the default): the Vite dev server
+CORS_ALLOWED_ORIGINS=http://localhost:5173
+
+# Production: name the real frontend origin(s)
+CORS_ALLOWED_ORIGINS=https://learn.example.org,https://admin.example.org
+```
+
+The development default is deliberately a loopback origin, and a production
+deployment that forgets to override it **fails to start** rather than silently
+inheriting it. An empty value registers no CORS middleware at all, which is the
+right setting when the SPA is served from this same host.
+
+Allowed request methods are `GET, POST, PATCH, PUT, DELETE, OPTIONS`; allowed
+request headers are `Authorization`, `Content-Type` and `Range`; and
+`Content-Range`, `Accept-Ranges` and `Content-Disposition` are exposed so a
+cross-origin media player can seek. `Access-Control-Allow-Credentials` is
+**not** sent, because tokens travel in the `Authorization` header and the
+playback query parameter, never in cookies.
+
+**CORS is not authentication.** It only tells a browser what it may read; it
+stops nothing else. Every route keeps enforcing its own JWT validation, role
+check and enrollment rules, and an allowed origin with no token still gets 401.
 `DATABASE_URL` is required even if PostgreSQL is offline. Restart the application
 after changing configuration. Never commit `.env` or print the resolved URL.
 

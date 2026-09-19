@@ -14,9 +14,9 @@ from app.core.config import Settings
 from app.core.security import hash_password, verify_password
 from app.models.user import User, UserRole
 from app.repositories.user_repository import UserRepository
-from app.schemas.auth import TokenResponse
+from app.schemas.auth import AccessTokenResponse, TokenResponse
 
-TokenType = Literal["access", "refresh"]
+TokenType = Literal["access", "refresh", "playback"]
 
 
 class AuthenticationError(Exception):
@@ -33,6 +33,8 @@ class TokenClaims(BaseModel):
     iat: int
     nbf: int
     exp: int
+    # Present only on playback tokens, binding one token to one lesson.
+    lesson_id: UUID | None = None
 
 
 @lru_cache(maxsize=1)
@@ -74,31 +76,80 @@ class AuthService:
                 days=self.settings.refresh_token_expire_days)),
         )
 
-    def _encode(self, user: User, token_type: TokenType, lifetime: timedelta) -> str:
+    async def refresh(self, refresh_token: str) -> AccessTokenResponse:
+        """Exchange a valid refresh token for a fresh access token.
+
+        Stateless by design: the refresh token is neither rotated nor extended,
+        so it keeps exactly its original lifetime. The identity is reloaded from
+        PostgreSQL rather than trusted from the token, which is what makes a
+        deactivation or a role change take effect on the next refresh.
+        """
+        user = await self._active_user(
+            self.decode_token(refresh_token, expected_type="refresh")
+        )
+        return AccessTokenResponse(access_token=self._encode(
+            user, "access",
+            timedelta(minutes=self.settings.access_token_expire_minutes),
+        ))
+
+    def issue_playback_token(self, user: User, lesson_id: UUID) -> str:
+        """Mint a short-lived credential for streaming exactly one lesson's media.
+
+        Deliberately not a session credential: it carries its own ``playback``
+        type and a ``lesson_id``, so it cannot authenticate any other request,
+        and a leaked media URL exposes one lesson to one member for minutes.
+        """
+        if not user.is_active:
+            raise AuthenticationError("Inactive user")
+        return self._encode(
+            user, "playback",
+            timedelta(minutes=self.settings.playback_token_expire_minutes),
+            lesson_id=lesson_id,
+        )
+
+    def _encode(self, user: User, token_type: TokenType, lifetime: timedelta,
+                lesson_id: UUID | None = None) -> str:
         now = datetime.now(timezone.utc)
+        payload = {"sub": str(user.id), "role": user.role.value, "token_type": token_type,
+                   "jti": str(uuid4()), "iat": now, "nbf": now, "exp": now + lifetime}
+        if lesson_id is not None:
+            payload["lesson_id"] = str(lesson_id)
         return jwt.encode(
-            {"sub": str(user.id), "role": user.role.value, "token_type": token_type,
-             "jti": str(uuid4()), "iat": now, "nbf": now, "exp": now + lifetime},
-            self.settings.jwt_secret_key.get_secret_value(),
+            payload, self.settings.jwt_secret_key.get_secret_value(),
             algorithm=self.settings.jwt_algorithm,
         )
 
-    def decode_token(self, token: str, expected_type: TokenType = "access") -> TokenClaims:
+    def decode_token(self, token: str, expected_type: TokenType = "access",
+                     lesson_id: UUID | None = None) -> TokenClaims:
+        required = ["sub", "role", "token_type", "jti", "iat", "nbf", "exp"]
+        if expected_type == "playback":
+            required.append("lesson_id")
         try:
             payload = jwt.decode(
                 token, self.settings.jwt_secret_key.get_secret_value(),
                 algorithms=[self.settings.jwt_algorithm],
-                options={"require": ["sub", "role", "token_type", "jti", "iat", "nbf", "exp"]},
+                options={"require": required},
             )
             claims = TokenClaims.model_validate(payload)
             if claims.token_type != expected_type or claims.exp <= claims.iat:
+                raise AuthenticationError("Invalid token")
+            # A playback token is bound to one lesson and is useless elsewhere.
+            if lesson_id is not None and claims.lesson_id != lesson_id:
                 raise AuthenticationError("Invalid token")
             return claims
         except (jwt.InvalidTokenError, ValidationError, ValueError, TypeError) as exc:
             raise AuthenticationError("Invalid token") from exc
 
     async def current_user(self, token: str) -> User:
-        claims = self.decode_token(token, expected_type="access")
+        return await self._active_user(self.decode_token(token, expected_type="access"))
+
+    async def playback_user(self, token: str, lesson_id: UUID) -> User:
+        """Resolve the member a playback token was issued to, for this lesson only."""
+        return await self._active_user(
+            self.decode_token(token, expected_type="playback", lesson_id=lesson_id)
+        )
+
+    async def _active_user(self, claims: TokenClaims) -> User:
         user = await self.users.get_by_id(claims.sub)
         if user is None or not user.is_active:
             raise AuthenticationError("Invalid token")

@@ -161,3 +161,150 @@ def test_database_url_dotenv_interpolation_and_environment_override(
     override = "postgresql+asyncpg://localhost/override"
     monkeypatch.setenv("DATABASE_URL", override)
     assert Settings(_env_file=env_file).database_url.get_secret_value() == override
+
+
+# --------------------------- comma-separated list settings ---------------------------
+# These are complex-typed settings fed by plain environment variables. They must be
+# annotated NoDecode, or pydantic-settings JSON-decodes the value before the parsing
+# validator runs and the documented comma-separated form fails to load at all.
+
+VIDEO = "STORAGE_VIDEO_MIME_TYPES"
+DOCUMENT = "STORAGE_DOCUMENT_MIME_TYPES"
+
+
+def test_video_mime_types_parse_from_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(VIDEO, "video/mp4,video/webm,video/quicktime")
+
+    settings = Settings(_env_file=None)
+
+    assert settings.storage_video_mime_types == frozenset(
+        {"video/mp4", "video/webm", "video/quicktime"})
+
+
+def test_document_mime_types_parse_from_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(DOCUMENT, "application/pdf,application/msword")
+
+    settings = Settings(_env_file=None)
+
+    assert settings.storage_document_mime_types == frozenset(
+        {"application/pdf", "application/msword"})
+
+
+def test_mime_types_load_from_a_dotenv_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The reported symptom: these keys in .env used to abort settings loading."""
+    env_file = tmp_path / ".env"
+    env_file.write_text(
+        "\n".join([
+            f"{VIDEO}=video/mp4,video/webm",
+            f"{DOCUMENT}=application/pdf,application/msword",
+            "",
+        ]),
+        encoding="utf-8",
+    )
+
+    settings = Settings(_env_file=env_file)
+
+    assert settings.storage_video_mime_types == frozenset({"video/mp4", "video/webm"})
+    assert settings.storage_document_mime_types == frozenset(
+        {"application/pdf", "application/msword"})
+
+
+@pytest.mark.parametrize("value", [
+    " video/mp4 , video/webm ",          # surrounding whitespace
+    "video/mp4,video/webm,",             # trailing comma
+    "video/mp4,,video/webm",             # empty element
+    "VIDEO/MP4, Video/WebM",             # case is normalised
+    "\tvideo/mp4,\nvideo/webm\n",        # stray whitespace characters
+])
+def test_mime_type_lists_tolerate_untidy_values(
+    monkeypatch: pytest.MonkeyPatch, value: str
+) -> None:
+    monkeypatch.setenv(VIDEO, value)
+
+    assert Settings(_env_file=None).storage_video_mime_types == frozenset(
+        {"video/mp4", "video/webm"})
+
+
+def test_a_single_mime_type_needs_no_comma(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(VIDEO, "video/mp4")
+
+    assert Settings(_env_file=None).storage_video_mime_types == frozenset({"video/mp4"})
+
+
+def test_mime_types_keep_their_defaults_when_unset(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv(VIDEO, raising=False)
+    monkeypatch.delenv(DOCUMENT, raising=False)
+
+    settings = Settings(_env_file=None)
+
+    assert settings.storage_video_mime_types == frozenset({"video/mp4"})
+    assert settings.storage_document_mime_types == frozenset({"application/pdf"})
+
+
+def test_mime_type_lists_stay_frozensets(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The public type is unchanged; only the decoding step was fixed."""
+    monkeypatch.setenv(VIDEO, "video/mp4,video/webm")
+
+    parsed = Settings(_env_file=None).storage_video_mime_types
+
+    assert isinstance(parsed, frozenset)
+    with pytest.raises(AttributeError):
+        parsed.add("video/x-new")  # type: ignore[attr-defined]
+
+
+@pytest.mark.parametrize("name", [VIDEO, DOCUMENT])
+@pytest.mark.parametrize("value", ["", "   ", ",", " , "])
+def test_an_empty_mime_type_list_is_rejected(
+    monkeypatch: pytest.MonkeyPatch, name: str, value: str
+) -> None:
+    """Existing rule, now actually reachable: at least one type must be allowed."""
+    monkeypatch.setenv(name, value)
+
+    with pytest.raises(ValidationError) as error:
+        Settings(_env_file=None)
+    assert "At least one media type" in str(error.value)
+
+
+@pytest.mark.parametrize("name", [VIDEO, DOCUMENT])
+@pytest.mark.parametrize("value", [
+    "video", "video/", "/mp4", "video/mp4/extra", "video mp4", "video/mp4,bogus",
+])
+def test_malformed_mime_types_are_rejected(
+    monkeypatch: pytest.MonkeyPatch, name: str, value: str
+) -> None:
+    """Existing validator, unchanged: entries must look like type/subtype."""
+    monkeypatch.setenv(name, value)
+
+    with pytest.raises(ValidationError) as error:
+        Settings(_env_file=None)
+    assert "type/subtype" in str(error.value)
+
+
+def test_json_list_syntax_is_no_longer_accepted(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Only the documented comma-separated form is supported, in either direction."""
+    monkeypatch.setenv(VIDEO, '["video/mp4", "video/webm"]')
+
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
+def test_cors_origins_still_parse_from_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Regression guard: the sibling NoDecode setting is unaffected."""
+    monkeypatch.setenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173, https://app.example.com")
+
+    assert Settings(_env_file=None).cors_allowed_origins == (
+        "http://localhost:5173", "https://app.example.com")
+
+
+def test_all_comma_separated_settings_load_together(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A realistic .env sets every list setting at once."""
+    monkeypatch.setenv(VIDEO, "video/mp4,video/webm")
+    monkeypatch.setenv(DOCUMENT, "application/pdf,application/msword")
+    monkeypatch.setenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173")
+
+    settings = Settings(_env_file=None)
+
+    assert settings.storage_video_mime_types == frozenset({"video/mp4", "video/webm"})
+    assert settings.storage_document_mime_types == frozenset(
+        {"application/pdf", "application/msword"})
+    assert settings.cors_allowed_origins == ("http://localhost:5173",)

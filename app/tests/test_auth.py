@@ -196,3 +196,23 @@ async def test_database_rejects_duplicate_and_noncanonical_email(auth_session: A
     with pytest.raises(IntegrityError):
         await auth_session.flush()
     await auth_session.rollback()
+
+
+@pytest.mark.anyio
+async def test_openapi_documents_the_authentication_failures(auth_client: AsyncClient) -> None:
+    """A generated client must model the most common failure of both endpoints."""
+    schema = (await auth_client.get("/api/v1/openapi.json")).json()
+    login_operation = schema["paths"]["/api/v1/auth/login"]["post"]
+    me_operation = schema["paths"]["/api/v1/auth/me"]["get"]
+    assert "401" in login_operation["responses"]
+    assert "401" in me_operation["responses"]
+    assert login_operation["responses"]["401"]["description"]
+    assert me_operation["responses"]["401"]["description"]
+    # Documenting the failure must not have changed who may call them.
+    assert "security" not in login_operation
+    assert me_operation["security"] == [{"HTTPBearer": []}]
+
+    # ...and the documented status is the one actually returned.
+    failed = await auth_client.post("/api/v1/auth/login", json={"email": EMAIL, "password": "incorrect"})
+    assert failed.status_code == 401
+    assert (await auth_client.get("/api/v1/auth/me")).status_code == 401

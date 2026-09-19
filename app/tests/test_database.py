@@ -141,4 +141,4 @@ async def test_database_health_does_not_swallow_cancellation() -> None:
 
 def test_identity_model_is_registered() -> None:
     load_models()
-    assert set(Base.metadata.tables) == {"users", "courses", "modules", "lessons", "enrollments", "progress"}
+    assert set(Base.metadata.tables) == {"users", "courses", "modules", "lessons", "enrollments", "progress", "lesson_resources"}

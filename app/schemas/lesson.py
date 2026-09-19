@@ -47,10 +47,21 @@ class CatalogLesson(BaseModel):
 
 
 class CatalogLessonContent(CatalogLesson):
+    """Member projection of a single lesson.
+
+    ``content`` is null for VIDEO and DOCUMENT lessons: their payload is a
+    storage reference, which is platform-internal and meaningless to a client.
+    Members reach those files through ``GET /lessons/{id}/resource`` instead,
+    which requires enrollment and returns no provider vocabulary.
+    """
+
+    content: str | None
+
+
+class LessonResponse(CatalogLesson):
+    """Administrator projection; the stored content reference is always present."""
+
     content: str
-
-
-class LessonResponse(CatalogLessonContent):
     module_id: UUID
     created_at: datetime
     updated_at: datetime

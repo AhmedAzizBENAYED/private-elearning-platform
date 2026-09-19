@@ -19,10 +19,25 @@ class LoginRequest(BaseModel):
         return value.strip().lower() if isinstance(value, str) else value
 
 
-class TokenResponse(BaseModel):
+class RefreshRequest(BaseModel):
+    """Only the refresh token; the identity comes from the token itself."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    # SecretStr keeps the credential out of reprs and validation error output,
+    # matching how passwords and activation tokens are accepted elsewhere.
+    refresh_token: SecretStr = Field(min_length=1, max_length=4096)
+
+
+class AccessTokenResponse(BaseModel):
+    """A renewed access token. Deliberately carries nothing else."""
+
     access_token: str = Field(repr=False)
-    refresh_token: str = Field(repr=False)
     token_type: Literal["bearer"] = "bearer"
+
+
+class TokenResponse(AccessTokenResponse):
+    refresh_token: str = Field(repr=False)
 
 
 class UserResponse(BaseModel):
