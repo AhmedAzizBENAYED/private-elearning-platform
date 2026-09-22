@@ -1,0 +1,237 @@
+/* Course-Completed (desktop) and Completion-Mobile.
+ *
+ * Desktop: a 330px photo banner holding a 190px navy band with the 100%
+ * figure (Montserrat Black 104) beside the title (ExtraBold 40) and message;
+ * then a white summary card - course overline, the videos count, and the two
+ * actions on one row; then a small note.
+ * Phone: a 300px banner with the figure (72) above the title (28), then the
+ * count, a 10px progress bar and two full-width actions stacked.
+ */
+
+.completed {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.banner {
+  position: relative;
+  height: 330px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--bg-inverse);
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.band {
+  position: absolute;
+  inset-inline: 0;
+  top: 70px;
+  min-height: 190px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-6) var(--space-12);
+  box-sizing: border-box;
+  background: rgba(26, 74, 107, .94);
+}
+
+.percent {
+  font-size: 104px;
+  line-height: 104px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--text-inverse);
+}
+
+.bandText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.title {
+  font-size: 40px;
+  line-height: 48px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-inverse);
+}
+
+.title:focus {
+  outline: none;
+}
+
+.title:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.message {
+  margin-top: 6px;
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: #E8EEF3;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+  padding: var(--space-6) 28px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+}
+
+.summaryText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.courseTitle {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 6px;
+  font-size: var(--fs-body);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.countIcon {
+  flex-shrink: 0;
+  color: var(--action-primary);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.noteIcon {
+  flex-shrink: 0;
+}
+
+/* Below 1024px the lesson column is the full width and narrower than the
+   board's 960px: the band text wraps, and the card may stack its actions. */
+@media (max-width: 1023px) {
+  .band {
+    gap: var(--space-8);
+    padding-inline: var(--space-8);
+  }
+
+  .percent {
+    font-size: 80px;
+    line-height: 80px;
+  }
+
+  .title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .summary {
+    flex-wrap: wrap;
+  }
+}
+
+/* Completion-Mobile. */
+@media (max-width: 599px) {
+  .banner {
+    height: 300px;
+  }
+
+  .band {
+    top: 48px;
+    min-height: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: var(--space-6) var(--space-6) 28px;
+  }
+
+  .percent {
+    font-size: 72px;
+    line-height: 72px;
+  }
+
+  .title {
+    margin-top: var(--space-2);
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .message {
+    font-size: var(--fs-body-sm);
+    line-height: 22px;
+  }
+
+  /* The board has no card on a phone: the content sits on the page. */
+  .summary {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    margin-top: 0;
+    padding: var(--space-6) 0;
+    background: none;
+    border: 0;
+  }
+
+  .count {
+    margin-top: 0;
+    font-size: var(--fs-body-sm);
+  }
+
+  .progress {
+    margin-top: var(--space-1);
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+    margin-top: var(--space-3);
+  }
+
+  .note {
+    margin-top: 0;
+  }
+}

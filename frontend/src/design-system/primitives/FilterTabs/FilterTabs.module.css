@@ -1,0 +1,166 @@
+/* Filter tabs with counts (DS 07 tabs; Admin-Courses; Catalogue).
+ * Every option is a 44px target (Handoff-A11y), in both appearances.
+ */
+
+.group {
+  display: flex;
+  min-width: 0;
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  font-family: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+}
+
+.check {
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------- chip (admin) */
+
+.chip {
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip .option {
+  padding-inline: var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--control-radius);
+  background: var(--bg-surface);
+  color: var(--text-body);
+  font-size: var(--fs-control-sm);
+}
+
+.chip .option:hover {
+  border-color: var(--color-blue-500);
+}
+
+/* Selected carries a fill AND a weight change, so the state survives
+ * greyscale; `aria-pressed` carries it for assistive technology. */
+.chip .selected {
+  background: var(--bg-inverse);
+  border-color: var(--bg-inverse);
+  color: var(--text-inverse);
+  font-weight: 700;
+}
+
+.chip .count {
+  opacity: 0.75;
+}
+
+/* ------------------------------------------------- tab (member catalogue) */
+
+/* From 600px: an underlined row, the figure in a small pill (Catalogue). */
+.tab {
+  /* Wraps to a second row rather than widening the page. */
+  flex-wrap: wrap;
+  column-gap: var(--space-6);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.tab .option {
+  padding: 0 var(--space-1);
+  border: 0;
+  /* Reserved at rest, so the selected underline does not shift the row. */
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  background: transparent;
+  color: var(--text-body);
+  font-size: var(--fs-control-md);
+}
+
+.tab .option:hover {
+  color: var(--action-primary);
+}
+
+.tab .selected {
+  color: var(--action-primary);
+  font-weight: 700;
+  border-bottom-color: var(--accent);
+}
+
+.tab .count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 6px;
+  border-radius: 999px;
+  background: var(--color-gray-100);
+  color: var(--text-body);
+  font-size: var(--fs-caption);
+  font-weight: 700;
+}
+
+.tab .selected .count {
+  background: var(--color-blue-100);
+  color: var(--action-primary);
+}
+
+/* The check marks the selected chip on a phone only. */
+.tab .check {
+  display: none;
+}
+
+/* Below 600px: pill chips in one row that scrolls sideways rather than
+ * wrapping or pushing the page wider (Catalogue-Mobile). */
+@media (max-width: 599px) {
+  .tab {
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+    border-bottom: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* Room for the focus ring inside the scroller. */
+    padding: 3px;
+    margin: -3px;
+  }
+
+  .tab::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab .option {
+    flex-shrink: 0;
+    gap: var(--space-1);
+    padding-inline: var(--space-4);
+    margin-bottom: 0;
+    border: 1.5px solid var(--action-primary);
+    border-radius: 999px;
+    color: var(--action-primary);
+    background: var(--bg-surface);
+    font-size: var(--fs-body-sm);
+  }
+
+  .tab .selected {
+    background: var(--action-primary);
+    border-color: var(--action-primary);
+    color: var(--text-inverse);
+  }
+
+  .tab .check {
+    display: inline-flex;
+  }
+
+  .tab .count,
+  .tab .selected .count {
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font-size: inherit;
+  }
+}

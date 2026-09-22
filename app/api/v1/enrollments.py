@@ -5,28 +5,28 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request
 
-from app.api.v1.content_dependencies import CourseDependency, LessonDependency, catalog_access, no_cache
+from app.api.v1.content_dependencies import (
+    CatalogUser, CourseDependency, EnrollmentDependency, LessonDependency,
+    catalog_access, get_enrollment_service, no_cache,
+)
 from app.database.session import DatabaseSession
 from app.models.user import User
-from app.repositories.enrollment_repository import EnrollmentRepository
 from app.repositories.learning_repository import LearningRepository
 from app.repositories.progress_repository import ProgressRepository
 from app.schemas.enrollment import EnrollmentResponse, EnrollmentSummary
 from app.schemas.learning import CourseContent
 from app.schemas.pagination import Page, Pagination
 from app.schemas.progress import CourseProgressResponse, ProgressResponse, ProgressUpdate
-from app.services.enrollment_service import EnrollmentService
 from app.services.learning_service import LearningService
 from app.services.progress_service import ProgressService
 
-LearningUser = Annotated[User, Depends(catalog_access)]
+#: The enrollment service and the acting user are composed in
+#: `content_dependencies` so the lesson service can reuse them without an
+#: import cycle. Re-exported here because this router and the resources router
+#: have always imported them from this module.
+LearningUser = CatalogUser
 
-
-def get_enrollment_service(session: DatabaseSession, courses: CourseDependency) -> EnrollmentService:
-    return EnrollmentService(EnrollmentRepository(session), courses)
-
-
-EnrollmentDependency = Annotated[EnrollmentService, Depends(get_enrollment_service)]
+__all__ = ["EnrollmentDependency", "LearningUser", "get_enrollment_service", "router"]
 
 
 def get_progress_service(

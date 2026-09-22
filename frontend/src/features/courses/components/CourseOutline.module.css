@@ -1,0 +1,252 @@
+/* DS 08: module header (ExtraBold numeral + counter) and lesson item
+ * (completed / current / not-started marker, title, duration or type badge).
+ */
+
+.outline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.module {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.moduleHeader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  /* The numeral no longer sets a tall line box, so the header needs less
+   * vertical room than it did. */
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-surface);
+}
+
+/* DS 04's --fs-numeral (96px) dwarfed the 18px module title and pushed the
+ * header out of balance. --fs-stat (48px) is the next step down the same scale:
+ * the numeral stays the distinctive brand-blue marker the board draws, without
+ * competing with the title for first read. */
+.moduleNumber {
+  font-size: var(--fs-stat);
+  /* Matched to the glyphs, so the numeral sets no line box taller than itself. */
+  line-height: 1;
+  font-weight: 800;
+  color: var(--color-blue-500);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.moduleTitle {
+  font-size: var(--fs-h4);
+  line-height: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  /* Takes the row, so the counter is pushed to the far edge; wraps below it
+   * rather than overflowing once the title is long or the screen narrow. */
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.moduleCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.moduleCheck {
+  color: var(--accent);
+}
+
+/* Below 1024px the title is a disclosure button stretched over the header. */
+.moduleToggle {
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.moduleToggle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.moduleToggle:focus-visible {
+  outline: none;
+}
+
+.moduleHeader:has(.moduleToggle:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: calc(-1 * var(--focus-ring-width));
+}
+
+.moduleChevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+/* "NEXT UP" (Course-Details-Enrolled): 11/14 ExtraBold on blue-100. */
+.nextUp {
+  flex-shrink: 0;
+  padding: 3px var(--space-2);
+  border-radius: 3px;
+  background: var(--color-blue-100);
+  color: var(--action-primary);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.moduleDescription {
+  padding: var(--space-4) var(--space-5) 0;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+.emptyModule {
+  padding: var(--space-4) var(--space-5);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+.lessons {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+.lesson {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  min-height: 56px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--border-default);
+  /* Set for the link form; inherited harmlessly by the inert one, so both
+   * render identically. */
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The row moved inside the list item when it became a link, so the last
+ * separator is dropped from the item rather than from the row itself. */
+.lessons > li:last-child .lesson {
+  border-bottom: 0;
+}
+
+/* Only the link form reacts to the pointer; the inert form must not look
+ * clickable. The focus ring comes from the design system's global
+ * :focus-visible rule, so it is not restated here. */
+.lessonLink:hover {
+  background: var(--color-gray-50);
+}
+
+.lessonCurrent {
+  background: var(--bg-current);
+}
+
+/* Three distinct SHAPES, not three colours: a filled disc, a ring with a dot
+ * and a hollow ring, so the state survives greyscale and high contrast. */
+.marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.markerSpacer {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.completed {
+  background: var(--bg-inverse);
+  color: var(--text-inverse);
+}
+
+.current {
+  border: 2px solid var(--accent);
+  background: var(--bg-surface);
+  position: relative;
+}
+
+.current::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.not-started {
+  border: 2px solid var(--color-gray-400);
+  background: var(--bg-surface);
+}
+
+.lessonBody {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-body);
+  line-height: 24px;
+  color: var(--text-primary);
+}
+
+.lessonTitle {
+  overflow-wrap: anywhere;
+}
+
+.lessonCurrent .lessonTitle {
+  font-weight: 700;
+}
+
+.duration {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  /* One step further down on a phone, where the header shares a narrow row. */
+  .moduleNumber {
+    font-size: var(--fs-h1);
+  }
+
+  .moduleHeader,
+  .lesson,
+  .emptyModule {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .moduleDescription {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+}

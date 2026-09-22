@@ -161,7 +161,7 @@ settings repr; validation error text does not print the submitted input.
 | `APP_LOG_LEVEL` | `INFO` | One of `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`. |
 | `APP_DOCS_ENABLED` | `true` | Enables `/docs`, `/redoc`, and `/api/v1/openapi.json`. |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | Comma-separated browser origins allowed to call the API. Development default; production must set its own. |
-| `DATABASE_URL` | **Required** | Full `postgresql+asyncpg://` URL, including host and database name. No default credentials. |
+| `DATABASE_URL` | **Required** | Full `postgresql+asyncpg://` URL, including host and database name. No default credentials. Against the Docker database, write the host as `127.0.0.1` rather than `localhost`: the container publishes IPv4 only, and a resolver that prefers `::1` makes every new pool connection wait ~2 s for a refused IPv6 attempt first. |
 | `DATABASE_POOL_SIZE` | `5` | Persistent connection pool size per worker, at least 1. |
 | `DATABASE_MAX_OVERFLOW` | `10` | Additional temporary connections per worker, at least 0. |
 | `DATABASE_POOL_TIMEOUT` | `30` | Positive seconds to wait for an available pooled connection. |
@@ -378,6 +378,13 @@ manager or container platform that restarts failed processes and collects stdout
 Terminate HTTPS at your ingress/reverse proxy and configure trusted proxy addresses
 for that deployment. Reload and worker supervisor messages may use Uvicorn's own
 format; application-worker logs use JSON.
+
+The application refuses an over-large request body before it reads it, and before
+authentication runs: `RequestBodyLimitMiddleware` allows `STORAGE_MAX_UPLOAD_BYTES`
+plus the multipart framing to a request that presents a credential, and 1 MiB to one
+that presents none. That gate is active with no configuration. Set a matching body
+limit at the ingress as well - `client_max_body_size` on nginx, `maxRequestBodyBytes`
+on Traefik - so an over-large upload is dropped before it reaches a worker at all.
 
 Use a managed PostgreSQL service or a separately operated database in production;
 this Compose file is for local development. Use least-privilege runtime credentials

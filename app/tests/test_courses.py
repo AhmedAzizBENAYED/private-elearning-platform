@@ -159,28 +159,53 @@ async def test_lifecycle_is_forward_only_and_idempotent(auth_client, admin_heade
 
 
 async def test_catalog_visibility_and_safe_read_models(auth_client, admin_headers, member_headers):
+    """The outline is open to any signed-in member; the lesson body is not.
+
+    BE-SEC-01: reading a lesson now requires enrollment in its own course, so
+    the detail path is asserted separately from the three outline paths that
+    deliberately remain browsable before enrolling.
+    """
     course = await create_course(auth_client, admin_headers)
     module = await create_module(auth_client, admin_headers, course["id"])
     lesson = await create_lesson(auth_client, admin_headers, module["id"], is_preview=True)
-    paths = [f"/api/v1/courses/{course['id']}", f"/api/v1/courses/{course['id']}/modules",
-             f"/api/v1/modules/{module['id']}/lessons", f"/api/v1/lessons/{lesson['id']}"]
+    outline = [f"/api/v1/courses/{course['id']}", f"/api/v1/courses/{course['id']}/modules",
+               f"/api/v1/modules/{module['id']}/lessons"]
+    detail = f"/api/v1/lessons/{lesson['id']}"
     for state in ("DRAFT", "PUBLISHED", "ARCHIVED"):
         if state != "DRAFT":
             action = "publish" if state == "PUBLISHED" else "archive"
             assert (await auth_client.post(f"{COURSES}/{course['id']}/{action}", headers=admin_headers)).status_code == 200
         listing = (await auth_client.get("/api/v1/courses", headers=member_headers)).json()
         assert listing["total"] == (1 if state == "PUBLISHED" else 0)
-        responses = [await auth_client.get(path, headers=member_headers) for path in paths]
+        responses = [await auth_client.get(path, headers=member_headers) for path in outline]
         assert all(response.status_code == (200 if state == "PUBLISHED" else 404) for response in responses)
+
+        # is_preview is a presentation flag, not an enrollment exemption: this
+        # lesson carries it and is still refused to a member who has not
+        # enrolled, in every lifecycle state.
+        refused = await auth_client.get(detail, headers=member_headers)
+        assert refused.status_code == 404
+        assert refused.json() == {"detail": "Lesson not found"}
+        assert "Welcome!" not in refused.text
+
         if state == "PUBLISHED":
             assert set(responses[0].json()) == CATALOG_FIELDS
             assert set(responses[1].json()["items"][0]) == MODULE_FIELDS
             assert set(responses[2].json()["items"][0]) == LESSON_FIELDS
-            assert set(responses[3].json()) == LESSON_FIELDS | {"content"}
-            assert responses[3].json()["content"] == "Welcome!"
-            assert responses[3].headers["cache-control"] == "no-store"
             # Administrators may use the same safe member-facing projection.
-            assert (await auth_client.get(paths[0], headers=admin_headers)).status_code == 200
+            assert (await auth_client.get(outline[0], headers=admin_headers)).status_code == 200
+
+            # Enrolled, the same member reads the same lesson in full.
+            # Enrolled inline rather than through test_enrollments.enroll:
+            # that module imports this one, so the helper cannot be imported
+            # back without a cycle.
+            assert (await auth_client.post(f"/api/v1/courses/{course['id']}/enroll",
+                                           headers=member_headers)).status_code == 200
+            granted = await auth_client.get(detail, headers=member_headers)
+            assert granted.status_code == 200
+            assert set(granted.json()) == LESSON_FIELDS | {"content"}
+            assert granted.json()["content"] == "Welcome!"
+            assert granted.headers["cache-control"] == "no-store"
 
 
 async def test_module_order_uniqueness_update_and_cascade(auth_client, auth_session, admin_headers):

@@ -67,7 +67,10 @@ def test_revision_template_and_offline_sql(
     assert "COMMIT;" in sql
     assert secret not in sql
     assert '"timestamp"' not in sql
-    assert set(Base.metadata.tables) == {"users", "courses", "modules", "lessons", "enrollments", "progress", "lesson_resources"}
+    assert set(Base.metadata.tables) == {"users", "courses", "modules", "lessons", "enrollments", "progress",
+                                          "lesson_resources", "revoked_refresh_tokens",
+                                          # BE-LEARNING-TRACKING-01: the learning-event log.
+                                          "learning_events"}
     assert "CREATE TABLE users" in sql
     assert "CREATE UNIQUE INDEX ix_users_email" in sql
     assert "CREATE TRIGGER users_updated_at" in sql
@@ -145,3 +148,63 @@ def test_activation_migration_downgrade_sql() -> None:
     assert "DROP COLUMN activation_expires_at" in sql
     assert "DROP COLUMN activation_token_hash" in sql
     assert "DROP TABLE users" not in sql
+
+
+def test_the_migration_adds_nullable_columns_and_changes_no_url() -> None:
+    output = io.StringIO()
+    config = Config(str(PROJECT_ROOT / "alembic.ini"), output_buffer=output)
+    command.upgrade(config, "b7d41e9c3a20:c3f8a61d2e47", sql=True)
+    sql = output.getvalue()
+    for column in ("thumbnail_storage_provider VARCHAR(32)", "thumbnail_storage_key VARCHAR(512)",
+                   "thumbnail_provider_reference VARCHAR(512)"):
+        assert f"ALTER TABLE courses ADD COLUMN {column}" in sql
+    # Nullable: existing courses need no value.
+    assert all("NOT NULL" not in line for line in sql.splitlines() if "ADD COLUMN" in line)
+    assert "CONSTRAINT ck_courses_thumbnail_object" in sql
+    assert "thumbnail_storage_provider IN ('memory', 'google_drive')" in sql
+    # Existing rows, and their external URLs, are left alone.
+    assert "UPDATE courses" not in sql and "thumbnail_url" not in sql
+
+
+def test_the_migration_downgrade_drops_only_its_columns() -> None:
+    output = io.StringIO()
+    config = Config(str(PROJECT_ROOT / "alembic.ini"), output_buffer=output)
+    command.downgrade(config, "c3f8a61d2e47:b7d41e9c3a20", sql=True)
+    sql = output.getvalue()
+    for column in ("thumbnail_storage_provider", "thumbnail_storage_key", "thumbnail_provider_reference"):
+        assert f"ALTER TABLE courses DROP COLUMN {column}" in sql
+    assert "DROP TABLE" not in sql and "DROP COLUMN thumbnail_url" not in sql
+
+
+def test_the_tracking_migration_adds_the_event_log_and_two_nullable_dates() -> None:
+    output = io.StringIO()
+    config = Config(str(PROJECT_ROOT / "alembic.ini"), output_buffer=output)
+    command.upgrade(config, "c3f8a61d2e47:e4a9c2f71b38", sql=True)
+    sql = output.getvalue()
+    assert "ALTER TABLE enrollments ADD COLUMN started_at TIMESTAMP WITH TIME ZONE;" in sql
+    assert "ALTER TABLE enrollments ADD COLUMN last_activity_at TIMESTAMP WITH TIME ZONE;" in sql
+    assert "CONSTRAINT ck_enrollments_activity_time" in sql
+    assert "CREATE TABLE learning_events" in sql
+    assert "CONSTRAINT ck_learning_events_shape" in sql
+    assert "event_type IN ('course_opened', 'module_opened', 'lesson_opened', 'lesson_completed')" in sql
+    assert ("CREATE UNIQUE INDEX uq_learning_events_lesson_completed ON learning_events (user_id, lesson_id) "
+            "WHERE event_type = 'lesson_completed'") in sql
+    for index in ("ix_learning_events_user_occurred", "ix_learning_events_occurred_at",
+                  "ix_learning_events_course_occurred"):
+        assert f"CREATE INDEX {index}" in sql
+    # Completion is not duplicated, and no existing row is rewritten.
+    assert "UPDATE enrollments" not in sql and "UPDATE progress" not in sql
+    assert "progress" not in sql.split("CREATE TABLE learning_events")[1].split(";")[0]
+
+
+def test_the_tracking_migration_downgrade_drops_only_what_it_added() -> None:
+    output = io.StringIO()
+    config = Config(str(PROJECT_ROOT / "alembic.ini"), output_buffer=output)
+    command.downgrade(config, "e4a9c2f71b38:c3f8a61d2e47", sql=True)
+    sql = output.getvalue()
+    assert "DROP TABLE learning_events" in sql
+    assert "ALTER TABLE enrollments DROP COLUMN started_at" in sql
+    assert "ALTER TABLE enrollments DROP COLUMN last_activity_at" in sql
+    assert "DROP COLUMN completed_at" not in sql
+    for table in ("enrollments", "progress", "courses", "users"):
+        assert f"DROP TABLE {table}" not in sql

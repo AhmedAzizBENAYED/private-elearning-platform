@@ -1,0 +1,152 @@
+/* The learning page's contextual header (G27).
+ *
+ * Phone, Learning-Mobile: 60px on white, 0 8px 0 4px padding, 8px gaps, a 44px
+ * back target, the module (12/16, 500, muted) over the course (14/20, 600).
+ * Tablet, Learning-Tablet: 72px, 24px sides, logo, a 1 x 32px rule 16px either
+ * side, the same two lines, then "45%" over a 96px bar and the account chip.
+ * Both keep the member header's surface and 1px bottom rule.
+ */
+
+.header {
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.phone {
+  gap: var(--space-2);
+  height: 60px;
+  /* The board's 4px / 8px, widened only where a notch or rounded corner
+   * claims more (landscape phones). */
+  padding-inline: max(var(--space-1), env(safe-area-inset-left, 0px))
+    max(var(--space-2), env(safe-area-inset-right, 0px));
+}
+
+.tablet {
+  justify-content: space-between;
+  gap: var(--space-4);
+  height: var(--header-h);
+  padding-inline: var(--space-6);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  flex-shrink: 0;
+  color: var(--action-primary);
+  border-radius: var(--control-radius);
+}
+
+.back:hover {
+  background: var(--color-gray-100);
+}
+
+.context {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.module,
+.course,
+.courseLink {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.module {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.course,
+.courseLink {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* The two lines are 36px tall; 12px of padding above and below take the
+ * link's hit area to 44px, and the matching negative margin keeps the lines
+ * where the board puts them. Padding rather than a stretched ::after: the
+ * ellipsis needs `overflow: hidden`, which would clip a pseudo-element. */
+.courseLink {
+  display: block;
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  margin-top: calc(-1 * var(--space-3));
+  margin-bottom: calc(-1 * var(--space-3));
+  text-decoration: none;
+  border-radius: var(--control-radius);
+}
+
+.courseLink:hover {
+  color: var(--action-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: var(--control-radius);
+}
+
+.logo {
+  width: 120px;
+  height: auto;
+  display: block;
+}
+
+.divider {
+  width: 1px;
+  height: 32px;
+  margin-inline: var(--space-4);
+  background: var(--border-default);
+  flex-shrink: 0;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.percent {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--action-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar {
+  width: 96px;
+}

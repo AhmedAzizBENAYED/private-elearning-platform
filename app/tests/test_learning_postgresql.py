@@ -18,6 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from app.core.config import Settings
 from app.models.course import Course, CourseStatus
 from app.models.enrollment import Enrollment
+from app.models.learning_event import LearningEvent
 from app.models.lesson import ContentType, Lesson
 from app.models.module import Module
 from app.models.progress import Progress
@@ -71,6 +72,10 @@ async def postgres_learning() -> AsyncIterator[tuple[async_sessionmaker[AsyncSes
         finally:
             async with factory() as session:
                 async with session.begin():
+                    # Completing a video also records a learning event, and that
+                    # row references the lesson, the module and the course this
+                    # fixture is about to remove - so it goes first.
+                    await session.execute(delete(LearningEvent).where(LearningEvent.user_id == member_id))
                     await session.execute(delete(Progress).where(Progress.user_id == member_id))
                     await session.execute(delete(Enrollment).where(Enrollment.user_id == member_id))
                     await session.execute(delete(Lesson).where(Lesson.id.in_(lesson_ids)))
@@ -84,8 +89,10 @@ async def postgres_learning() -> AsyncIterator[tuple[async_sessionmaker[AsyncSes
 def learning_services(session: AsyncSession, settings: Settings) -> tuple[EnrollmentService, ProgressService]:
     courses = CourseService(CourseRepository(session))
     modules = ModuleService(ModuleRepository(session), courses)
-    lessons = LessonService(LessonRepository(session), modules)
+    # The lesson service is enrollment-gated, so the enrollment service is built
+    # first and handed to it, exactly as `get_lesson_service` composes them.
     enrollments = EnrollmentService(EnrollmentRepository(session), courses)
+    lessons = LessonService(LessonRepository(session), modules, enrollments)
     return enrollments, ProgressService(ProgressRepository(session), enrollments, lessons, settings)
 
 

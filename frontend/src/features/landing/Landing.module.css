@@ -1,0 +1,1263 @@
+/* Public landing page (Landing, Landing-Tablet, Landing-Mobile,
+ * Landing-Mobile-Menu and DS 09 boards): header, hero, footer.
+ *
+ * Widths follow the project's breakpoints (tokens `bp`): the boards are drawn
+ * at 1440, 768 and 390. The full navigation needs 1024px (md); the split hero,
+ * drawn with its card beside the text, needs 1280px (lg) - below it, the
+ * tablet composition (card under the text) is used, as on the 768 board.
+ *
+ * The boards' motion (LANDING-03) is gathered at the end of this file; none of
+ * it applies under prefers-reduced-motion: reduce.
+ */
+
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.main {
+  flex: 1;
+  outline: none;
+}
+
+/* ------------------------------------------------------------------ header */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.bar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 76px;
+  padding: 0 64px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.barStart {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.logoLink {
+  display: flex;
+  border-radius: var(--control-radius);
+}
+
+.logo {
+  width: 124px;
+  height: 55px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.nav {
+  display: flex;
+  gap: 28px;
+  margin-left: var(--space-12);
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  height: var(--control-h-md);
+  padding: 0 var(--space-1);
+  font-size: var(--fs-control-md);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-body);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  box-sizing: border-box;
+}
+
+.navLink:hover {
+  color: var(--action-primary);
+  border-bottom-color: var(--color-blue-300);
+}
+
+.barEnd {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--control-radius);
+}
+
+.accountText {
+  display: flex;
+  flex-direction: column;
+}
+
+.accountName {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.accountRole {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.accountChevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* The mobile menu: a panel under the bar, the page dimmed below it. */
+.menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  background: var(--bg-surface);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 var(--space-5);
+  border-bottom: 1px solid var(--border-default);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.menuItem svg {
+  color: var(--text-muted);
+}
+
+.menuItem:hover {
+  background: var(--color-blue-50);
+  color: var(--action-primary);
+}
+
+.menuFoot {
+  padding: var(--space-5);
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.menuNote {
+  margin: var(--space-4) 0 0;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+.menuMail {
+  color: var(--text-link);
+  font-weight: 700;
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: var(--scrim);
+}
+
+/* -------------------------------------------------------------------- hero */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--action-primary);
+}
+
+.heroPhoto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 70% 50%;
+  display: block;
+}
+
+/* The charte's translucent navy band: white text on it is 9.4 : 1 (DS 09). */
+.heroPanel {
+  position: relative;
+  overflow: hidden;
+  padding: 64px 40px 56px;
+  background: color-mix(in srgb, var(--color-navy) 93%, transparent);
+}
+
+.heroDecor {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blobOne,
+.blobTwo {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.blobOne {
+  width: 560px;
+  height: 560px;
+  left: -140px;
+  top: -190px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 50%, transparent), transparent);
+}
+
+.blobTwo {
+  width: 460px;
+  height: 460px;
+  right: -90px;
+  bottom: -170px;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-blue-300) 34%, transparent),
+    transparent
+  );
+}
+
+.grid {
+  position: absolute;
+  inset: -64px;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--text-inverse) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--text-inverse) 7%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at 35% 45%, #000 0, transparent 72%);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.heroOverline {
+  margin: 0;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-inverse);
+  opacity: 0.95;
+}
+
+.heroTitle {
+  margin: 18px 0 0;
+  max-width: 640px;
+  font-size: 44px;
+  line-height: 52px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-inverse);
+}
+
+.heroLede {
+  margin: 22px 0 0;
+  max-width: 560px;
+  font-size: var(--fs-h4);
+  line-height: 30px;
+  color: var(--on-navy-text);
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: 36px;
+}
+
+.heroNote {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 22px 0 0;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--on-navy-text);
+}
+
+.heroNote svg {
+  flex-shrink: 0;
+}
+
+/* Tablet: the card sits under the text. */
+.heroCardBelow {
+  display: flex;
+  margin-top: var(--space-12);
+}
+
+.heroCardBelow .previewWrap {
+  width: 440px;
+  max-width: 100%;
+}
+
+.heroCardBelow .previewThumb {
+  height: 168px;
+}
+
+.heroCardBelow .previewPill {
+  left: -20px;
+}
+
+/* Wide screens only - see the lg block. */
+.heroAside {
+  display: none;
+}
+
+/* ------------------------------------------------------- hero preview card */
+
+.previewWrap {
+  position: relative;
+}
+
+.previewCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-overlay);
+}
+
+.overline {
+  margin: 0;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.previewThumb {
+  height: 151px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.previewThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.previewTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.previewTitle {
+  margin: 0;
+  font-size: var(--fs-h4);
+  line-height: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.previewMeta {
+  margin: 0;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.previewProgressHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  color: var(--action-primary);
+}
+
+.previewContinue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: var(--control-h-md);
+  border-radius: var(--radius-sm);
+  background: var(--action-primary);
+  color: var(--text-inverse);
+  font-size: var(--fs-control-md);
+  font-weight: 600;
+}
+
+.previewPill {
+  position: absolute;
+  left: -36px;
+  bottom: -26px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-raised);
+}
+
+.previewPillCheck {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--action-primary);
+  color: var(--text-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.previewPillText {
+  display: flex;
+  flex-direction: column;
+}
+
+.previewPillTitle {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.lessonTypes {
+  padding: 14px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-overlay);
+  box-sizing: border-box;
+}
+
+.lessonTypeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 10px;
+}
+
+.lessonTypeTile {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--color-blue-50);
+  color: var(--action-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lessonTypeCaption {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------ footer */
+
+.footer {
+  background: var(--color-navy-800);
+}
+
+.footerColumns {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: var(--space-10);
+  padding: 56px 64px var(--space-10);
+}
+
+.footerBrand {
+  display: flex;
+  flex-direction: column;
+}
+
+.footerLogo {
+  width: 140px;
+  height: 62px;
+  display: block;
+}
+
+.footerAbout {
+  margin: var(--space-4) 0 0;
+  max-width: 340px;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--on-navy-muted);
+}
+
+.footerColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.footerHeading {
+  margin: 0;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-navy-overline);
+}
+
+.footerLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  color: var(--text-inverse);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footerMail {
+  gap: var(--space-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footerBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-5) 64px;
+  border-top: 1px solid var(--on-navy-hairline);
+}
+
+.footerCopy {
+  margin: 0;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--on-navy-muted);
+}
+
+.backToTop {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--control-h-md);
+  color: var(--text-inverse);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* -------------------------------------------------------------- responsive */
+
+/* Wide (Landing 1440): 120px gutters, the split hero with its still shapes.
+ * The shapes are placed from the right edge, as far from it as on the board. */
+@media (min-width: 1280px) {
+  .bar {
+    padding: 0 120px;
+  }
+
+  .hero {
+    height: 680px;
+  }
+
+  .heroPanel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+    width: 800px;
+    max-width: 56%;
+    padding: 96px 72px 96px 120px;
+    box-sizing: border-box;
+    background: color-mix(in srgb, var(--color-navy) 94%, transparent);
+  }
+
+  .heroTitle {
+    font-size: var(--fs-display);
+    line-height: 64px;
+  }
+
+  .heroCardBelow {
+    display: none;
+  }
+
+  .heroAside {
+    display: block;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .spot {
+    position: absolute;
+    right: 80px;
+    top: -10px;
+    width: 720px;
+    height: 720px;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--color-blue-300) 30%, transparent),
+      transparent
+    );
+  }
+
+  /* Each shape sits in a layer the pointer parallax moves; the layer holds
+     the position, the shape inside it keeps its own animation. */
+  .layer {
+    position: absolute;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .orbitLayer {
+    right: -40px;
+    top: 70px;
+  }
+
+  .orbit {
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    border: 2px dashed color-mix(in srgb, var(--text-inverse) 22%, transparent);
+  }
+
+  .squareLayer {
+    right: 34px;
+    top: 104px;
+  }
+
+  .square {
+    width: 170px;
+    height: 170px;
+    background: var(--accent);
+  }
+
+  .outlineLayer {
+    right: 484px;
+    top: 574px;
+  }
+
+  .outline {
+    width: 110px;
+    height: 110px;
+    border: 3px solid color-mix(in srgb, var(--text-inverse) 40%, transparent);
+    box-sizing: border-box;
+  }
+
+  .heroCardAside {
+    right: 160px;
+    top: 150px;
+    width: 400px;
+  }
+
+  .lessonTypesLayer {
+    right: 54px;
+    top: 548px;
+    width: 236px;
+  }
+
+  .footerColumns {
+    padding-inline: 120px;
+  }
+
+  .footerBar {
+    padding-inline: 120px;
+  }
+}
+
+/* Tablet (Landing-Tablet 768): the menu button replaces the anchors, a 6px
+ * strip, two footer columns. */
+@media (max-width: 1023px) {
+  .bar {
+    padding: 0 32px 0 40px;
+  }
+
+  .barEnd {
+    gap: var(--space-2);
+  }
+
+  .header .strip,
+  .footer .strip {
+    height: 6px;
+  }
+
+  .header .strip > :first-child,
+  .footer .strip > :first-child {
+    width: 96px;
+  }
+
+  .footerColumns {
+    grid-template-columns: 1fr 1fr;
+    padding: var(--space-12) var(--space-10) var(--space-8);
+  }
+
+  .footerBar {
+    padding: var(--space-5) var(--space-10);
+  }
+}
+
+/* Phone (Landing-Mobile 390): a 68px bar, stacked full-width actions, no
+ * preview card, one footer column. */
+@media (max-width: 599px) {
+  .bar {
+    height: 68px;
+    padding: 0 var(--space-2) 0 var(--space-5);
+  }
+
+  .logo {
+    width: 116px;
+    height: 51px;
+  }
+
+  .heroPanel {
+    padding: var(--space-10) var(--space-5);
+  }
+
+  .heroTitle {
+    font-size: 34px;
+    line-height: 42px;
+  }
+
+  .heroLede {
+    font-size: var(--fs-body);
+    line-height: 26px;
+  }
+
+  .heroActions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+  }
+
+  .heroAction {
+    width: 100%;
+  }
+
+  .heroCardBelow {
+    display: none;
+  }
+
+  .footerColumns {
+    grid-template-columns: 1fr;
+    padding: 56px var(--space-5) var(--space-10);
+  }
+
+  .footerBar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--space-5);
+  }
+}
+
+/* ====================================================================== *
+ * Motion and interaction - LANDING-03                                    *
+ *                                                                        *
+ * Ported from the Landing boards' own stylesheet. Three gates:           *
+ *   - every movement sits under `prefers-reduced-motion: no-preference`  *
+ *     (DS 09: "Nothing moves under prefers-reduced-motion");             *
+ *   - what follows the pointer also needs `hover: hover`, so a touch     *
+ *     screen never depends on it;                                        *
+ *   - what follows the scroll needs scroll timelines (`@supports`), the  *
+ *     browser doing the work without a scroll listener.                  *
+ * Everything animates opacity, transform, clip-path or box-shadow; the   *
+ * header's height is the one exception, as drawn.                        *
+ * ====================================================================== */
+
+/* Anchors land below the sticky header. */
+.page [id] {
+  scroll-margin-top: 84px;
+}
+
+/* The header link and menu item of the section being read (DS 09). */
+.navLinkCurrent,
+.navLinkCurrent:hover {
+  font-weight: 700;
+  color: var(--action-primary);
+  border-bottom-color: var(--accent);
+}
+
+.menuItemCurrent {
+  background: var(--color-blue-50);
+  color: var(--action-primary);
+}
+
+/* The title's underline under "together," - drawn in, then kept. */
+.underline {
+  background: linear-gradient(var(--color-blue-300), var(--color-blue-300)) no-repeat 0 97% / 100% 6px;
+}
+
+.wordMask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.word {
+  display: inline-block;
+}
+
+/* The pill's ring, pulsing out from behind the check. */
+.previewPillBadge {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.previewPillRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--action-primary);
+}
+
+.previewPillBadge .previewPillCheck {
+  position: relative;
+}
+
+/* The sheen that crosses the main "Sign in" on hover. */
+.glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 55%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    color-mix(in srgb, var(--bg-surface) 75%, transparent),
+    transparent
+  );
+  transform: translateX(-150%) skewX(-18deg);
+  pointer-events: none;
+}
+
+/* The page-load bar and the header's scroll-progress bar exist only while
+ * they animate: still, they would only be stray lines. */
+.loadBar,
+.scrollBar {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  pointer-events: none;
+}
+
+.loadBar {
+  top: 0;
+  z-index: 40;
+  background: var(--color-blue-300);
+}
+
+.scrollBar {
+  bottom: -3px;
+  z-index: 6;
+  background: var(--accent);
+}
+
+/* The pointer-parallax zones: wide screens with a pointer only. */
+.zone {
+  display: none;
+  position: absolute;
+  width: 20%;
+  height: 33.4%;
+  z-index: 1;
+}
+
+.hero {
+  --mx: 0;
+  --my: 0;
+}
+
+@keyframes drop {
+  from { opacity: 0; transform: translateY(-14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes load {
+  0% { transform: scaleX(0); }
+  70% { transform: scaleX(0.9); }
+  100% { transform: scaleX(1); }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
+
+@keyframes zoom {
+  from { transform: scale(1.09); }
+  to { transform: scale(1); }
+}
+
+@keyframes wipe {
+  from { clip-path: inset(0 0 0 100%); }
+  to { clip-path: inset(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: none; }
+}
+
+@keyframes slideFromRight {
+  from { opacity: 0; transform: translateX(56px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes wordUp {
+  from { transform: translateY(112%); }
+  to { transform: none; }
+}
+
+@keyframes underlineIn {
+  from { background-size: 0 6px; }
+  to { background-size: 100% 6px; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pillPop {
+  from { opacity: 0; transform: translateY(14px) scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes popUp {
+  from { opacity: 0; transform: translateY(26px) scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes ring {
+  0% { transform: scale(1); opacity: 0.45; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-blue-300) 65%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 16px transparent; }
+}
+
+@keyframes glowCard {
+  0%, 100% { box-shadow: var(--shadow-overlay), 0 0 0 0 transparent; }
+  50% { box-shadow: var(--shadow-overlay), 0 0 54px 8px color-mix(in srgb, var(--color-blue-300) 42%, transparent); }
+}
+
+@keyframes driftOne {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(110px, 70px) scale(1.2); }
+}
+
+@keyframes driftTwo {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-90px, -60px) scale(1.14); }
+}
+
+@keyframes pan {
+  to { transform: translate(64px, 64px); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shrink {
+  from { height: 76px; box-shadow: 0 0 0 transparent; }
+  to { height: 64px; box-shadow: 0 8px 20px color-mix(in srgb, var(--color-black) 12%, transparent); }
+}
+
+@keyframes shrinkPhone {
+  from { height: 68px; box-shadow: 0 0 0 transparent; }
+  to { height: 60px; box-shadow: 0 8px 20px color-mix(in srgb, var(--color-black) 12%, transparent); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:has(.page) {
+    scroll-behavior: smooth;
+  }
+
+  /* On load: the bar runs across the top, the header drops in, the strip's
+     accent grows. */
+  .loadBar {
+    display: block;
+    transform-origin: left;
+    animation:
+      load 1.1s cubic-bezier(0.4, 0, 0.2, 1) both,
+      fadeOut 0.35s 1.05s forwards;
+  }
+
+  .header {
+    animation: drop 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  .header .strip > :first-child {
+    transform-origin: left;
+    animation: grow 1s 0.1s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  /* The hero: photo, words, texts, then the card. */
+  .heroPhoto {
+    animation:
+      zoom 2.6s cubic-bezier(0.2, 0.7, 0.2, 1) backwards,
+      wipe 1.3s 0.05s cubic-bezier(0.7, 0, 0.2, 1) backwards;
+  }
+
+  .word {
+    animation: wordUp 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: calc(0.35s + var(--i) * 0.09s);
+  }
+
+  .underline {
+    animation: underlineIn 1s 1.15s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  .heroOverline,
+  .heroLede,
+  .heroActions,
+  .heroNote {
+    animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  .heroOverline { animation-delay: 0.45s; }
+  .heroLede { animation-delay: 0.68s; }
+  .heroActions { animation-delay: 0.8s; }
+  .heroNote { animation-delay: 0.92s; }
+
+  .cardIn {
+    animation: slideFromRight 1s 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  .float {
+    animation: float 7s 1.6s ease-in-out infinite;
+  }
+
+  .float2 {
+    animation: float 9s 1s ease-in-out infinite reverse;
+  }
+
+  .previewCard {
+    animation: glowCard 5s 1.8s ease-in-out infinite;
+  }
+
+  .previewPill {
+    animation: pillPop 0.7s 1.2s cubic-bezier(0.2, 0.9, 0.3, 1.3) backwards;
+  }
+
+  .previewPillRing {
+    animation: ring 2.8s 2s ease-out infinite;
+  }
+
+  .previewCard [role="progressbar"] > div {
+    transform-origin: left;
+    animation: grow 1.4s 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  .popIn {
+    animation: popUp 0.8s 1.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) backwards;
+  }
+
+  .blobOne { animation: driftOne 22s ease-in-out infinite; }
+  .blobTwo { animation: driftTwo 28s ease-in-out infinite; }
+  .grid { animation: pan 40s linear infinite; }
+  .orbit { animation: spin 70s linear infinite; }
+
+  .glow {
+    animation: glowPulse 2.8s 2.1s ease-out infinite;
+  }
+
+  .glow:hover {
+    animation-play-state: paused;
+  }
+
+  .glow:hover::after {
+    transform: translateX(280%) skewX(-18deg);
+    transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  /* The phone menu drops in, its items one after another. */
+  .menu {
+    animation: drop 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  .scrim {
+    animation: fade 0.3s backwards;
+  }
+
+  .menuItem {
+    transition: background-color 0.2s;
+    animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  .menuItem:nth-child(1) { animation-delay: 0.08s; }
+  .menuItem:nth-child(2) { animation-delay: 0.14s; }
+  .menuItem:nth-child(3) { animation-delay: 0.2s; }
+  .menuItem:nth-child(4) { animation-delay: 0.26s; }
+  .menuItem:nth-child(5) { animation-delay: 0.32s; }
+
+  .menuItem svg {
+    transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .menuItem:hover svg {
+    transform: translateX(5px);
+  }
+
+  .navLink {
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .lift {
+    transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.2s, filter 0.2s;
+  }
+
+  .lift > svg:last-child:not(:first-child) {
+    transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+}
+
+/* With a pointer: buttons lift and their trailing arrow nudges forward. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--color-black) 20%, transparent);
+    filter: brightness(1.08);
+  }
+
+  .lift:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: none;
+  }
+
+  .lift:hover > svg:last-child:not(:first-child) {
+    transform: translateX(4px);
+  }
+}
+
+/* The wide panel slides in from the left (the 1440 board only). */
+@media (min-width: 1280px) and (prefers-reduced-motion: no-preference) {
+  .heroPanel {
+    animation: slideIn 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+}
+
+/* Wide screens with a pointer: the shapes lean towards the pointer. */
+@media (min-width: 1280px) and (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .zone {
+    display: block;
+  }
+
+  .layer {
+    transform: translate3d(calc(var(--mx) * var(--d, 10) * 1px), calc(var(--my) * var(--d, 10) * 1px), 0);
+    transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .spot {
+    transform: translate(calc(var(--mx) * 90px), calc(var(--my) * 70px));
+    transition: transform 1.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .hero:has(.zx0:hover) { --mx: -2; }
+  .hero:has(.zx1:hover) { --mx: -1; }
+  .hero:has(.zx2:hover) { --mx: 0; }
+  .hero:has(.zx3:hover) { --mx: 1; }
+  .hero:has(.zx4:hover) { --mx: 2; }
+  .hero:has(.zy0:hover) { --my: -1; }
+  .hero:has(.zy1:hover) { --my: 0; }
+  .hero:has(.zy2:hover) { --my: 1; }
+}
+
+/* While the page scrolls: the progress bar under the header fills, and the
+   header tightens and takes a soft shadow over its first 120px (DS 09
+   "Desktop · scrolled"). */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scrollBar {
+      display: block;
+      transform-origin: left;
+      animation: grow linear both;
+      animation-timeline: scroll(root);
+    }
+
+    .bar {
+      animation: shrink linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 120px;
+    }
+  }
+
+  @media (max-width: 599px) and (prefers-reduced-motion: no-preference) {
+    .bar {
+      animation-name: shrinkPhone;
+    }
+  }
+}

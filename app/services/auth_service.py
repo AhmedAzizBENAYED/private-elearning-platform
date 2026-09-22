@@ -9,10 +9,13 @@ from uuid import UUID, uuid4
 import jwt
 from anyio import CapacityLimiter, to_thread
 from pydantic import BaseModel, ConfigDict, ValidationError
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.config import Settings
+from app.core.exceptions import BusinessError
 from app.core.security import hash_password, verify_password
 from app.models.user import User, UserRole
+from app.repositories.revoked_token_repository import RevokedTokenRepository
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import AccessTokenResponse, TokenResponse
 
@@ -50,11 +53,16 @@ def _check_password(password: str, user_hash: str | None) -> bool:
 
 class AuthService:
     def __init__(
-        self, settings: Settings, users: UserRepository, password_limiter: CapacityLimiter
+        self, settings: Settings, users: UserRepository,
+        password_limiter: CapacityLimiter, revocations: RevokedTokenRepository,
     ) -> None:
         self.settings = settings
         self.users = users
         self.password_limiter = password_limiter
+        # Required, not optional: `refresh` consults it on every call, and a
+        # collaborator that could be omitted would be a revocation check that
+        # could be omitted.
+        self.revocations = revocations
 
     async def login(self, email: str, password: str) -> TokenResponse:
         user = await self.users.get_by_email(email)
@@ -77,20 +85,67 @@ class AuthService:
         )
 
     async def refresh(self, refresh_token: str) -> AccessTokenResponse:
-        """Exchange a valid refresh token for a fresh access token.
+        """Exchange a valid, unrevoked refresh token for a fresh access token.
 
-        Stateless by design: the refresh token is neither rotated nor extended,
-        so it keeps exactly its original lifetime. The identity is reloaded from
-        PostgreSQL rather than trusted from the token, which is what makes a
-        deactivation or a role change take effect on the next refresh.
+        The refresh token is neither rotated nor extended, so it keeps exactly
+        its original lifetime. The identity is reloaded from PostgreSQL rather
+        than trusted from the token, which is what makes a deactivation or a
+        role change take effect on the next refresh.
+
+        Revocation is checked **before** any token is issued, and after the
+        signature, expiry and type have been validated: a forged or expired
+        token is refused on its own merits and never reaches the database.
+        A token whose ``jti`` has been revoked is refused even though every
+        cryptographic check passed - which is the whole point of the denylist.
         """
-        user = await self._active_user(
-            self.decode_token(refresh_token, expected_type="refresh")
-        )
+        claims = self.decode_token(refresh_token, expected_type="refresh")
+        if await self.revocations.is_revoked(claims.jti):
+            raise AuthenticationError("Invalid token")
+
+        user = await self._active_user(claims)
         return AccessTokenResponse(access_token=self._encode(
             user, "access",
             timedelta(minutes=self.settings.access_token_expire_minutes),
         ))
+
+    async def logout(self, refresh_token: str) -> None:
+        """Revoke one refresh token, server-side and for good.
+
+        Scoped to the token presented, so signing out in one browser leaves a
+        session in another alone. There is no "sign out everywhere" here
+        because the product has never offered one.
+
+        Invalid, expired and wrong-type tokens are accepted silently rather
+        than refused. RFC 7009 s2.2 takes the same position for token
+        revocation - "invalid tokens do not cause an error response since the
+        client cannot handle such an error in a reasonable way" - and there is
+        nothing to protect: a token that cannot be decoded cannot be used to
+        refresh either, and answering differently would turn sign-out into an
+        oracle for whether a token is valid.
+
+        An already-issued **access** token is deliberately untouched. It is a
+        stateless bearer credential with a short life (15 minutes by default),
+        and refusing it would mean a database lookup on every authenticated
+        request - a different design, not a revocation fix.
+        """
+        try:
+            claims = self.decode_token(refresh_token, expected_type="refresh")
+        except AuthenticationError:
+            return
+
+        # The commit is the revocation. If it cannot be written, saying 204
+        # would be a lie with a security consequence - the token would stay
+        # usable while the caller believed the session was over - so the
+        # failure is reported instead of swallowed.
+        try:
+            await self.revocations.revoke(
+                claims.jti, claims.sub,
+                datetime.fromtimestamp(claims.exp, tz=timezone.utc),
+            )
+            await self.revocations.session.commit()
+        except SQLAlchemyError:
+            await self.revocations.session.rollback()
+            raise BusinessError(503, "Sign-out could not be completed") from None
 
     def issue_playback_token(self, user: User, lesson_id: UUID) -> str:
         """Mint a short-lived credential for streaming exactly one lesson's media.

@@ -142,8 +142,10 @@ of `repr(settings)`.
     └── <course-uuid>/
         ├── videos/
         │   └── <resource-uuid>.mp4
-        └── documents/
-            └── <resource-uuid>.pdf
+        ├── documents/
+        │   └── <resource-uuid>.pdf
+        └── thumbnails/                ← BE-THUMBNAIL-UPLOAD-01, see docs/course-catalog.md
+            └── <uuid>.png | <uuid>.jpg
 ```
 
 Folder names are stable UUIDs and fixed words. Course *titles* are never used:

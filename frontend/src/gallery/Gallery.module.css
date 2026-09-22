@@ -1,0 +1,168 @@
+/* Development-only verification page. Deliberately plain: it exists to show
+ * the design system, so it must not become a second, competing style layer.
+ * FE-03 replaces this entry point with the real router.
+ */
+
+.page {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: var(--space-10) var(--space-6) var(--space-20);
+}
+
+.header {
+  margin-bottom: var(--space-10);
+}
+
+.strip {
+  display: flex;
+  height: var(--strip-h);
+  margin-bottom: var(--space-6);
+}
+
+.stripAccent {
+  /* Shrinks below its 320px ideal rather than pushing the page sideways. */
+  flex: 0 1 320px;
+  min-width: 0;
+  background: var(--accent);
+}
+
+.stripMuted {
+  flex: 1;
+  background: var(--color-gray-400);
+  margin-left: var(--space-2);
+}
+
+.lede {
+  color: var(--text-muted);
+  max-width: 70ch;
+  margin-top: var(--space-2);
+}
+
+.section {
+  margin-top: var(--space-12);
+}
+
+.sectionHead {
+  border-bottom: 1px solid var(--border-default);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.cardDark {
+  background: var(--bg-inverse);
+  border-color: var(--bg-inverse);
+}
+
+.caption {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.captionOnDark {
+  color: var(--color-blue-100);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Auto-fitting columns so every section reflows to one column on a phone
+ * without a breakpoint of its own. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: var(--space-6) var(--space-8);
+}
+
+.gridWide {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: var(--space-6);
+}
+
+/* The button state matrix: a variant per row, a state per column. It scrolls
+ * horizontally on narrow screens rather than crushing the controls. */
+.matrixScroll {
+  overflow-x: auto;
+}
+
+.matrix {
+  display: grid;
+  grid-template-columns: 130px repeat(6, minmax(150px, 1fr));
+  gap: var(--space-4);
+  align-items: center;
+  min-width: 1040px;
+}
+
+.matrixLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.iconGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(112px, 100%), 1fr));
+  gap: var(--space-4);
+}
+
+.iconCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-body);
+}
+
+.iconName {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  text-align: center;
+  word-break: break-word;
+}
+
+.avatarRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.avatarPair {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-body-sm);
+  color: var(--text-body);
+}
+
+.skeletonRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: var(--space-5);
+}

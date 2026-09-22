@@ -20,7 +20,10 @@ Preview flags do not permit anonymous access.
 | GET, PATCH, DELETE | `/admin/modules/{module_id}` | Read/edit/delete module |
 | POST, GET | `/admin/modules/{module_id}/lessons` | Create draft lesson; list ordered lessons |
 | GET, PATCH, DELETE | `/admin/lessons/{lesson_id}` | Read/edit/delete lesson |
-| GET | `/courses` | Published catalog |
+| PUT | `/admin/courses/{course_id}/structure` | Reorder modules and lessons, move lessons between modules, atomically |
+| PUT | `/admin/courses/{course_id}/thumbnail` | Upload or replace a draft course's thumbnail image |
+| GET | `/course-thumbnails/{course_id}/{name}` | The bytes of a course's current uploaded thumbnail - **no authentication** |
+| GET | `/courses` | Published catalog, with course sizes and the caller's enrollment tabs |
 | GET | `/courses/{course_id}` | Published course metadata |
 | GET | `/courses/{course_id}/modules` | Published course's module metadata |
 | GET | `/modules/{module_id}/lessons` | Published course's lesson metadata, without content |
@@ -44,6 +47,39 @@ lesson fields: id, title, description, content_type, duration_seconds, position,
 is_preview. Only the authenticated lesson detail adds `content`. Ownership,
 parent foreign keys, creation/update/archive timestamps and user security fields
 are excluded from member responses. Responses use `Cache-Control: no-store`.
+
+### Catalogue list: sizes and enrollment tabs (BE-COURSE-CATALOG-01, G04 + G05)
+
+`GET /courses` accepts, besides `page`, `page_size` and `search`, an optional
+`enrollment` = `not_enrolled` | `in_progress` | `completed` (any other value is
+422). It is applied in SQL, for the caller: enrolled with every VIDEO lesson
+completed is `completed`; enrolled otherwise - a course with no video included,
+which never completes - is `in_progress`. This is the rule `/me/enrollments`,
+`/courses/{id}/progress` and `/courses/{id}/content` already apply.
+
+The response is `{items, total, page, page_size, enrollment_counts}`:
+
+- each item is the member course fields above plus `module_count` (modules the
+  course owns) and `total_video_lessons` (VIDEO lessons across those modules).
+  An empty course is `0` and `0`. Both are counted from the database on every
+  request and equal what `/courses/{id}/modules` and `/modules/{id}/lessons`
+  already show a member, so no administrator information is exposed
+  (`lesson_count`, ownership and timestamps stay admin-only);
+- `total` counts the filtered set (the page's `enrollment` tab);
+- `enrollment_counts` = `{all, not_enrolled, in_progress, completed}` sizes
+  every tab for the same `search`, ignoring `enrollment` and the page.
+
+Drafts and archived courses are never listed or counted, whatever the caller's
+enrollments; a `status` query parameter is ignored. `GET /courses/{id}` keeps
+exactly the member course fields.
+
+`GET /me/enrollments` rows add `module_count`, `total_video_lessons` and
+`completed_video_lessons` - the figures behind `progress_percent` and
+`completed`, with the names `CourseContent` uses.
+
+Cost: the catalogue list is two statements (tab counts, page) after the
+current-user read, the enrollment list stays three; every count is a
+correlated subquery on the course row, never a query per course or module.
 
 ## Lifecycle and editing
 
@@ -71,8 +107,137 @@ cleared with null. Parent IDs, ownership, status and timestamps are never editab
 
 Positions must be positive integers and unique within the parent. Gaps are allowed;
 deletion does not renumber siblings. Moving to an occupied position returns 409.
-There is no bulk reorder operation; draft clients can use an unused position to
-stage a swap. Content cannot be moved between parents.
+`PATCH` still moves one row at a time: swapping two rows through it takes three
+requests (one to an unused position). `PUT /admin/courses/{course_id}/structure`
+reorders a whole course in one transaction and is the only way to move a lesson
+to another module of the same course (see below). Modules never change course
+and lessons never change course.
+
+### Reorganising a course (BE-COURSE-REORDER-01)
+
+`PUT /admin/courses/{course_id}/structure` - ADMIN only, DRAFT courses only.
+
+Request: the course's **complete** structure, in the order wanted. Every module
+of the course appears once; every lesson of those modules appears once, under
+the module that is to hold it. No positions are sent; list order is the order.
+
+```json
+{
+  "modules": [
+    {"id": "<M1>", "lesson_ids": ["<B>"]},
+    {"id": "<M2>", "lesson_ids": ["<C>", "<A>", "<D>"]},
+    {"id": "<M3>", "lesson_ids": []}
+  ]
+}
+```
+
+With `M1: A, B` and `M2: C, D` stored before, this moves `A` to the second place
+of `M2` and closes the gap in `M1`: `M1: B` and `M2: C, A, D`.
+
+Response `200`: `{course_id, modules: [ModuleResponse + {lessons: [LessonResponse]}]}`,
+read back from the database after the change, in order.
+
+Positions: the existing convention - positive integers, unique per parent,
+starting at 1. After the request every module is numbered 1..n in the submitted
+order and every lesson 1..n within its module, so gaps left by earlier writes
+close. A structure already stored exactly so is not written at all; otherwise
+only the rows whose module or position changes are written. A module may be
+left empty, and a lesson may move into an empty module. `{"modules": []}` is
+valid only for a course that has no module.
+
+Errors:
+
+| Status | When |
+| --- | --- |
+| 401 / 403 | Not signed in, inactive account / not an ADMIN |
+| 404 | The course does not exist (`Course not found`) |
+| 409 | The course is not a DRAFT (`Only DRAFT courses can be edited`) |
+| 409 | The body is not exactly the course's current structure: a module or lesson missing, unknown, or belonging to another course. The same detail every time - `The submitted structure does not match the course; reload it and try again` - so the endpoint never reveals whether an identifier exists elsewhere. |
+| 422 | Malformed body: unknown fields (including `position`), a non-UUID, a module or lesson repeated, more than 500 modules or 1000 lessons in a module |
+| 503 | Storage failure; nothing is written |
+
+Transaction: positions are unique per parent and checked row by row as each
+UPDATE runs, so rows cannot trade places in one step. The service therefore
+writes in two passes inside one transaction: every moving row first goes to a
+staging position that no row holds or will hold (and a moving lesson to its new
+module), then every moving row takes its final position. Both passes commit
+together or not at all; a failure between them rolls the first back.
+
+Concurrency: like every content write, the request first locks the course row
+(`SELECT ... FOR UPDATE`), so it is serialised with any other create, edit,
+delete, publication or reorganisation of the same course, and it validates the
+structure after taking the lock. A client whose view is out of date because a
+module or lesson was added or removed gets `409` and nothing changes. Two
+reorganisations of an unchanged set of modules and lessons both succeed, one
+after the other: the last one wins. There is no version or ETag precondition
+to refuse that case.
+
+### Uploading a thumbnail (BE-THUMBNAIL-UPLOAD-01)
+
+`PUT /admin/courses/{course_id}/thumbnail` - ADMIN only, DRAFT courses only.
+
+Request: `multipart/form-data` with one required part, `file`. The part's
+declared type must be `image/png` or `image/jpeg` - the formats the application
+already ships - and the bytes must really be that format:
+
+- PNG: every chunk and its CRC, a legal `IHDR` first, `IEND` last with nothing
+  after it, and image data that inflates to exactly the size the header states.
+- JPEG: the marker segments up to the start of scan, with a frame header of
+  non-zero dimensions before it and an end-of-image marker after it.
+- At most 5 MiB (`THUMBNAIL_MAX_BYTES`), at most 16 384 px a side and
+  40 megapixels. No image library is used or added; JPEG pixel data is not
+  decoded.
+
+The client's filename is ignored: it never reaches the storage key, the stored
+name or the URL. The file is stored through the storage port under
+`courses/<course-id>/thumbnails/<uuid>.<png|jpg>`, the extension coming from the
+validated type.
+
+Response `200`: the course (`CourseResponse`), whose `thumbnail_url` is now an
+absolute URL built from the request's origin -
+`<origin>/api/v1/course-thumbnails/<course-id>/<uuid>.<ext>`. Every other field
+is unchanged except `updated_at`.
+
+| Status | When |
+| --- | --- |
+| `401` | Missing, invalid or expired token, or inactive account |
+| `403` | Caller is not ADMIN |
+| `404` | Course not found |
+| `409` | Course is not DRAFT (`Only DRAFT courses can be edited`) |
+| `413` | More than 5 MiB |
+| `415` | Declared type is not `image/png` or `image/jpeg` |
+| `422` | No `file` part, an empty file, bytes that are not a valid image of the declared type, or dimensions too large |
+| `503` | Storage or database unavailable; nothing changed |
+
+Order, as for lesson files: the draft check, then the whole file is read and
+validated, and only then stored; the course row is pointed at it in one
+transaction that re-checks DRAFT. If that transaction fails, the new object is
+deleted and the course keeps its previous thumbnail. The previous uploaded
+object is deleted only after the commit, best effort: if the provider refuses,
+the course is still correct and the orphan is logged with its key
+(`Orphaned storage object after a replaced thumbnail`).
+
+`GET /course-thumbnails/{course_id}/{name}` serves the course's *current*
+uploaded thumbnail, in any status, with `X-Content-Type-Options: nosniff`, a
+`sandbox` CSP and `Cache-Control: private, max-age=3600`. It is unauthenticated
+on purpose: an `<img>` cannot send a bearer token, and an external
+`thumbnail_url` was always public too. Any other name - a replaced thumbnail, a
+guess, another course's - is `404`. It lives outside `/courses`, whose routes
+all require a token.
+
+`thumbnail_url` is unchanged as a field and still accepts any external http(s)
+URL; existing URLs are not rewritten. Three nullable columns
+(`thumbnail_storage_provider`, `thumbnail_storage_key`,
+`thumbnail_provider_reference`, migration `c3f8a61d2e47`) remember the uploaded
+object, all set or all empty - they are needed because a provider such as
+Google Drive addresses an object by an opaque handle, and they never appear in
+a response. A `PATCH` that changes `thumbnail_url` (to `null` - "Remove" - or to
+another URL) forgets the uploaded object and deletes it after the commit;
+sending the same URL back keeps it.
+
+Behind a reverse proxy, the stored origin is the one the application sees:
+run it with forwarded headers trusted (`uvicorn --proxy-headers
+--forwarded-allow-ips=...`) so `thumbnail_url` names the public host.
 
 ## Content validation
 

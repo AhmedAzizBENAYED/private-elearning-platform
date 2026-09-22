@@ -1,0 +1,156 @@
+/* The course editor (Admin-Course-Editor): header, then the structure and the
+ * 380px side column, side by side from 1024px and stacked below. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+}
+
+.crumb {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.crumb:hover {
+  text-decoration: underline;
+}
+
+.separator {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.current {
+  color: var(--text-primary);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+
+.title {
+  margin: 0;
+  font-size: var(--fs-h2);
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+
+
+
+
+
+
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--fs-h4);
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.subtitle {
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-8);
+  }
+
+  .side {
+    flex: 0 0 380px;
+    width: 380px;
+  }
+}
+
+.structure {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.error {
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-danger-200);
+  background: var(--color-danger-50);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--color-danger-800);
+}
+
+.dialogError {
+  display: block;
+  margin-top: var(--space-3);
+  color: var(--color-danger-700);
+  font-weight: 600;
+}
+
+@media (max-width: 599px) {
+  .title {
+    font-size: var(--fs-h3);
+    line-height: 32px;
+  }
+}

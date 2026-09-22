@@ -1,0 +1,58 @@
+/* Learning page: context bar, then the lesson column with the course outline
+ * beside it (Learning-Laptop 1280). The outline drops below the lesson on
+ * tablet and phone, as Learning-Tablet and Learning-Mobile draw it.
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: start;
+  min-width: 0;
+}
+
+.lesson {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.sidebar {
+  min-width: 0;
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stateCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+@media (min-width: 1024px) {
+  .columns {
+    /* `min()` keeps the outline column from forcing overflow at the breakpoint
+     * itself, where 380px would be too large a share. */
+    grid-template-columns: 1fr min(380px, 32%);
+    gap: var(--space-8);
+  }
+
+  .sidebar {
+    /* The outline follows the reader down a long lesson. */
+    position: sticky;
+    top: var(--space-6);
+    max-height: calc(100vh - var(--space-12));
+    overflow-y: auto;
+  }
+}

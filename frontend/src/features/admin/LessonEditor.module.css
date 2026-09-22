@@ -1,0 +1,199 @@
+/* The lesson editor (Admin-Lesson-Editor, Admin-Lesson-Types). The header,
+ * breadcrumb and page rhythm are the course editor's own
+ * (AdminCourseDetailPage.module.css); this file is the form and its preview.
+ *
+ * The board is drawn at 1440: a white card (32px padding) beside a 340px
+ * preview. The preview joins the form from 1280px (DS 04 "lg"): at 1024 the
+ * content column beside the admin sidebar is about 700px, which cannot hold a
+ * 340px card and a form whose type control needs four readable segments, so
+ * it stacks under the form, as the course editor's columns do below 1024. */
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+.aside {
+  min-width: 0;
+}
+
+@media (min-width: 1280px) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-8);
+  }
+
+  .aside {
+    flex: 0 0 340px;
+    width: 340px;
+  }
+}
+
+/* The form card: 22px between fields, as the board spaces them. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: var(--space-8);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+/* Duration and Position side by side, 200px each (Admin-Lesson-Editor). */
+.pair {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.pair > * {
+  flex: 0 1 200px;
+  min-width: 0;
+}
+
+/* The file field: `LessonFile` draws its own label and dropzone. Before the
+ * lesson exists, a label and one sentence stand in for it. */
+.file {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  scroll-margin-top: var(--space-6);
+}
+
+.fileLabel {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+.fileNote {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+.fileNoteGlyph {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--action-primary);
+}
+
+/* The preview toggle. */
+.checkboxRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--action-primary);
+  flex-shrink: 0;
+}
+
+.checkboxLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.checkboxTitle {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+.checkboxHint {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  color: var(--text-muted);
+  max-width: 60ch;
+}
+
+/* "Delete lesson" on the left, Cancel and Save on the right, over a rule. */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-default);
+}
+
+.footerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.dialogError {
+  display: block;
+  margin-top: var(--space-3);
+  color: var(--color-danger-700);
+  font-weight: 600;
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (max-width: 1023px) {
+  .card {
+    padding: var(--space-6);
+  }
+}
+
+/* No board draws the editor on a phone. The project's phone forms (Profile-
+ * Edit-Mobile, the dialogs) stack their actions full width with the primary
+ * one first, under the thumb; the destructive one goes last, apart. */
+@media (max-width: 599px) {
+  .card {
+    padding: var(--space-4);
+  }
+
+  .pair > * {
+    flex: 1 1 140px;
+  }
+
+  .footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .footerActions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    margin-left: 0;
+  }
+
+  .footer > *,
+  .footerActions > * {
+    width: 100%;
+  }
+}

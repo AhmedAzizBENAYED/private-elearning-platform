@@ -1,0 +1,41 @@
+/* Dashboard board: "01 In progress" - a 32px blue numeral beside a 24/32
+ * heading, with an optional action pushed to the right.
+ */
+
+.section {
+  margin-top: var(--space-14, 56px);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.index {
+  font-size: var(--fs-h1);
+  line-height: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+  font-variant-numeric: lining-nums;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: var(--fs-h2);
+  line-height: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 0;
+}

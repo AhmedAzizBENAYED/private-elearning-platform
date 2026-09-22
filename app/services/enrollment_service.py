@@ -47,11 +47,13 @@ class EnrollmentService:
     async def list(self, user_id: UUID, query: Pagination) -> Page[EnrollmentSummary]:
         rows, total = await self.enrollments.list_for_user(user_id, query.page, query.page_size)
         items = []
-        for enrollment, course, video_count, completed_count in rows:
+        for enrollment, course, video_count, completed_count, module_count in rows:
             percent, completed = completion_summary(video_count, completed_count)
             items.append(EnrollmentSummary(
                 enrollment_id=enrollment.id, course_id=course.id, title=course.title, slug=course.slug,
                 thumbnail_url=course.thumbnail_url, enrolled_at=enrollment.enrolled_at,
                 completed_at=enrollment.completed_at, progress_percent=percent, completed=completed,
+                module_count=module_count, total_video_lessons=video_count,
+                completed_video_lessons=completed_count,
             ))
         return Page[EnrollmentSummary](items=items, total=total, page=query.page, page_size=query.page_size)

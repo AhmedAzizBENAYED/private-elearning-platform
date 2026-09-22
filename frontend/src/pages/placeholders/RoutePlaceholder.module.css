@@ -1,0 +1,38 @@
+/* Deliberately plain. A placeholder must not be mistaken for a finished screen. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  font-size: var(--fs-h1);
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.lede {
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: var(--text-muted);
+}
+
+.badge {
+  align-self: flex-start;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-control);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}

@@ -1,0 +1,75 @@
+/* Access-States board: a white card, a 64px tinted disc, an "Error NNN"
+ * overline, a 20/28 heading, body copy and one primary action.
+ */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-8);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.danger {
+  background: var(--color-danger-50);
+  color: var(--color-danger);
+}
+
+.neutral {
+  background: var(--color-blue-50);
+  color: var(--action-primary);
+}
+
+.overline {
+  margin-top: var(--space-1);
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.title {
+  font-size: var(--fs-h3);
+  line-height: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.body {
+  max-width: 440px;
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--text-muted);
+}
+
+.action {
+  margin-top: var(--space-2);
+}
+
+/* Two actions side by side, the primary first (Access-States, "Error 500"):
+   8px apart, wrapping to two lines on a narrow phone rather than overflowing. */
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

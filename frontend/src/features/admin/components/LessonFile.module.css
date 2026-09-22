@@ -1,0 +1,74 @@
+/* One lesson's stored file, inside the lesson row of the course structure. */
+
+.file {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
+}
+
+.error,
+.unknown,
+.locked {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+}
+
+.error {
+  color: var(--color-danger-700);
+  font-weight: 500;
+}
+
+.unknown,
+.locked {
+  color: var(--text-muted);
+}
+
+.dialogError {
+  display: block;
+  margin-top: var(--space-3);
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--color-danger-700);
+}
+
+/* A stored file on a course that can no longer be changed: described, with no
+ * affordance, because every mutation would be refused with a 409.
+ */
+.readonly {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.readonlyLabel {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+.readonlyRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  color: var(--text-muted);
+}
+
+.readonlyName {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-body);
+  overflow-wrap: anywhere;
+}
+
+.readonlyMeta {
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  color: var(--text-muted);
+}

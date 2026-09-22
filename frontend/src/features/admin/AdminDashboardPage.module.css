@@ -1,0 +1,185 @@
+/* The administration landing page (Admin-Dashboard). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+/* Admin-Dashboard: title and subtitle, the two actions at the end of the line. */
+.head {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.headActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-h2);
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: var(--text-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(212px, 1fr));
+  gap: var(--space-4);
+}
+
+.card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: inherit;
+}
+
+.card:hover {
+  border-color: var(--color-blue-500);
+}
+
+.cardGlyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-current);
+  color: var(--color-blue-500);
+}
+
+.cardLabel {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.cardValue {
+  grid-column: 1 / -1;
+  font-size: var(--fs-stat);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.cardAction {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  font-weight: 600;
+  color: var(--color-blue-500);
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border: 1px solid var(--color-danger-200);
+  background: var(--color-danger-50);
+  border-radius: var(--radius-md);
+}
+
+.errorTitle {
+  font-size: var(--fs-body);
+  line-height: 24px;
+  font-weight: 700;
+  color: var(--color-danger-800);
+}
+
+.errorBody {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--color-danger-700);
+  margin-bottom: var(--space-2);
+}
+
+@media (max-width: 599px) {
+  .title {
+    font-size: var(--fs-h3);
+    line-height: 32px;
+  }
+
+  /* On a phone the two actions share the line under the title. */
+  .headActions {
+    width: 100%;
+  }
+
+  .headActions > * {
+    flex: 1 1 0;
+  }
+}
+
+/* "Recently created courses" (Admin-Dashboard). */
+.recent {
+  margin-top: var(--space-12);
+}
+
+/* Heading and "All courses" share one line, as drawn; they stack when there
+   is no room for both. */
+.recentHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.recentTitle {
+  margin: 0;
+  font-size: var(--fs-h2);
+  line-height: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Blocks the height of a row, so the card does not change size when the real
+   rows arrive. */
+.recentSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 44px 0 0;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  overflow: hidden;
+}

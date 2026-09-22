@@ -1,0 +1,165 @@
+:root {
+  /* Brand (official) */
+  --color-blue-500: #3594D6;   /* Pantone 2925 C */
+  --color-gray-600: #615F5F;   /* Cool Gray 10 C */
+  --color-navy: #1A4A6B;       /* Pantone 7694 C */
+  --color-blue-300: #71B4E2;
+  --color-charcoal: #3A3939;   /* Pantone 447 C */
+  --color-gray-400: #908F8F;   /* Pantone 877 C */
+  --color-black: #131313;
+
+  /* Derived tints (tone on tone) */
+  --color-navy-700: #133A56;
+  --color-navy-800: #0E2C43;
+  --color-blue-100: #D5E8F6;
+  --color-blue-50: #EAF4FB;
+  --color-gray-50: #F5F6F7;
+  --color-gray-100: #ECEBEB;
+  --color-gray-200: #DAD9D9;
+  --color-gray-300: #C3C2C2;
+
+  /* Functional extension */
+  --color-danger: #B3261E;
+  --color-danger-50: #FCEBEA;
+  --color-danger-200: #E8A9A5;
+
+  /* Semantic */
+  --bg-app: var(--color-gray-50);
+  --bg-surface: #fff;
+  --bg-current: var(--color-blue-50);
+  --bg-inverse: var(--color-navy);
+  --text-primary: var(--color-black);
+  --text-body: var(--color-charcoal);
+  --text-muted: var(--color-gray-600);
+  --text-link: var(--color-navy);
+  --text-inverse: #fff;
+  --border-default: var(--color-gray-200);
+  --border-control: var(--color-gray-400);
+  --action-primary: var(--color-navy);
+  --action-primary-hover: var(--color-navy-700);
+  --accent: var(--color-blue-500);
+  --focus-ring: 0 0 0 3px var(--color-blue-500);
+
+  /* Type */
+  --font-sans: 'Montserrat', Arial, sans-serif;
+  --fs-caption: 12px; --fs-body-sm: 14px; --fs-body: 16px;
+  --fs-h4: 18px; --fs-h3: 20px; --fs-h2: 24px; --fs-h1: 32px;
+  --fs-stat: 48px; --fs-display: 56px; --fs-numeral: 96px;
+
+  /* Space (4px base) */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --space-12: 48px; --space-16: 64px; --space-20: 80px; --space-24: 96px;
+
+  /* Shape & elevation */
+  --radius-xs: 2px; --radius-sm: 4px; --radius-md: 6px;
+  --radius-lg: 8px; --radius-full: 999px;
+  --shadow-raised: 0 8px 24px rgba(19,19,19,.16);
+  --shadow-overlay: 0 16px 48px rgba(19,19,19,.28);
+
+  /* Layout */
+  --container: 1200px; --header-h: 72px; --strip-h: 8px;
+  --outline-w: 400px; --outline-w-laptop: 340px; --sidebar-w: 248px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Extension block — FE-01
+ *
+ * Everything above this line is `design/tokens.css` copied verbatim and is the
+ * authoritative source. The values below are NOT invented: each one is read off
+ * a design board (DS-04 / DS-05 / DS-06) where the exported token file has no
+ * entry for it. They are declared here so no component ever hard-codes a hex,
+ * a control height or a font size.
+ *
+ * If a future token export adds any of these, delete it here and keep the
+ * exported value.
+ * ------------------------------------------------------------------------ */
+:root {
+  /* Palette values used by DS-05 control states, absent from tokens.css */
+  --color-gray-500: #7B7A7A;     /* DS 05 · disabled label / disabled field text */
+  --color-blue-200: #C2DBEE;     /* DS 05 · tonal button, pressed */
+  --color-danger-100: #F7D6D3;   /* DS 05 · danger-outline button, pressed */
+  --color-danger-700: #8F1E18;   /* DS 05 · danger button, hover */
+  --color-danger-800: #731812;   /* DS 05 · danger button, pressed */
+
+  /* Semantic aliases for the shared disabled treatment (DS 05) */
+  --bg-disabled: var(--color-gray-100);
+  --text-disabled: var(--color-gray-500);
+  --border-disabled: var(--color-gray-200);
+
+  /* Progress track (DS 06) and modal scrim (DS 06) */
+  --progress-track: var(--color-gray-200);
+  --scrim: rgba(19, 19, 19, .55);
+
+  /* Skeleton fill (DS 06: "use gray-100") and the highlight that sweeps it.
+     The board states the fill but not the shimmer colour, so the highlight is
+     plain white at low alpha over that fill. */
+  --skeleton-bg: var(--color-gray-100);
+  --skeleton-shimmer: rgba(255, 255, 255, .65);
+
+  /* Navy-surface text and hairlines (DS 07 sidebar / drawer) */
+  --on-navy-overline: #C9D6E0;
+  --on-navy-hairline: rgba(255, 255, 255, .22);
+  /* Landing boards: body text on the hero's navy panel, and the footer's. */
+  --on-navy-text: #E8EEF3;
+  --on-navy-muted: #DCE5EC;
+
+  /* On-dark button surfaces (DS 05) */
+  --on-dark-border: rgba(255, 255, 255, .55);
+  --on-dark-disabled-bg: rgba(255, 255, 255, .12);
+  --on-dark-disabled-text: rgba(255, 255, 255, .55);
+  /* DS 05 shows ghost-dark at rest only; pressed deepens the same wash. */
+  --on-dark-pressed-bg: rgba(255, 255, 255, .2);
+
+  /* Focus ring (DS 05: 3px brand blue, 2px offset). --focus-ring above is the
+     box-shadow form; these drive the `outline` form the boards actually use. */
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color: var(--color-blue-500);
+
+  /* Control geometry — DS 05 "Height lg 52 · md 44 (default) · sm 36" and
+     "Padding 24 / 20 / 14 px horizontal" */
+  --control-h-lg: 52px;
+  --control-h-md: 44px;
+  --control-h-sm: 36px;
+  --control-px-lg: 24px;
+  --control-px-md: 20px;
+  --control-px-sm: 14px;
+  --control-radius: var(--radius-sm);
+  --control-border-w: 2px;
+
+  /* Control type ramp — DS 05 buttons use 16/15/14px, which sit between the
+     editorial --fs-* steps, so they get their own names. */
+  --fs-control-lg: 16px;
+  --fs-control-md: 15px;
+  --fs-control-sm: 14px;
+
+  /* Form fields — DS 05: 48px tall, 1px --border-control, 14px inset */
+  --field-h: 48px;
+  --field-px: 14px;
+  --field-border-w: 1px;
+  --field-border-w-active: 2px;
+  /* DS 05 stacks label / control / message with a 6px gap. DS 04's prose
+     ("space-4 field label <-> control") describes page rhythm, not the control
+     itself; the rendered board wins for the component. */
+  --field-gap: 6px;
+
+  /* Minimum hit areas — Handoff A11y: ">= 44px (36px small buttons only in
+     dense desktop tables)" */
+  --tap-target: 44px;
+  --tap-target-dense: 36px;
+
+  /* Shell geometry not covered by the exported --sidebar-w (DS 07). */
+  --sidebar-rail-w: 72px;
+  --sidebar-drawer-w: 300px;
+  --bottom-nav-h: 64px;
+  --nav-item-h: 48px;
+
+  /* Breakpoints, mirrored from tokens.ts `bp`. CSS cannot use custom properties
+     inside a media query, so @media rules repeat these literals; these exist so
+     JS and documentation read from one place. */
+  --bp-sm: 600px;
+  --bp-md: 1024px;
+  --bp-lg: 1280px;
+  --bp-xl: 1600px;
+}

@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from anyio import CapacityLimiter
 
 from app.api.v1.router import router as api_v1_router
+from app.core.body_limit import MULTIPART_OVERHEAD_BYTES, RequestBodyLimitMiddleware
 from app.core.config import Settings, get_settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import configure_logging
@@ -95,6 +96,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         ],
     )
     application.state.settings = settings
+    # Added before CORS so that CORS ends up the outer layer: a refused upload
+    # still answers a browser with the headers it needs to read the 413. The
+    # limit itself is the configured maximum upload plus the multipart framing
+    # around it, so no legitimate upload is affected.
+    application.add_middleware(
+        RequestBodyLimitMiddleware,
+        max_body_bytes=settings.storage_max_upload_bytes + MULTIPART_OVERHEAD_BYTES,
+    )
     configure_cors(application, settings)
     register_exception_handlers(application)
     application.include_router(api_v1_router, prefix="/api/v1")

@@ -1,0 +1,97 @@
+/* The member table (Admin-Members). */
+
+/* The table is the one element allowed to scroll sideways: narrowing four
+ * columns into a phone would make every one of them unreadable. */
+.scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  /* Below this the columns start truncating rather than wrapping badly. */
+  min-width: 640px;
+}
+
+.table thead th {
+  text-align: left;
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--color-gray-50);
+  border-bottom: 1px solid var(--border-default);
+  white-space: nowrap;
+}
+
+.table tbody td,
+.table tbody th {
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--border-default);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-body);
+  text-align: left;
+  font-weight: 400;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td,
+.table tbody tr:last-child th {
+  border-bottom: 0;
+}
+
+.table tbody tr:hover {
+  background: var(--color-gray-50);
+}
+
+.memberCell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.name {
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.name:hover {
+  text-decoration: underline;
+}
+
+.email {
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.created {
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+/* The row just created (Admin-Members-States success state): blue-50. */
+.table tbody tr.highlighted,
+.table tbody tr.highlighted:hover {
+  background: var(--color-blue-50);
+}
+
+/* Admin-Members "Actions": the row's Edit profile, kept on one line. */
+.actions {
+  white-space: nowrap;
+}
+
+.actionGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

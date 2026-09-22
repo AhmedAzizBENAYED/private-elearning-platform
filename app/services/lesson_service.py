@@ -11,6 +11,7 @@ from app.repositories.lesson_repository import LessonRepository
 from app.schemas.lesson import CatalogLesson, CatalogLessonContent, LessonCreate, LessonResponse, LessonUpdate
 from app.schemas.pagination import Page, Pagination
 from app.services.content_rules import content_write
+from app.services.enrollment_service import EnrollmentService
 from app.services.module_service import ModuleService
 
 _http_url = TypeAdapter(HttpUrl)
@@ -42,9 +43,14 @@ def validate_content(content_type: ContentType, content: str, duration_seconds: 
 
 
 class LessonService:
-    def __init__(self, lessons: LessonRepository, modules: ModuleService) -> None:
+    def __init__(self, lessons: LessonRepository, modules: ModuleService,
+                 enrollments: EnrollmentService) -> None:
         self.lessons = lessons
         self.modules = modules
+        # Required, not optional: `catalog_get` is enrollment-gated, and a
+        # collaborator that could be omitted would be an authorization check
+        # that could be omitted.
+        self.enrollments = enrollments
 
     async def require_lesson(self, lesson_id: UUID, *, published: bool = False) -> Lesson:
         lesson = await self.lessons.get(lesson_id, published=published)
@@ -68,9 +74,29 @@ class LessonService:
     async def get(self, lesson_id: UUID) -> LessonResponse:
         return LessonResponse.model_validate(await self.require_lesson(lesson_id))
 
-    async def catalog_get(self, lesson_id: UUID) -> CatalogLessonContent:
-        """Member lesson detail; stored-file references never leave this boundary."""
+    async def catalog_get(self, user_id: UUID, lesson_id: UUID) -> CatalogLessonContent:
+        """Member lesson detail, for the enrolled only.
+
+        Enrollment is checked against the lesson's **own** parent course,
+        resolved here from the lesson id alone: the caller supplies no module or
+        course, so a member enrolled in one course cannot reach another's
+        lesson by presenting its id.
+
+        The refusal is deliberately indistinguishable from a lesson that does
+        not exist. `require_enrollment` raises its own 404, but its detail names
+        enrollment, which would confirm that the lesson is real and that the
+        caller simply lacks access - an oracle a member could walk to enumerate
+        the catalogue. Both paths therefore end on the same "Lesson not found".
+
+        Stored-file references still never leave this boundary.
+        """
         lesson = await self.require_lesson(lesson_id, published=True)
+        module = await self.modules.require_module(lesson.module_id)
+        try:
+            await self.enrollments.require_enrollment(user_id, module.course_id)
+        except BusinessError:
+            raise BusinessError(404, "Lesson not found") from None
+
         projection = CatalogLessonContent.model_validate(lesson)
         if lesson.content_type in STORED_CONTENT_TYPES:
             projection.content = None

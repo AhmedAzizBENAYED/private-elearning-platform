@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landing mobile menu open — JEENISo UI/UX</title>
+<style>@font-face{font-family:'Montserrat';font-weight:400;font-display:swap;src:url('../fonts/montserrat-latin-400-normal.woff2') format('woff2');}@font-face{font-family:'Montserrat';font-weight:500;font-display:swap;src:url('../fonts/montserrat-latin-500-normal.woff2') format('woff2');}@font-face{font-family:'Montserrat';font-weight:600;font-display:swap;src:url('../fonts/montserrat-latin-600-normal.woff2') format('woff2');}@font-face{font-family:'Montserrat';font-weight:700;font-display:swap;src:url('../fonts/montserrat-latin-700-normal.woff2') format('woff2');}@font-face{font-family:'Montserrat';font-weight:800;font-display:swap;src:url('../fonts/montserrat-latin-800-normal.woff2') format('woff2');}@font-face{font-family:'Montserrat';font-weight:900;font-display:swap;src:url('../fonts/montserrat-latin-900-normal.woff2') format('woff2');}
+
+body{margin:0}
+*{box-sizing:border-box}
+@keyframes dcspin{to{transform:rotate(360deg)}}
+a{color:#1A4A6B}
+a:hover{color:#133A56}
+
+html{scroll-behavior:smooth}
+.lp [id]{scroll-margin-top:84px}
+.lp a,.lp button{transition:transform .2s cubic-bezier(.2,.7,.2,1),box-shadow .2s,filter .2s,color .2s,border-color .2s}
+.lp a:focus-visible,.lp button:focus-visible{outline:3px solid #3594D6;outline-offset:2px}
+.lp .lp-nav a{transition:color .2s,border-color .2s}
+.lp .lp-nav a:hover{color:#1A4A6B!important;border-bottom-color:#71B4E2!important}
+.lp .lp-acc,.lp .lp-feat{transition:transform .28s cubic-bezier(.2,.7,.2,1),box-shadow .28s,border-color .28s}
+.lp .lp-acc:hover,.lp .lp-acc:focus-visible,.lp .lp-feat:hover{transform:translateY(-6px);border-color:#1A4A6B!important;box-shadow:0 14px 30px rgba(19,19,19,.16)}
+.lp .lp-tile{transition:background-color .28s,transform .28s cubic-bezier(.2,.7,.2,1)}
+.lp .lp-acc:hover .lp-tile,.lp .lp-acc:focus-visible .lp-tile,.lp .lp-feat:hover .lp-tile{background:#1A4A6B!important;transform:scale(1.08) rotate(-5deg)}
+.lp .lp-acc:hover .lp-tile svg,.lp .lp-acc:focus-visible .lp-tile svg,.lp .lp-feat:hover .lp-tile svg{color:#fff!important}
+.lp .lp-arrow{transition:transform .28s cubic-bezier(.2,.7,.2,1)}
+.lp .lp-acc:hover .lp-arrow,.lp .lp-acc:focus-visible .lp-arrow{transform:translateX(6px)}
+.lp .lp-photo img{transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.lp .lp-photo:hover img{transform:scale(1.04)}
+.lp .lp-step .lp-num{display:inline-block;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+.lp .lp-step:hover .lp-num{transform:translateX(6px)}
+@keyframes lp-rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+@keyframes lp-rise-l{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
+@keyframes lp-rise-r{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
+@keyframes lp-fade{from{opacity:0}to{opacity:1}}
+@keyframes lp-drop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes lp-slide{from{transform:translateX(-100%)}to{transform:none}}
+@keyframes lp-slide-r{from{opacity:0;transform:translateX(56px)}to{opacity:1;transform:none}}
+@keyframes lp-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes lp-pop{from{opacity:0;transform:translateY(14px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes lp-zoom{from{transform:scale(1.09)}to{transform:scale(1)}}
+@keyframes lp-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes lp-load{0%{transform:scaleX(0)}70%{transform:scaleX(.9)}100%{transform:scaleX(1)}}
+@keyframes lp-fadeout{to{opacity:0}}
+@keyframes lp-ring{0%{transform:scale(1);opacity:.45}100%{transform:scale(1.9);opacity:0}}
+@keyframes lp-par{from{transform:translateY(34px)}to{transform:translateY(-34px)}}
+@keyframes lp-hshadow{from{box-shadow:0 0 0 rgba(19,19,19,0)}to{box-shadow:0 8px 20px rgba(19,19,19,.12)}}
+@media (prefers-reduced-motion:no-preference){
+.lp-load{transform-origin:left;animation:lp-load 1.1s cubic-bezier(.4,0,.2,1) both,lp-fadeout .35s 1.05s forwards}
+.lp-head{animation:lp-drop .6s cubic-bezier(.2,.7,.2,1) backwards}
+.lp-strip>div:first-child{transform-origin:left;animation:lp-grow 1s .1s cubic-bezier(.2,.7,.2,1) backwards}
+.lp-zoom{animation:lp-zoom 2.6s cubic-bezier(.2,.7,.2,1) backwards}
+.lp-panel{animation:lp-slide .9s cubic-bezier(.2,.7,.2,1) backwards}
+.lp-in{animation:lp-rise .8s cubic-bezier(.2,.7,.2,1) backwards}
+.lp-d1{animation-delay:.45s}.lp-d2{animation-delay:.56s}.lp-d3{animation-delay:.68s}.lp-d4{animation-delay:.8s}.lp-d5{animation-delay:.92s}
+.lp-cardin{animation:lp-slide-r 1s .5s cubic-bezier(.2,.7,.2,1) backwards}
+.lp-float{animation:lp-float 7s 1.6s ease-in-out infinite}
+.lp-float2{animation:lp-float 9s 1s ease-in-out infinite reverse}
+.lp-pill{animation:lp-pop .7s 1.2s cubic-bezier(.2,.9,.3,1.3) backwards}
+.lp-prog [role=progressbar]>div{transform-origin:left;animation:lp-grow 1.4s 1.1s cubic-bezier(.2,.7,.2,1) backwards}
+.lp-ring{animation:lp-ring 2.8s 2s ease-out infinite}
+.lp-menu{animation:lp-drop .35s cubic-bezier(.2,.7,.2,1) backwards}
+.lp-scrim{animation:lp-fade .3s backwards}
+.lp-mi{animation:lp-rise .45s cubic-bezier(.2,.7,.2,1) backwards}
+.lp-mi:nth-child(1){animation-delay:.08s}.lp-mi:nth-child(2){animation-delay:.14s}.lp-mi:nth-child(3){animation-delay:.2s}.lp-mi:nth-child(4){animation-delay:.26s}.lp-mi:nth-child(5){animation-delay:.32s}
+}
+@supports (animation-timeline:view()){
+@media (prefers-reduced-motion:no-preference){
+.rv{animation:lp-rise linear backwards;animation-timeline:view();animation-range:entry 0% entry 62%}
+.rv-l{animation-name:lp-rise-l}
+.rv-r{animation-name:lp-rise-r}
+.rv-b{animation-range:entry 6% entry 68%}
+.rv-c{animation-range:entry 12% entry 74%}
+.rv-d{animation-range:entry 18% entry 80%}
+.rv-line{transform-origin:left;animation:lp-grow linear backwards;animation-timeline:view();animation-range:entry 10% entry 85%}
+.lp-par{animation:lp-par linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+.lp-par2{animation:lp-par linear both reverse;animation-timeline:view();animation-range:cover 0% cover 100%}
+.lp-head-s{animation:lp-hshadow linear both;animation-timeline:scroll(root);animation-range:0 90px}
+}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.lp button:hover,.lp a[style*="inline-flex"][style*="border-radius:4px"]:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(19,19,19,.20);filter:brightness(1.08)}
+.lp button:active,.lp a[style*="inline-flex"][style*="border-radius:4px"]:active{transform:translateY(0) scale(.98);box-shadow:none}
+.lp button > svg:last-child:not(:first-child),.lp a[style*="inline-flex"][style*="border-radius:4px"] > svg:last-child:not(:first-child){transition:transform .2s cubic-bezier(.2,.7,.2,1)}
+.lp button:hover > svg:last-child:not(:first-child),.lp a[style*="inline-flex"][style*="border-radius:4px"]:hover > svg:last-child:not(:first-child){transform:translateX(4px)}
+
+@property --gx{syntax:'<percentage>';inherits:true;initial-value:50%}
+.lp-hero{--mx:0;--my:0}
+.lp-z{position:absolute;width:20%;height:33.4%;z-index:1}
+.lp-wm{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.12em;margin-bottom:-.12em}
+.lp-w{display:inline-block}
+.lp-ul{background:linear-gradient(#71B4E2,#71B4E2) no-repeat 0 97%/100% 6px}
+.lp-blob{position:absolute;border-radius:50%;pointer-events:none}
+.lp-b1{width:560px;height:560px;left:-140px;top:-190px;background:radial-gradient(closest-side,rgba(53,148,214,.5),rgba(53,148,214,0))}
+.lp-b2{width:460px;height:460px;right:-90px;bottom:-170px;background:radial-gradient(closest-side,rgba(113,180,226,.34),rgba(113,180,226,0))}
+.lp-grid{position:absolute;inset:-64px;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:64px 64px;-webkit-mask-image:radial-gradient(ellipse at 35% 45%,#000 0,transparent 72%);mask-image:radial-gradient(ellipse at 35% 45%,#000 0,transparent 72%)}
+.lp-spot{position:absolute;pointer-events:none;background:radial-gradient(closest-side,rgba(113,180,226,.30),rgba(113,180,226,0))}
+.lp-orbit{position:absolute;border-radius:50%;border:2px dashed rgba(255,255,255,.22);pointer-events:none}
+.lp-glow{position:relative;overflow:hidden}
+.lp-glow::after{content:"";position:absolute;top:0;bottom:0;left:0;width:55%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.75),rgba(255,255,255,0));transform:translateX(-150%) skewX(-18deg);pointer-events:none}
+.lp-glow:hover::after{transform:translateX(280%) skewX(-18deg);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.lp-tilt{position:relative}
+.lp-tilt::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(260px circle at var(--gx) 38%,rgba(53,148,214,.17),rgba(53,148,214,0) 70%);opacity:0;transition:opacity .3s}
+.lp-tilt:hover::before,.lp-tilt:focus-visible::before{opacity:1}
+.lp-tzs{position:absolute;inset:0;display:flex;z-index:2}
+.lp-tzs>div{flex:1}
+.lp .lp-tilt{transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .3s,border-color .3s,--gx .35s}
+.lp .lp-tilt:hover .lp-tile svg{animation:lp-nudge .7s cubic-bezier(.2,.7,.2,1)}
+@keyframes lp-nudge{0%{transform:none}35%{transform:translateY(-3px) scale(1.14)}100%{transform:none}}
+.lp-tabs input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.lp-tabs label{cursor:pointer;transition:background-color .2s,color .2s,border-color .2s}
+.lp-tabs label:hover{background:#EAF4FB}
+.lp-tp{display:none}
+.lp-tp1{display:block}
+.lp-tabs:has(#lpt2:checked) .lp-tp1,.lp-tabs:has(#lpt3:checked) .lp-tp1{display:none}
+.lp-tabs:has(#lpt2:checked) .lp-tp2,.lp-tabs:has(#lpt3:checked) .lp-tp3{display:block}
+.lp-tabs:has(#lpt1:checked) label[for=lpt1],.lp-tabs:has(#lpt2:checked) label[for=lpt2],.lp-tabs:has(#lpt3:checked) label[for=lpt3]{color:#1A4A6B!important;border-bottom-color:#1A4A6B!important;background:#EAF4FB}
+.lp-tabs:has(#lpt1:focus-visible) label[for=lpt1],.lp-tabs:has(#lpt2:focus-visible) label[for=lpt2],.lp-tabs:has(#lpt3:focus-visible) label[for=lpt3]{outline:3px solid #3594D6;outline-offset:-3px}
+.lp-mi{transition:background-color .2s}
+.lp-mi:hover{background:#EAF4FB!important}
+.lp-mi svg{transition:transform .25s cubic-bezier(.2,.7,.2,1)}
+.lp-mi:hover svg{transform:translateX(5px)}
+@keyframes lp-drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(110px,70px) scale(1.2)}}
+@keyframes lp-drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-90px,-60px) scale(1.14)}}
+@keyframes lp-pan{to{transform:translate(64px,64px)}}
+@keyframes lp-spin{to{transform:rotate(360deg)}}
+@keyframes lp-glow{0%{box-shadow:0 0 0 0 rgba(113,180,226,.65)}70%,100%{box-shadow:0 0 0 16px rgba(113,180,226,0)}}
+@keyframes lp-glowcard{0%,100%{box-shadow:0 16px 48px rgba(19,19,19,.35),0 0 0 0 rgba(113,180,226,0)}50%{box-shadow:0 16px 48px rgba(19,19,19,.35),0 0 54px 8px rgba(113,180,226,.42)}}
+@keyframes lp-word{from{transform:translateY(112%)}to{transform:none}}
+@keyframes lp-ul{from{background-size:0 6px}to{background-size:100% 6px}}
+@keyframes lp-wipe{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0)}}
+@keyframes lp-clipv{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+@keyframes lp-unfold{from{opacity:0;transform:perspective(1400px) rotateX(9deg) translateY(48px) scale(.95)}to{opacity:1;transform:none}}
+@keyframes lp-draw{to{stroke-dashoffset:0}}
+@keyframes lp-pop2{from{opacity:0;transform:translateY(26px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes lp-tabin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes lp-hshrink{from{height:76px;box-shadow:0 0 0 rgba(19,19,19,0)}to{height:64px;box-shadow:0 8px 20px rgba(19,19,19,.12)}}
+@keyframes lp-hshrink-m{from{height:68px;box-shadow:0 0 0 rgba(19,19,19,0)}to{height:60px;box-shadow:0 8px 20px rgba(19,19,19,.12)}}
+@keyframes lp-blink{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes lp-cursor{0%,100%{transform:translate(0,0)}40%{transform:translate(22px,14px)}70%{transform:translate(8px,30px)}}
+@media (prefers-reduced-motion:no-preference){
+.lp-w{animation:lp-word .95s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(.35s + var(--i)*.09s)}
+.lp-ul{animation:lp-ul 1s 1.15s cubic-bezier(.2,.7,.2,1) backwards}
+.lp-zoom{animation:lp-zoom 2.6s cubic-bezier(.2,.7,.2,1) backwards,lp-wipe 1.3s .05s cubic-bezier(.7,0,.2,1) backwards}
+.lp-b1{animation:lp-drift1 22s ease-in-out infinite}
+.lp-b2{animation:lp-drift2 28s ease-in-out infinite}
+.lp-grid{animation:lp-pan 40s linear infinite}
+.lp-orbit{animation:lp-spin 70s linear infinite}
+.lp-glow{animation:lp-glow 2.8s 2.1s ease-out infinite}
+.lp-glow:hover{animation-play-state:paused}
+.lp-glowcard{animation:lp-glowcard 5s 1.8s ease-in-out infinite}
+.lp-pop{animation:lp-pop2 .8s 1.35s cubic-bezier(.2,.9,.3,1.2) backwards}
+.lp-tp>*{animation:lp-tabin .5s cubic-bezier(.2,.7,.2,1)}
+.lp-tp [role=progressbar]>div{transform-origin:left;animation:lp-grow 1.1s .2s cubic-bezier(.2,.7,.2,1) backwards}
+.lp-cur{animation:lp-cursor 6s ease-in-out infinite}
+.lp-live{animation:lp-blink 2.2s ease-in-out infinite}
+}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+.lp-l{transform:translate3d(calc(var(--mx)*var(--d,10)*1px),calc(var(--my)*var(--d,10)*1px),0);transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.lp-spot{transform:translate(calc(var(--mx)*90px),calc(var(--my)*70px));transition:transform 1.3s cubic-bezier(.2,.7,.2,1)}
+.lp-hero:has(.lp-zx0:hover){--mx:-2}.lp-hero:has(.lp-zx1:hover){--mx:-1}.lp-hero:has(.lp-zx2:hover){--mx:0}.lp-hero:has(.lp-zx3:hover){--mx:1}.lp-hero:has(.lp-zx4:hover){--mx:2}.lp-hero:has(.lp-zy0:hover){--my:-1}.lp-hero:has(.lp-zy1:hover){--my:0}.lp-hero:has(.lp-zy2:hover){--my:1}
+.lp .lp-tilt:has(.tz-l:hover){transform:perspective(900px) translateY(-6px) rotateY(-5deg) rotateX(1.5deg);--gx:14%}
+.lp .lp-tilt:has(.tz-c:hover){transform:perspective(900px) translateY(-6px) rotateX(-1deg);--gx:50%}
+.lp .lp-tilt:has(.tz-r:hover){transform:perspective(900px) translateY(-6px) rotateY(5deg) rotateX(1.5deg);--gx:86%}
+
+}
+@supports (animation-timeline:view()){
+@media (prefers-reduced-motion:no-preference){
+.rv-pop{animation-name:lp-pop2}
+.rv-unfold{animation:lp-unfold linear backwards;animation-timeline:view();animation-range:entry 0% entry 72%}
+.rv-clip{animation:lp-clipv linear backwards;animation-timeline:view();animation-range:entry 0% entry 78%}
+.lp-draw svg :is(path,line,polyline,circle,rect,polygon){stroke-dasharray:1;stroke-dashoffset:1;animation:lp-draw linear both;animation-timeline:view();animation-range:entry 15% entry 92%}
+.lp-scrollbar{transform-origin:left;animation:lp-grow linear both;animation-timeline:scroll(root)}
+.lp-rail-fill{transform-origin:left;animation:lp-grow linear both;animation-timeline:view();animation-range:entry 35% cover 55%}
+.lp-head-s{animation:lp-hshrink linear both;animation-timeline:scroll(root);animation-range:0 120px}
+.lp-head-sm{animation:lp-hshrink-m linear both;animation-timeline:scroll(root);animation-range:0 120px}
+}}
+
+
+body{margin:0;background:#DDE3E8}#root{margin:0 auto}</style>
+</head>
+<body>
+<div id="root" style="width:390px;height:844px;display:flex;flex-direction:column;background:#FFFFFF;color:#131313;font-family:'Montserrat',Arial,sans-serif;font-size:16px;line-height:26px;overflow:hidden;position:relative;overflow:visible;overflow-x:clip" class="lp">
+<div style="width:100%;flex-shrink:0;position:relative;z-index:5"><div style="display:flex;height:6px;width:100%;flex-shrink:0"><div style="width:96px;background:#3594D6;flex-shrink:0"></div><div style="flex:1;background:#908F8F;margin-left:8px"></div></div><div style="display:flex;align-items:center;justify-content:space-between;height:68px;padding:0 8px 0 20px;background:#FFFFFF;border-bottom:1px solid #DAD9D9"><img style="width:116px;height:51px;display:block;flex-shrink:0" src="../assets/logo-color.png" alt="JEENISo" width="116" height="51"><div style="display:flex;align-items:center;gap:8px"><a style="display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 20px;background:#1A4A6B;color:#FFFFFF;border:2px solid #1A4A6B;border-radius:4px;font-family:'Montserrat',Arial,sans-serif;font-size:15px;line-height:20px;font-weight:600;letter-spacing:0.005em;cursor:pointer;text-decoration:none;white-space:nowrap;box-sizing:border-box" href="Login-Mobile.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block;color:currentColor" aria-hidden="true" focusable="false"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span>Sign in</span></a><button style="display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;min-width:44px;padding:0;background:transparent;color:#1A4A6B;border:2px solid transparent;border-radius:4px;font-family:'Montserrat',Arial,sans-serif;font-size:15px;line-height:20px;font-weight:600;letter-spacing:0.005em;cursor:pointer;text-decoration:none;white-space:nowrap;box-sizing:border-box" type="button" aria-label="Close menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block;color:currentColor" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div></div><div class="lp-menu" style="background:#FFFFFF;flex-shrink:0"><nav aria-label="Main"><div class="lp-mi" style="display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 20px;border-bottom:1px solid #DAD9D9;background:#EAF4FB"><span style="font-size:17px;font-weight:700;color:#1A4A6B">Platform</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block;color:#615F5F" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></div><div class="lp-mi" style="display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 20px;border-bottom:1px solid #DAD9D9;background:#FFFFFF"><span style="font-size:17px;font-weight:700;color:#131313">Preview</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block;color:#615F5F" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></div><div class="lp-mi" style="display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 20px;border-bottom:1px solid #DAD9D9;background:#FFFFFF"><span style="font-size:17px;font-weight:700;color:#131313">Benefits</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block;color:#615F5F" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></div><div class="lp-mi" style="display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 20px;border-bottom:1px solid #DAD9D9;background:#FFFFFF"><span style="font-size:17px;font-weight:700;color:#131313">How it works</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block;color:#615F5F" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></div><div class="lp-mi" style="display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 20px;border-bottom:1px solid #DAD9D9;background:#FFFFFF"><span style="font-size:17px;font-weight:700;color:#131313">Contact</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block;color:#615F5F" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></div></nav><div style="padding:20px"><a style="display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 24px;background:#1A4A6B;color:#FFFFFF;border:2px solid #1A4A6B;border-radius:4px;font-family:'Montserrat',Arial,sans-serif;font-size:16px;line-height:20px;font-weight:600;letter-spacing:0.005em;cursor:pointer;width:100%;text-decoration:none;white-space:nowrap;box-sizing:border-box" href="Login-Mobile.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block;color:currentColor" aria-hidden="true" focusable="false"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span>Sign in</span></a><div style="margin-top:16px;font-size:14px;line-height:22px;color:#615F5F">Accounts are created by an administrator. Need access? <a style="color:#1A4A6B;font-weight:700" href="mailto:contact@jeeniso.com">contact@jeeniso.com</a></div></div></div><div style="flex:1;background:rgba(19,19,19,.55)" class="lp-scrim"></div>
+</div>
+</body>
+</html>

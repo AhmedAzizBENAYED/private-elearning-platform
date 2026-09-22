@@ -1,0 +1,131 @@
+/* DS 07 admin sidebar: navy panel, logo, "ADMINISTRATION" overline, nav, then
+ * the identity block and sign-out pinned to the bottom.
+ */
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-inverse);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.expanded {
+  width: var(--sidebar-w);
+  padding: 28px var(--space-5) var(--space-5);
+}
+
+.rail {
+  width: var(--sidebar-rail-w);
+  padding: var(--space-5) 0;
+  align-items: center;
+}
+
+.drawer {
+  width: var(--sidebar-drawer-w);
+  max-width: 85vw;
+  height: 100%;
+  padding: var(--space-6) var(--space-5);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-inline-start: var(--space-1);
+}
+
+.logoLink {
+  display: flex;
+  border-radius: var(--control-radius);
+}
+
+.logo {
+  width: 124px;
+  height: auto;
+  display: block;
+  flex-shrink: 0;
+}
+
+.overline {
+  margin: 36px 0 10px var(--space-1);
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--on-navy-overline);
+}
+
+.drawer .overline {
+  margin-top: var(--space-8);
+}
+
+.foot {
+  margin-top: auto;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--on-navy-hairline);
+}
+
+/* Admin-Tablet: the rail's Sign out, alone at the bottom, no hairline. */
+.railFoot {
+  margin-top: auto;
+  padding-top: var(--space-5);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.identityLink {
+  padding: var(--space-2);
+  margin: 0 calc(-1 * var(--space-2));
+  border-radius: var(--control-radius);
+  text-decoration: none;
+}
+
+.identityLink:hover {
+  background: var(--on-dark-disabled-bg);
+}
+
+.identityCurrent,
+.identityCurrent:hover {
+  background: var(--bg-surface);
+}
+
+.identityCurrent .name {
+  color: var(--action-primary);
+}
+
+.identityCurrent .role {
+  color: var(--text-muted);
+}
+
+.identityText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-inverse);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.role {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--on-navy-overline);
+}
+
+.signOut {
+  margin-top: 14px;
+}

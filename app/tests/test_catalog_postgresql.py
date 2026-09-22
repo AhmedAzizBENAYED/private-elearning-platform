@@ -17,6 +17,7 @@ from app.core.config import Settings
 from app.database.session import get_db_session
 from app.models.lesson import Lesson
 from app.models.user import User, UserRole
+from app.repositories.revoked_token_repository import RevokedTokenRepository
 from app.repositories.user_repository import UserRepository
 from app.services.auth_service import AuthService
 
@@ -44,7 +45,12 @@ async def test_postgresql_catalog_lifecycle_and_cascade(settings: Settings) -> N
                                  last_name="Test", role=UserRole.ADMIN, hashed_password="!test-account")
                     session.add(admin)
                     await session.flush()
-                    token = AuthService(settings, UserRepository(session), CapacityLimiter(1)).issue_tokens(admin).access_token
+                    # Same collaborators as `get_auth_service` composes in production,
+                    # revocation repository included - it is a required dependency.
+                    token = AuthService(
+                        settings, UserRepository(session), CapacityLimiter(1),
+                        RevokedTokenRepository(session),
+                    ).issue_tokens(admin).access_token
                     application = create_app(settings)
 
                     async def test_session():

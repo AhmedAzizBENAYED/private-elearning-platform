@@ -1,0 +1,90 @@
+/* DS 07 "Header — member (desktop)": 72px bar on white, 40px side padding,
+ * 1px bottom rule, logo then nav at 48px, user menu pushed right.
+ */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  height: var(--header-h);
+  padding-inline: var(--space-10);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  border-radius: var(--control-radius);
+}
+
+.logo {
+  width: 120px;
+  height: auto;
+  display: block;
+  flex-shrink: 0;
+}
+
+.nav {
+  display: flex;
+  margin-inline-start: var(--space-12);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  height: var(--header-h);
+  padding-inline: var(--space-1);
+  margin-inline-end: var(--space-8);
+  font-size: var(--fs-control-md);
+  font-weight: 600;
+  color: var(--text-body);
+  text-decoration: none;
+  /* Reserved at rest so the active underline does not shift the row. */
+  border-bottom: 3px solid transparent;
+  box-sizing: border-box;
+}
+
+.link:hover {
+  color: var(--action-primary);
+}
+
+.active {
+  font-weight: 700;
+  color: var(--action-primary);
+  border-bottom-color: var(--accent);
+}
+
+/* Laptop and below: tighten the side padding before anything has to shrink. */
+@media (max-width: 1279px) {
+  .header {
+    padding-inline: var(--space-6);
+  }
+
+  .nav {
+    margin-inline-start: var(--space-8);
+  }
+}
+
+/* Mobile: the header keeps the logo and the avatar; navigation moves to the
+ * bottom bar (DS 07), and the bar drops to 68px. */
+@media (max-width: 599px) {
+  .header {
+    height: 68px;
+    padding-inline: var(--space-4);
+  }
+
+  .logo {
+    /* "The logo stays >= 113 px wide". */
+    width: 116px;
+  }
+}

@@ -1,0 +1,604 @@
+/* The learning-progress screens (Admin-Progress, Admin-Activity,
+ * Admin-Progress-Courses, Admin-Course-Analytics, Admin-Member-View).
+ *
+ * One stylesheet for the feature, as the profile pages share theirs: the five
+ * screens are the same table, the same figure cards and the same filter bar
+ * with different columns, and splitting them would mean five copies of each. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-h1);
+  line-height: 40px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: var(--space-1) 0 0;
+  font-size: var(--fs-body-sm);
+  color: var(--text-muted);
+}
+
+/* The accent rule under the page title, as every admin page draws it. */
+.rule {
+  display: flex;
+  gap: var(--space-2);
+  height: 4px;
+}
+
+/* The Matrix / List switch beside the title (Admin-Progress).
+ *
+ * The segmented control is a form field by default: it fills the width it is
+ * given and takes its own from its container, not from its options. Beside a
+ * flexible title that leaves it nothing, so it has to size to its two options
+ * and keep that width. */
+.viewSwitch {
+  flex: 0 0 auto;
+  container-type: normal;
+}
+
+.ruleAccent {
+  width: 64px;
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+
+.ruleMuted {
+  flex: 1;
+  background: var(--border-default);
+  border-radius: var(--radius-full);
+}
+
+/* ------------------------------------------------------------------ tabs */
+
+.tabs {
+  display: flex;
+  gap: var(--space-5);
+  border-bottom: 1px solid var(--border-default);
+  overflow-x: auto;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-1) var(--space-2);
+  border-bottom: 3px solid transparent;
+  color: var(--text-muted);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+}
+
+.tabCurrent {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent);
+}
+
+/* ------------------------------------------------------------- figures */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--space-4);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.statLabel {
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.statValue {
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.statCaption {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------- filters */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: flex-end;
+}
+
+.search {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.filter {
+  flex: 0 1 200px;
+  min-width: 160px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.note {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-blue-50);
+  border: 1px solid var(--color-blue-100);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-body-sm);
+  color: var(--text-body);
+}
+
+.noteIcon {
+  color: var(--color-navy);
+  flex-shrink: 0;
+}
+
+.count {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  color: var(--text-muted);
+}
+
+.showing {
+  margin: 0;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------- table */
+
+.scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.matrixTable {
+  min-width: 900px;
+}
+
+.table thead th {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--color-gray-50);
+  border-bottom: 1px solid var(--border-default);
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.table tbody td,
+.table tbody th {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-default);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-body);
+  text-align: left;
+  font-weight: 400;
+  vertical-align: top;
+}
+
+.table tbody tr:last-child td,
+.table tbody tr:last-child th {
+  border-bottom: 0;
+}
+
+.columnHead {
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: var(--fs-body-sm);
+  white-space: normal;
+  min-width: 150px;
+}
+
+.columnCaption {
+  display: block;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------- member cell */
+
+.memberCell {
+  min-width: 190px;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.memberText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.memberName {
+  color: var(--text-link);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.memberName:hover {
+  text-decoration: underline;
+}
+
+.memberCaption {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.courseLink {
+  color: var(--text-link);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.courseLink:hover {
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------ progress */
+
+.progressCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 120px;
+}
+
+.percent {
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.bar {
+  width: 100%;
+  min-width: 80px;
+}
+
+.cellCaption {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+/* A cell for a pair with no activity: dashed track, no invented figure. */
+.emptyCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.dashed {
+  height: 6px;
+  border-radius: var(--radius-full);
+  border: 1px dashed var(--border-control);
+}
+
+/* ------------------------------------------------------------ activity */
+
+.activity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.activeNow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.exact {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+/* -------------------------------------------------------- status split */
+
+.split {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  min-width: 140px;
+}
+
+.splitPart {
+  border-radius: var(--radius-full);
+}
+
+.splitCompleted {
+  background: var(--color-navy);
+}
+
+.splitInProgress {
+  background: var(--color-blue-500);
+}
+
+.splitNotStarted {
+  background: var(--color-gray-200);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.legendSwatch {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-xs);
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------- cards */
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.cardRows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cardRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-default);
+}
+
+.cardRowHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.cardTitle {
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* -------------------------------------------------------- detail pages */
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+@media (max-width: 1023px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: var(--fs-h4);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.panelCaption {
+  margin: 0;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.events {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.event {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.event:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.eventTitle {
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-body-sm);
+  color: var(--text-muted);
+}
+
+.crumb {
+  color: var(--text-link);
+  text-decoration: none;
+}
+
+.crumb:hover {
+  text-decoration: underline;
+}
+
+.current {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.back {
+  align-self: flex-start;
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* On a phone the tables become the cards the mobile boards draw; the wrappers
+ * above already stack, so only the paddings tighten here. */
+@media (max-width: 599px) {
+  .title {
+    font-size: var(--fs-h2);
+    line-height: 32px;
+  }
+
+  .filter,
+  .search {
+    flex: 1 1 100%;
+  }
+}
+
+/* Hidden from the page, present for assistive technology: a column whose
+ * header would only repeat the link inside it still needs a name. */
+.hiddenLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

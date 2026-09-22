@@ -1,0 +1,303 @@
+/* The course structure (Admin-Course-Editor, structure half). */
+
+.structure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.summary {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.module {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+
+/* The board: a gray-50 band, the position as a 32px blue numeral, then the
+ * title and its count, then the actions. */
+.moduleHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-gray-50);
+  flex-wrap: wrap;
+}
+
+.moduleNumber {
+  font-size: 32px;
+  line-height: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-blue-500);
+  font-variant-numeric: lining-nums tabular-nums;
+  flex-shrink: 0;
+}
+
+.moduleText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.moduleTitle {
+  margin: 0;
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.moduleCount {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ↑ ↓, edit, delete (and collapse): 44px targets, as every control here. */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.lessons {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lesson {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 64px;
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-gray-100);
+  flex-wrap: wrap;
+}
+
+.lessonPosition {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.lessonBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.lessonTitle {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+/* "06:10 · know-your-reader.mp4", "Text · 240 words". */
+.lessonMeta {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* "No video uploaded yet" and, on a draft, "Upload resource". */
+.missing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.missingText {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+.missingGlyph {
+  flex-shrink: 0;
+  color: var(--text-body);
+}
+
+.preview {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--bg-current);
+  color: var(--color-blue-500);
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.noLessons,
+.lessonsFailed {
+  padding: var(--space-4) var(--space-5);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+.lessonsFailed {
+  color: var(--color-danger-700);
+}
+
+.moduleFoot {
+  padding: var(--space-3);
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: var(--fs-h4);
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.emptyBody {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+  max-width: 60ch;
+  margin-bottom: var(--space-2);
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border: 1px solid var(--color-danger-200);
+  background: var(--color-danger-50);
+  border-radius: var(--radius-md);
+}
+
+.errorTitle {
+  font-size: var(--fs-body);
+  line-height: 24px;
+  font-weight: 700;
+  color: var(--color-danger-800);
+}
+
+.errorBody {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--color-danger-700);
+  margin-bottom: var(--space-2);
+}
+
+.dialogError {
+  display: block;
+  margin-top: var(--space-3);
+  color: var(--color-danger-700);
+  font-weight: 600;
+}
+
+@media (max-width: 599px) {
+  .noLessons,
+  .lessonsFailed {
+    padding: var(--space-4);
+  }
+
+  .empty {
+    padding: var(--space-4);
+  }
+
+  /* No board draws the editor on a phone. Following the project's own phone
+     rows (FE-MOBILE-01): the actions drop to a full-width row of their own
+     rather than squeezing the title into a sliver, and keep 44px targets. */
+  .actions {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+  }
+
+  .moduleText {
+    flex-basis: 0;
+  }
+
+  /* One predictable shape per row, whatever the title's length: the type and
+     the position on the first line, the title and what it holds on the
+     second, the actions on the third. */
+  .lessonPosition {
+    order: 1;
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .preview {
+    order: 1;
+  }
+
+  .lessonBody {
+    order: 2;
+    flex-basis: 100%;
+  }
+
+  .lesson > .actions {
+    order: 3;
+  }
+}

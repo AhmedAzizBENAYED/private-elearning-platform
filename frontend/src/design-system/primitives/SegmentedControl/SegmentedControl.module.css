@@ -1,0 +1,139 @@
+/* DS 05 - Segmented control (drawn as the lesson-type picker).
+ * Adjacent options overlap by the border width so the shared edge stays 2px
+ * rather than doubling to 4px.
+ */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--field-gap);
+  /* The options respond to the width the control is given, not the window's:
+     the same control sits in a 516px column beside a preview at 1280 and in a
+     311px card on a phone. */
+  container-type: inline-size;
+}
+
+.group {
+  display: flex;
+  width: 100%;
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+  height: var(--control-h-md);
+  padding-inline: 18px;
+  background: var(--bg-surface);
+  color: var(--action-primary);
+  border: var(--control-border-w) solid var(--action-primary);
+  border-radius: 0;
+  margin-inline-start: calc(-1 * var(--control-border-w));
+  font-family: var(--font-sans);
+  font-size: var(--fs-control-sm);
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.option:first-child {
+  margin-inline-start: 0;
+  border-start-start-radius: var(--control-radius);
+  border-end-start-radius: var(--control-radius);
+}
+
+.option:last-child {
+  border-start-end-radius: var(--control-radius);
+  border-end-end-radius: var(--control-radius);
+}
+
+.option:hover:not(.selected):not(:disabled) {
+  background: var(--color-blue-50);
+}
+
+.selected {
+  background: var(--action-primary);
+  color: var(--text-inverse);
+  font-weight: 700;
+  /* Lift the selected option so its full border outranks both neighbours. */
+  z-index: 1;
+}
+
+.option:focus-visible {
+  /* Raise above the neighbours' borders so the ring is never clipped. */
+  z-index: 2;
+}
+
+.option:disabled {
+  cursor: not-allowed;
+  background: var(--bg-disabled);
+  color: var(--text-disabled);
+  border-color: var(--border-disabled);
+}
+
+.option:disabled.selected {
+  background: var(--border-disabled);
+  color: var(--text-disabled);
+}
+
+.label {
+  /* Truncate rather than wrap: a segmented control is a single-line chooser. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Narrower than about four full labels: trade horizontal padding for label
+ * width, so "Document" is read rather than truncated. The 44px height, and
+ * therefore the hit area, is unchanged. */
+@container (max-width: 560px) {
+  .option {
+    padding-inline: var(--space-2);
+    gap: var(--space-1);
+  }
+}
+
+/* Too narrow for four segments in one row at all (a phone's card, ~311px):
+ * two rows of two, still one joined control with the same outer corners. */
+@container (max-width: 440px) {
+  .group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .option,
+  .option:first-child,
+  .option:last-child {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .option:nth-child(even) {
+    margin-inline-start: calc(-1 * var(--control-border-w));
+  }
+
+  .option:nth-child(n + 3) {
+    margin-block-start: calc(-1 * var(--control-border-w));
+  }
+
+  .option:nth-child(1) {
+    border-start-start-radius: var(--control-radius);
+  }
+
+  .option:nth-child(2) {
+    border-start-end-radius: var(--control-radius);
+  }
+
+  .option:nth-last-child(2):nth-child(odd) {
+    border-end-start-radius: var(--control-radius);
+  }
+
+  .option:last-child:nth-child(even) {
+    border-end-end-radius: var(--control-radius);
+  }
+}

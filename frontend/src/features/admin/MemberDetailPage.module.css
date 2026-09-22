@@ -1,0 +1,35 @@
+/* One member account (Admin-Member-View). The page, its cards and rows come
+ * from the profile feature's stylesheet - the board is the profile pages'
+ * layout - so this file holds only what the member view adds: the account
+ * status explanation and its refusal messages.
+ */
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sectionBody {
+  margin-top: var(--space-3);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+  max-width: 60ch;
+}
+
+.saveError {
+  margin-top: var(--space-2);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--color-danger-700);
+}
+
+/* The same reason, inside the confirmation, where it can actually be seen. */
+.dialogError {
+  margin: var(--space-3) 0 0;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  font-weight: 600;
+  color: var(--color-danger-700);
+}

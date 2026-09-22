@@ -1,0 +1,41 @@
+/* Shown only while the session is being restored. Deliberately quiet: it must
+ * not look like a screen, because it is replaced within one round trip.
+ */
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  min-height: 100vh;
+  padding: var(--space-6);
+  background: var(--bg-app);
+}
+
+.logo {
+  width: 148px;
+  height: auto;
+}
+
+.label {
+  font-size: var(--fs-body-sm);
+  color: var(--text-muted);
+}
+
+.spinner {
+  color: var(--action-primary);
+  animation: appLoadingSpin 0.9s linear infinite;
+}
+
+@keyframes appLoadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

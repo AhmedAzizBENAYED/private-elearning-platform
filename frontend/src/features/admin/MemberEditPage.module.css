@@ -1,0 +1,33 @@
+/* Edit member profile (Admin-Member-Edit). Everything else comes from the
+ * profile feature's own stylesheet - the same cards and fields as Edit
+ * profile - so this file holds only what the member edit adds.
+ */
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* "You are editing the profile of another member": pale blue, 1px blue-300
+   border, 14/22 semi-bold charcoal, an info glyph. */
+.otherMember {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-blue-50);
+  border: 1px solid var(--color-blue-300);
+  border-radius: 6px;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  font-weight: 600;
+  color: var(--color-charcoal);
+}
+
+.otherMemberGlyph {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--action-primary);
+}

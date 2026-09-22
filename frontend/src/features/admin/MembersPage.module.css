@@ -1,0 +1,95 @@
+/* Member accounts (Admin-Members). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+/* Title and subtitle on the left, "Add member" on the right (Admin-Members);
+   the button drops under the text when the row is too narrow for both. */
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.add {
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-h2);
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: var(--text-muted);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  /* Both filters start at the row's top edge. Stated rather than left to the
+   * default `stretch`, so a field that later grows - a hint, an error, a shown
+   * label - lengthens downwards instead of pushing its neighbour down. */
+  align-items: flex-start;
+}
+
+.search {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.status {
+  flex: 0 0 200px;
+}
+
+.count {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.showing {
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  color: var(--text-muted);
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (max-width: 599px) {
+  .title {
+    font-size: var(--fs-h3);
+    line-height: 32px;
+  }
+
+  /* Both controls take the full row rather than sharing a cramped one. */
+  .search,
+  .status {
+    flex: 1 1 100%;
+  }
+}

@@ -1,0 +1,76 @@
+/* DS 06 - Badge.
+ * "Every badge = icon + text + shape (dashed outline for DRAFT, filled for
+ * COMPLETED, tinted for the rest). Colour is never the only signal."
+ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--field-gap);
+  height: 24px;
+  padding-inline: 10px;
+  border: var(--field-border-w) solid transparent;
+  border-radius: var(--control-radius);
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Course status is the only family the board sets in caps. */
+.uppercase {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tight {
+  letter-spacing: 0.02em;
+}
+
+/* -- shapes -------------------------------------------------------------- */
+
+/* DRAFT: nothing has happened yet, so the outline is not solid. */
+.outlineDashed {
+  background: var(--bg-surface);
+  color: var(--text-body);
+  border-style: dashed;
+  border-color: var(--text-muted);
+}
+
+.outlineSolid {
+  background: var(--bg-surface);
+  color: var(--text-body);
+  border-color: var(--border-control);
+}
+
+.tinted {
+  background: var(--color-blue-50);
+  color: var(--action-primary);
+  border-color: var(--color-blue-300);
+}
+
+.muted {
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+  border-color: var(--border-default);
+}
+
+/* COMPLETED: the only filled badge, so "done" reads at a glance. */
+.filled {
+  background: var(--action-primary);
+  color: var(--text-inverse);
+  border-color: var(--action-primary);
+}
+
+/* -- lesson type --------------------------------------------------------- */
+
+.lessonType {
+  padding-inline: var(--space-2);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  background: var(--bg-surface);
+  color: var(--text-body);
+  border-color: var(--color-gray-300);
+}

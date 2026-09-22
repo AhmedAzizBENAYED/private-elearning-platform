@@ -17,7 +17,7 @@ Orphans are logged with their storage key so they can be reconciled.
 
 import logging
 from collections.abc import AsyncIterator
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Protocol
 from urllib.parse import quote
 from uuid import UUID
@@ -31,6 +31,7 @@ from app.schemas.resource import MemberResourceResponse, ResourceResponse
 from app.services.content_rules import content_write, require_draft
 from app.services.enrollment_service import EnrollmentService
 from app.services.lesson_service import LessonService
+from app.services.media_probe import PROBE_WINDOW_BYTES, probe_mp4_duration, read_box_header
 from app.services.resource_rules import (
     SIGNATURE_BYTES, UploadRules, require_storage_lesson, validate_filename,
     validate_mime_type, validate_signature,
@@ -56,6 +57,29 @@ class UploadPayload:
     filename: str | None
     mime_type: str | None
     chunks: AsyncIterator[bytes]
+
+
+#: Top-level boxes walked when looking for a trailing ``moov``. Real files have
+#: a handful; the cap stops a hostile one from driving unbounded reads.
+MAX_TOP_LEVEL_BOXES = 16
+#: One box header, including the optional 64-bit size.
+BOX_HEADER_BYTES = 16
+
+
+@dataclass(slots=True)
+class _ProbeBuffer:
+    """A bounded copy of an upload's first bytes, kept for duration probing.
+
+    The upload itself is never buffered: chunks are forwarded to the provider as
+    they arrive and only this fixed-size prefix is retained, so a 20 GB video
+    costs the same memory here as a 20 MB one.
+    """
+
+    data: bytearray = field(default_factory=bytearray)
+
+    def absorb(self, chunk: bytes) -> None:
+        if len(self.data) < PROBE_WINDOW_BYTES:
+            self.data.extend(chunk[: PROBE_WINDOW_BYTES - len(self.data)])
 
 
 class LessonResourceService:
@@ -110,11 +134,14 @@ class LessonResourceService:
             logger.error("Orphaned storage object after %s", reason,
                          extra={"storage_key": ref.storage_key})
 
-    async def _limited(self, payload: UploadPayload, mime_type: str) -> AsyncIterator[bytes]:
+    async def _limited(self, payload: UploadPayload, mime_type: str,
+                       probe: "_ProbeBuffer | None" = None) -> AsyncIterator[bytes]:
         """Yield the upload while sniffing its head and enforcing the size cap.
 
         The limit is applied to the bytes actually received, not to a
-        client-supplied ``Content-Length`` header.
+        client-supplied ``Content-Length`` header. When ``probe`` is given, the
+        first :data:`PROBE_WINDOW_BYTES` are copied into it as they pass; the
+        stream is otherwise untouched and still never materialised in full.
         """
         head, total, checked = bytearray(), 0, False
         async for chunk in payload.chunks:
@@ -128,11 +155,96 @@ class LessonResourceService:
                 if len(head) >= SIGNATURE_BYTES:
                     validate_signature(mime_type, bytes(head))
                     checked = True
+            if probe is not None:
+                probe.absorb(chunk)
             yield chunk
         if total == 0:
             raise BusinessError(422, "Uploaded file is empty")
         if not checked:
             validate_signature(mime_type, bytes(head))
+
+    # ------------------------------------------------------- video duration
+
+    async def _read_span(self, ref: ObjectRef, start: int, length: int) -> bytes:
+        """Read a bounded window of a stored object through the storage port."""
+        stream = await self.storage.open(ref, ByteRange(start=start, end=start + length - 1))
+        buffer = bytearray()
+        async for chunk in stream.chunks:
+            buffer.extend(chunk)
+            if len(buffer) >= length:
+                break
+        return bytes(buffer[:length])
+
+    async def _probe_trailing_moov(self, ref: ObjectRef, size_bytes: int) -> int | None:
+        """Find a ``moov`` that sits after the media data, without downloading it.
+
+        A non-faststart MP4 keeps its ``moov`` at the end, out of reach of the
+        head window. Rather than guess at an offset, the top-level box list is
+        walked with 16-byte reads - the file states each box's length - and only
+        the ``moov`` box itself is then read. For the 23 MB test video that is
+        four header reads plus 11 KB.
+
+        This uses ``StoragePort.open`` with a byte range, which every adapter
+        already implements for playback; no provider-specific call is made and
+        the port is unchanged.
+        """
+        offset = 0
+        for _ in range(MAX_TOP_LEVEL_BOXES):
+            if offset + BOX_HEADER_BYTES > size_bytes:
+                return None
+            parsed = read_box_header(await self._read_span(ref, offset, BOX_HEADER_BYTES))
+            if parsed is None:
+                return None
+            box_type, box_size = parsed
+            if box_type == b"moov":
+                return probe_mp4_duration(
+                    await self._read_span(ref, offset, min(box_size, PROBE_WINDOW_BYTES))
+                )
+            offset += box_size
+        return None
+
+    async def _detect_duration(self, probe: "_ProbeBuffer", ref: ObjectRef,
+                               size_bytes: int) -> int | None:
+        """The uploaded video's real duration, or ``None`` if it cannot be read.
+
+        Never raises: duration is advisory metadata, and an upload that stored
+        its bytes successfully must not fail because the container could not be
+        parsed or the provider declined a second read. The blanket except is the
+        point - every caller below it is defensive already, and this is the last
+        line between a malformed video and a failed upload.
+        """
+        try:
+            detected = probe_mp4_duration(bytes(probe.data))
+            if detected is not None:
+                return detected
+            return await self._probe_trailing_moov(ref, size_bytes)
+        except Exception:
+            logger.debug("Video duration probe did not complete", exc_info=True)
+            return None
+
+    @staticmethod
+    def _reconcile_duration(lesson: Lesson, detected: int | None) -> int | None:
+        """Resolve the duration to store, correcting the lesson when it is wrong.
+
+        The media is authoritative whenever it can be read; the authored value
+        is the fallback, so a lesson created before its upload keeps working.
+        Both the lesson and the resource end on the same number - they are read
+        by different callers and must never disagree.
+        """
+        if lesson.content_type != ContentType.VIDEO:
+            # DOCUMENT holds no duration, and the database constraint agrees.
+            return None
+        if detected is None or detected == lesson.duration_seconds:
+            return lesson.duration_seconds
+
+        logger.warning(
+            "VIDEO duration reconciled from uploaded media",
+            extra={"lesson_id": str(lesson.id),
+                   "previous_duration_seconds": lesson.duration_seconds,
+                   "detected_duration_seconds": detected},
+        )
+        lesson.duration_seconds = detected
+        return detected
 
     # -------------------------------------------------------------- upload
 
@@ -147,9 +259,11 @@ class LessonResourceService:
         # The provider transfer runs outside any transaction: a multi-gigabyte
         # upload must not hold a course row lock, and DRAFT is re-checked below.
         storage_key = build_storage_key(course_id, folder, mime_type)
+        # Only a video has a duration to read, so only a video pays for a buffer.
+        probe = _ProbeBuffer() if lesson.content_type == ContentType.VIDEO else None
         try:
             stored = await self.storage.upload(
-                storage_key, self._limited(payload, mime_type),
+                storage_key, self._limited(payload, mime_type, probe),
                 filename=filename, mime_type=mime_type,
             )
         except PayloadTooLarge:
@@ -157,6 +271,9 @@ class LessonResourceService:
         except StorageError:
             logger.error("Storage upload failed", extra={"storage_key": storage_key})
             raise BusinessError(503, "Storage temporarily unavailable") from None
+
+        detected = (None if probe is None
+                    else await self._detect_duration(probe, stored.ref, stored.size_bytes))
 
         replaced: ObjectRef | None = None
         try:
@@ -175,9 +292,11 @@ class LessonResourceService:
                 resource.mime_type = stored.mime_type
                 resource.file_size_bytes = stored.size_bytes
                 resource.checksum = stored.checksum
-                # Playback duration stays a lesson/progress concern; storage only
-                # mirrors it so a future provider migration keeps the value.
-                resource.duration_seconds = lesson.duration_seconds
+                # The media decides the duration when it can be read; the lesson
+                # is corrected in this same transaction, under the course lock
+                # already held above, so the two can never drift apart.
+                resource.duration_seconds = self._reconcile_duration(lesson, detected)
+                await self.lessons.lessons.save(lesson)
                 await self.resources.save(resource)
                 result = ResourceResponse.model_validate(resource)
         except BaseException:

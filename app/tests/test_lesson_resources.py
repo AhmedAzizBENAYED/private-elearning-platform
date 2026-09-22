@@ -13,6 +13,7 @@ from sqlalchemy import func, select, text
 from sqlalchemy.exc import IntegrityError, StatementError
 
 from app.models.resource import LessonResource
+from app.services.media_probe import PROBE_WINDOW_BYTES
 from app.storage.exceptions import ObjectNotFound, StorageUnavailable
 from app.storage.memory import InMemoryStorage
 from app.storage.models import ObjectRef, StorageProvider
@@ -537,3 +538,214 @@ async def test_progress_is_unaffected_by_storage(auth_client, storage, admin_hea
     assert response.json()["duration_seconds"] == 100
     course_progress = await auth_client.get(f"/api/v1/courses/{course_id}/progress", headers=member_headers)
     assert course_progress.json()["progress_percent"] == 100
+
+
+# ------------------------------------------------------- duration reconciliation
+
+def _box(box_type: bytes, body: bytes) -> bytes:
+    return (len(body) + 8).to_bytes(4, "big") + box_type + body
+
+
+_FTYP = _box(b"ftyp", b"mp42" + b"\x00" * 4 + b"mp42isom")
+
+
+def _mvhd(seconds: int, timescale: int = 1000) -> bytes:
+    return _box(b"mvhd", b"\x00" * 4 + b"\x00" * 8
+                + timescale.to_bytes(4, "big")
+                + (seconds * timescale).to_bytes(4, "big") + b"\x00" * 80)
+
+
+def faststart_mp4(seconds: int) -> bytes:
+    """A probeable MP4: moov before the media, as a faststart encode writes it."""
+    return _FTYP + _box(b"moov", _mvhd(seconds)) + _box(b"mdat", b"\x00" * 64)
+
+
+# Large enough that `moov` lands beyond the head window, which is what makes the
+# ranged-read fallback the thing under test rather than the head probe.
+TRAILING_MEDIA_BYTES = PROBE_WINDOW_BYTES + 4096
+
+
+def trailing_moov_mp4(seconds: int, media_bytes: int = TRAILING_MEDIA_BYTES) -> bytes:
+    """The layout the real test video uses: moov after a large mdat."""
+    return _FTYP + _box(b"mdat", b"\x00" * media_bytes) + _box(b"moov", _mvhd(seconds))
+
+
+async def test_detected_duration_overrides_a_wrong_authored_value(auth_client, auth_session,
+                                                                  storage, admin_headers, caplog):
+    """The FE-08 bug: 120 s was typed in, the real video is 27 s."""
+    data = await build_lesson(auth_client, admin_headers, duration=120)
+    lesson_id = data["lesson"]["id"]
+
+    with caplog.at_level("WARNING"):
+        body = (await upload(auth_client, admin_headers, lesson_id,
+                             payload=faststart_mp4(27))).json()
+
+    assert body["duration_seconds"] == 27
+    lesson = (await auth_client.get(f"{ADMIN}/lessons/{lesson_id}", headers=admin_headers)).json()
+    assert lesson["duration_seconds"] == 27
+    stored = await auth_session.scalar(select(LessonResource))
+    assert stored.duration_seconds == 27
+    assert any("reconciled" in record.message for record in caplog.records)
+
+
+async def test_a_matching_duration_is_left_alone_and_logs_nothing(auth_client, storage,
+                                                                  admin_headers, caplog):
+    data = await build_lesson(auth_client, admin_headers, duration=27)
+    with caplog.at_level("WARNING"):
+        body = (await upload(auth_client, admin_headers, data["lesson"]["id"],
+                             payload=faststart_mp4(27))).json()
+
+    assert body["duration_seconds"] == 27
+    assert not [record for record in caplog.records if "reconciled" in record.message]
+
+
+async def test_an_unprobeable_upload_keeps_the_authored_duration(auth_client, auth_session,
+                                                                 storage, admin_headers):
+    """The existing stub MP4 has no moov; the upload must still succeed."""
+    data = await build_lesson(auth_client, admin_headers, duration=120)
+    lesson_id = data["lesson"]["id"]
+
+    body = (await upload(auth_client, admin_headers, lesson_id, payload=MP4)).json()
+
+    assert body["duration_seconds"] == 120
+    lesson = (await auth_client.get(f"{ADMIN}/lessons/{lesson_id}", headers=admin_headers)).json()
+    assert lesson["duration_seconds"] == 120
+
+
+async def test_a_lesson_with_no_authored_duration_takes_the_detected_one(auth_client, auth_session,
+                                                                         storage, admin_headers):
+    data = await build_lesson(auth_client, admin_headers, duration=None)
+    lesson_id = data["lesson"]["id"]
+
+    body = (await upload(auth_client, admin_headers, lesson_id, payload=faststart_mp4(42))).json()
+
+    assert body["duration_seconds"] == 42
+    lesson = (await auth_client.get(f"{ADMIN}/lessons/{lesson_id}", headers=admin_headers)).json()
+    assert lesson["duration_seconds"] == 42
+
+
+async def test_neither_authored_nor_detected_leaves_the_duration_unset(auth_client, auth_session,
+                                                                       storage, admin_headers):
+    data = await build_lesson(auth_client, admin_headers, duration=None)
+    lesson_id = data["lesson"]["id"]
+
+    body = (await upload(auth_client, admin_headers, lesson_id, payload=MP4)).json()
+
+    assert body["duration_seconds"] is None
+    lesson = (await auth_client.get(f"{ADMIN}/lessons/{lesson_id}", headers=admin_headers)).json()
+    assert lesson["duration_seconds"] is None
+    stored = await auth_session.scalar(select(LessonResource))
+    assert stored.duration_seconds is None
+
+
+async def test_a_trailing_moov_is_found_without_downloading_the_file(auth_client, storage,
+                                                                     admin_headers):
+    """A non-faststart MP4: moov sits past the head window, after the media.
+
+    This is the layout of the real test video, and the head probe cannot see it;
+    the duration has to come from the bounded ranged reads instead.
+    """
+    payload = trailing_moov_mp4(27)
+    assert len(payload) > PROBE_WINDOW_BYTES
+    data = await build_lesson(auth_client, admin_headers, duration=120)
+
+    body = (await upload(auth_client, admin_headers, data["lesson"]["id"],
+                         payload=payload)).json()
+
+    assert body["duration_seconds"] == 27
+
+
+async def test_a_document_upload_never_runs_the_video_probe(auth_client, auth_session, storage,
+                                                            admin_headers, monkeypatch):
+    from app.services import resource_service
+
+    calls: list[int] = []
+    original = resource_service.probe_mp4_duration
+    monkeypatch.setattr(resource_service, "probe_mp4_duration",
+                        lambda head: calls.append(len(head)) or original(head))
+
+    data = await build_lesson(auth_client, admin_headers, content_type="DOCUMENT", duration=None)
+    body = (await upload(auth_client, admin_headers, data["lesson"]["id"],
+                         payload=PDF, filename="handbook.pdf", mime="application/pdf")).json()
+
+    assert body["duration_seconds"] is None
+    assert calls == []
+
+
+async def test_replacing_a_video_reconciles_the_duration_again(auth_client, auth_session,
+                                                               storage, admin_headers):
+    """The FE-08 regression: a shorter replacement must move the lesson with it."""
+    data = await build_lesson(auth_client, admin_headers, duration=120)
+    lesson_id = data["lesson"]["id"]
+
+    first = (await upload(auth_client, admin_headers, lesson_id,
+                          payload=faststart_mp4(120), filename="long.mp4")).json()
+    assert first["duration_seconds"] == 120
+
+    second = (await upload(auth_client, admin_headers, lesson_id,
+                           payload=faststart_mp4(27), filename="short.mp4")).json()
+
+    assert second["duration_seconds"] == 27
+    lesson = (await auth_client.get(f"{ADMIN}/lessons/{lesson_id}", headers=admin_headers)).json()
+    assert lesson["duration_seconds"] == 27
+
+
+async def test_a_probe_failure_never_fails_the_upload(auth_client, storage, admin_headers, monkeypatch):
+    from app.services import resource_service
+
+    def exploding(head: bytes):
+        raise RuntimeError("private-probe-detail")
+
+    monkeypatch.setattr(resource_service, "probe_mp4_duration", exploding)
+    data = await build_lesson(auth_client, admin_headers, duration=120)
+
+    response = await upload(auth_client, admin_headers, data["lesson"]["id"],
+                            payload=faststart_mp4(27))
+
+    assert response.status_code == 200, response.text
+    assert response.json()["duration_seconds"] == 120
+    assert "private-probe-detail" not in response.text
+
+
+async def test_a_storage_read_failure_during_probing_never_fails_the_upload(auth_client, application,
+                                                                            admin_headers):
+    """The trailing-moov fallback reads the object again; an outage is not fatal."""
+    application.state.storage = FailingStorage("open")
+    data = await build_lesson(auth_client, admin_headers, duration=120)
+
+    response = await upload(auth_client, admin_headers, data["lesson"]["id"],
+                            payload=trailing_moov_mp4(27))
+
+    assert response.status_code == 200, response.text
+    assert response.json()["duration_seconds"] == 120
+
+
+async def test_the_corrected_duration_makes_the_lesson_completable(auth_client, storage,
+                                                                   admin_headers, member_headers):
+    """End to end: the FE-08 bug, fixed, through the unchanged progress API."""
+    data = await build_lesson(auth_client, admin_headers, duration=120)
+    lesson_id, course_id = data["lesson"]["id"], data["course"]["id"]
+
+    await upload(auth_client, admin_headers, lesson_id, payload=faststart_mp4(27))
+    await auth_client.post(f"{ADMIN}/courses/{course_id}/publish", headers=admin_headers)
+    await enroll(auth_client, member_headers, course_id)
+
+    response = await auth_client.put(f"/api/v1/lessons/{lesson_id}/progress",
+                                     headers=member_headers, json={"watched_seconds": 27})
+
+    body = response.json()
+    assert response.status_code == 200, response.text
+    assert body["duration_seconds"] == 27
+    assert body["watched_seconds"] == 27
+    assert body["completed"] is True
+    assert body["completed_at"] is not None
+
+    course_progress = (await auth_client.get(f"/api/v1/courses/{course_id}/progress",
+                                             headers=member_headers)).json()
+    assert course_progress["completed_video_lessons"] == 1
+    assert course_progress["progress_percent"] == 100
+    assert course_progress["completed"] is True
+
+    enrollment = (await auth_client.get(f"/api/v1/courses/{course_id}/enrollment",
+                                        headers=member_headers)).json()
+    assert enrollment["completed_at"] is not None

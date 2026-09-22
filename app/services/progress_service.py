@@ -8,11 +8,13 @@ from app.core.exceptions import BusinessError
 from app.models.course import CourseStatus
 from app.models.lesson import ContentType, Lesson
 from app.models.progress import Progress
+from app.repositories.learning_event_repository import LearningEventRepository
 from app.repositories.progress_repository import ProgressRepository
 from app.schemas.progress import CourseProgressResponse, ProgressResponse
 from app.services.content_rules import content_write
 from app.services.enrollment_service import EnrollmentService, completion_summary
 from app.services.lesson_service import LessonService
+from app.services.tracking_service import record_lesson_completed
 
 
 class ProgressService:
@@ -24,6 +26,9 @@ class ProgressService:
         self.enrollments = enrollments
         self.lessons = lessons
         self.settings = settings
+        # The completion below is also a learning event (BE-LEARNING-TRACKING-01),
+        # logged in the same transaction as the progress row it describes.
+        self.events = LearningEventRepository(progress.session)
 
     async def _locate(self, lesson_id: UUID) -> tuple[Lesson, UUID]:
         """Resolve a lesson and its course without applying content rules yet."""
@@ -81,10 +86,14 @@ class ProgressService:
             # Never mark an unwatched short video complete when tolerance >= duration.
             threshold = max(1, duration - self.settings.video_completion_tolerance_seconds)
             now = datetime.now(timezone.utc)
-            if not progress.completed and progress.watched_seconds >= threshold:
+            newly_completed = not progress.completed and progress.watched_seconds >= threshold
+            if newly_completed:
                 progress.completed = True
                 progress.completed_at = now
             await self.progress.save(progress)
+            if newly_completed:
+                # Once per lesson: only the transition is logged, never a replay.
+                await record_lesson_completed(self.events, user_id, course_id, lesson.module_id, lesson.id, now)
             total, completed_count = await self.progress.course_counts(user_id, course_id)
             if total > 0 and completed_count == total and enrollment.completed_at is None:
                 enrollment.completed_at = now

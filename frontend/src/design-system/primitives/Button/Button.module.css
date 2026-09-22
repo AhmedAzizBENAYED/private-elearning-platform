@@ -1,0 +1,187 @@
+/* DS 05 "Actions and forms" - Button.
+ * Six variants sit in the states matrix on the board; on-dark and ghost-dark
+ * are the two additional variants shown beneath it for inverse surfaces.
+ */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--control-radius);
+  border: var(--control-border-w) solid transparent;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  line-height: 20px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  /* Buttons must not shrink below their hit area when a flex row is cramped. */
+  flex-shrink: 0;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+/* -- sizes -------------------------------------------------------------- */
+
+.lg {
+  height: var(--control-h-lg);
+  padding-inline: var(--control-px-lg);
+  font-size: var(--fs-control-lg);
+}
+
+.md {
+  height: var(--control-h-md);
+  padding-inline: var(--control-px-md);
+  font-size: var(--fs-control-md);
+}
+
+.sm {
+  height: var(--control-h-sm);
+  padding-inline: var(--control-px-sm);
+  font-size: var(--fs-control-sm);
+}
+
+/* Icon-only buttons drop their horizontal padding and become square, so the
+ * hit area stays at least as large as the size's height (44px / 36px). */
+.iconOnly {
+  padding-inline: 0;
+}
+
+.iconOnly.lg { min-width: var(--control-h-lg); }
+.iconOnly.md { min-width: var(--control-h-md); }
+.iconOnly.sm { min-width: var(--control-h-sm); }
+
+/* Handoff-A11y: "Interactive elements ≥ 44 px (36 px small buttons only in
+ * dense desktop tables)". Below the desktop breakpoint there is no dense
+ * table to excuse a small button, so `sm` takes the 44px `md` height there;
+ * its type and padding stay small. */
+@media (max-width: 1023px) {
+  .sm { height: var(--control-h-md); }
+  .iconOnly.sm { min-width: var(--control-h-md); }
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* -- variants ----------------------------------------------------------- */
+
+.primary {
+  background: var(--action-primary);
+  color: var(--text-inverse);
+  border-color: var(--action-primary);
+}
+
+.primary:hover { background: var(--color-navy-700); }
+.primary:active { background: var(--color-navy-800); }
+
+.secondary {
+  background: var(--bg-surface);
+  color: var(--action-primary);
+  border-color: var(--action-primary);
+}
+
+.secondary:hover { background: var(--color-blue-50); }
+.secondary:active { background: var(--color-blue-100); }
+
+.tertiary {
+  background: transparent;
+  color: var(--action-primary);
+  border-color: transparent;
+}
+
+.tertiary:hover { background: var(--color-blue-50); }
+.tertiary:active { background: var(--color-blue-100); }
+
+.tonal {
+  background: var(--color-blue-50);
+  color: var(--action-primary);
+  border-color: var(--color-blue-100);
+}
+
+.tonal:hover { background: var(--color-blue-100); }
+.tonal:active { background: var(--color-blue-200); }
+
+.danger {
+  background: var(--color-danger);
+  color: var(--text-inverse);
+  border-color: var(--color-danger);
+}
+
+.danger:hover { background: var(--color-danger-700); }
+.danger:active { background: var(--color-danger-800); }
+
+.dangerOutline {
+  background: var(--bg-surface);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.dangerOutline:hover { background: var(--color-danger-50); }
+.dangerOutline:active { background: var(--color-danger-100); }
+
+.onDark {
+  background: var(--bg-surface);
+  color: var(--action-primary);
+  border-color: var(--bg-surface);
+}
+
+.onDark:hover { background: var(--color-blue-50); border-color: var(--color-blue-50); }
+.onDark:active { background: var(--color-blue-100); border-color: var(--color-blue-100); }
+
+.ghostDark {
+  background: transparent;
+  color: var(--text-inverse);
+  border-color: var(--on-dark-border);
+}
+
+.ghostDark:hover { background: var(--on-dark-disabled-bg); }
+.ghostDark:active { background: var(--on-dark-pressed-bg); }
+
+/* -- disabled ------------------------------------------------------------
+ * One shared treatment for every light-surface variant, per DS 05. The two
+ * dark variants keep their own, since grey on navy would vanish.
+ * --------------------------------------------------------------------- */
+
+.button:disabled,
+.button[aria-disabled='true'] {
+  cursor: not-allowed;
+  background: var(--bg-disabled);
+  color: var(--text-disabled);
+  border-color: var(--border-disabled);
+}
+
+.tertiary:disabled,
+.tertiary[aria-disabled='true'] {
+  background: transparent;
+  border-color: transparent;
+}
+
+.onDark:disabled,
+.onDark[aria-disabled='true'],
+.ghostDark:disabled,
+.ghostDark[aria-disabled='true'] {
+  background: var(--on-dark-disabled-bg);
+  color: var(--on-dark-disabled-text);
+  border-color: transparent;
+}
+
+/* -- loading -------------------------------------------------------------
+ * The board keeps the button's own colours while busy and swaps the label for
+ * a progressive form, so the control never changes width mid-request.
+ * --------------------------------------------------------------------- */
+
+.spinner {
+  animation: buttonSpin 0.9s linear infinite;
+}
+
+@keyframes buttonSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

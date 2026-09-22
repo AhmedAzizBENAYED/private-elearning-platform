@@ -250,7 +250,12 @@ async def test_the_tree_exposes_no_storage_vocabulary(auth_client, learning, mem
 
 
 async def test_member_lesson_detail_hides_stored_references(auth_client, learning, member_headers):
-    """VIDEO and DOCUMENT payloads are storage references, so members never see them."""
+    """VIDEO and DOCUMENT payloads are storage references, so members never see them.
+
+    BE-SEC-01: the detail endpoint is enrollment-gated, so the member enrolls
+    first. The refusal before enrolling is asserted by the test below.
+    """
+    await enroll(auth_client, member_headers, learning["course"]["id"])
     for key in ("watched", "document"):
         response = await auth_client.get(f"/api/v1/lessons/{learning[key]['id']}", headers=member_headers)
         assert response.status_code == 200

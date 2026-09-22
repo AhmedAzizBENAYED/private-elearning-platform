@@ -32,9 +32,14 @@ router = APIRouter(
 )
 
 
-@router.post("", response_model=MemberCreated, response_model_exclude_none=True, status_code=201)
-async def create_member(payload: MemberCreate, service: MemberServiceDependency) -> MemberCreated:
-    """Create an active MEMBER awaiting password setup; never returns a password."""
+@router.post("", response_model=MemberResponse, status_code=201)
+async def create_member(payload: MemberCreate, service: MemberServiceDependency) -> MemberResponse:
+    """Create an active MEMBER with an initial password; it can sign in at once.
+
+    The role is always MEMBER and the account is always active - neither can be
+    sent. The password is hashed with Argon2id and never returned, logged or
+    echoed in a validation error.
+    """
     return await service.create(payload)
 
 

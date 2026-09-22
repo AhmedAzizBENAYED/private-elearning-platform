@@ -1,0 +1,65 @@
+/* DS 05 - the label / control / message scaffold shared by every form control.
+ * "Label above, never a placeholder-only label. Required marked with * and
+ * aria-required. Errors: red border 2px + icon + message linked with
+ * aria-describedby."
+ */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--field-gap);
+  width: 100%;
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+/* Present for assistive technology, absent for the eye. */
+.labelHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.labelDisabled {
+  color: var(--text-disabled);
+}
+
+.required {
+  margin-left: 2px;
+  /* aria-required on the control already announces this; the glyph is the
+     visual half of the same signal, so it is not announced twice. */
+  color: var(--color-danger);
+}
+
+.hint {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  color: var(--text-muted);
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--field-gap);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--color-danger);
+}
+
+.errorIcon {
+  /* Nudge the 16px glyph onto the first line's baseline. */
+  margin-top: 1px;
+}

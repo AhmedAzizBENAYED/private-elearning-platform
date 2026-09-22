@@ -41,6 +41,17 @@ def test_metadata_and_versioned_schema(client: TestClient, settings: Settings) -
         "/api/v1/admin/lessons/{lesson_id}/resource", "/api/v1/lessons/{lesson_id}/resource",
         "/api/v1/lessons/{lesson_id}/resource/content",
         "/api/v1/admin/courses/{course_id}/resources",
+        # BE-COURSE-REORDER-01: the atomic reorganisation, additive.
+        "/api/v1/admin/courses/{course_id}/structure",
+        "/api/v1/auth/logout", "/api/v1/auth/change-password",
+        # BE-THUMBNAIL-UPLOAD-01: the upload, and the public read of its bytes.
+        "/api/v1/admin/courses/{course_id}/thumbnail",
+        "/api/v1/course-thumbnails/{course_id}/{name}",
+        # BE-LEARNING-TRACKING-01: a member's own course/module/lesson openings.
+        "/api/v1/me/learning-events",
+        # BE-LEARNING-TRACKING-02: the administrator reads of that tracking.
+        "/api/v1/admin/learning/progress", "/api/v1/admin/learning/activity",
+        "/api/v1/admin/learning/members/{member_id}", "/api/v1/admin/courses/{course_id}/learning",
     }
     assert client.get("/docs").status_code == 200
 

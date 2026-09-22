@@ -6,7 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query
 
 from app.api.v1.content_dependencies import AdminUser, CONTENT_ERRORS, CourseDependency, admin_access, no_cache
-from app.schemas.course import CourseCreate, CourseQuery, CourseResponse, CourseUpdate
+from app.schemas.course import CourseCreate, CourseListItem, CourseQuery, CourseResponse, CourseUpdate
 from app.schemas.pagination import Page
 
 router = APIRouter(prefix="/admin/courses", tags=["admin courses"],
@@ -19,8 +19,9 @@ async def create_course(payload: CourseCreate, service: CourseDependency, admin:
     return await service.create(payload, admin.id)
 
 
-@router.get("", response_model=Page[CourseResponse])
-async def list_courses(query: Annotated[CourseQuery, Query()], service: CourseDependency) -> Page[CourseResponse]:
+@router.get("", response_model=Page[CourseListItem])
+async def list_courses(query: Annotated[CourseQuery, Query()], service: CourseDependency) -> Page[CourseListItem]:
+    """List courses with the size of each; `sort=-created_at` returns the newest first."""
     return await service.list(query)
 
 

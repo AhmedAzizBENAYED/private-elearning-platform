@@ -54,7 +54,8 @@ def token_of(url: str) -> str:
 
 
 def auth_service(settings: Settings) -> AuthService:
-    return AuthService(settings, None, None)
+    # Token encoding and decoding need neither users nor revocations.
+    return AuthService(settings, None, None, None)
 
 
 def claims_of(token: str, settings: Settings) -> dict:

@@ -1,0 +1,58 @@
+/* Montserrat 400-900, self-hosted.
+ *
+ * Files come from the JEENISo HTML export (`fonts/`); the design export ships
+ * tokens but no font binaries. Never load these from a CDN - the platform is
+ * private and must not make third-party requests on a member's behalf.
+ *
+ * `font-display: swap` is required by HANDOFF.md: Arial renders immediately and
+ * is swapped for Montserrat once loaded, so first paint is never blocked. The
+ * Arial fallback itself lives in --font-sans (tokens.css).
+ */
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/montserrat-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/montserrat-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/montserrat-latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/montserrat-latin-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/montserrat-latin-800-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/montserrat-latin-900-normal.woff2') format('woff2');
+}

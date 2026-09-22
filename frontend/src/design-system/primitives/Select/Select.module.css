@@ -1,0 +1,30 @@
+/* DS 05 - Select. The board draws a custom listbox; Handoff-Components asks for
+ * "Native <select> recommended, styled to the spec", so the native control is
+ * kept and only its chrome is restyled. The popup is then the platform's own,
+ * which is correct on touch and with a screen reader at no cost.
+ */
+
+.select {
+  appearance: none;
+  cursor: pointer;
+  /* Leave room for the chevron so a long option label cannot run under it. */
+  padding-inline-end: calc(var(--field-px) + var(--space-6));
+}
+
+.select:disabled {
+  cursor: not-allowed;
+}
+
+.chevron {
+  position: absolute;
+  inset-inline-end: var(--field-px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  /* The glyph is decoration over the native control; clicks must reach it. */
+  pointer-events: none;
+}
+
+.wrapper {
+  position: relative;
+}

@@ -1,0 +1,14 @@
+/* The signed-out 404: the card centred on the app background, with no shell. */
+
+.bare {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-6);
+  background: var(--bg-app);
+}
+
+.bare > * {
+  max-width: 640px;
+}

@@ -6,9 +6,10 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query
 
 from app.api.v1.content_dependencies import (
-    CONTENT_ERRORS, CourseDependency, LessonDependency, ModuleDependency, catalog_access, no_cache,
+    CONTENT_ERRORS, CatalogUser, CourseDependency, LessonDependency, ModuleDependency,
+    catalog_access, no_cache,
 )
-from app.schemas.course import CatalogCourse, CatalogQuery
+from app.schemas.course import CatalogCourse, CatalogListQuery, CatalogPage
 from app.schemas.lesson import CatalogLesson, CatalogLessonContent
 from app.schemas.module import CatalogModule
 from app.schemas.pagination import Page, Pagination
@@ -17,10 +18,19 @@ router = APIRouter(tags=["member course catalog"],
                    dependencies=[Depends(catalog_access), Depends(no_cache)], responses=CONTENT_ERRORS)
 
 
-@router.get("/courses", response_model=Page[CatalogCourse])
-async def catalog(query: Annotated[CatalogQuery, Query()], service: CourseDependency) -> Page[CatalogCourse]:
-    """Published courses for active members/admins; enrollment restrictions are future work."""
-    return await service.catalog_list(query)
+@router.get("/courses", response_model=CatalogPage)
+async def catalog(
+    query: Annotated[CatalogListQuery, Query()], user: CatalogUser, service: CourseDependency,
+) -> CatalogPage:
+    """Published courses for active members/admins, with their size and the caller's tab counts.
+
+    ``enrollment`` keeps only the caller's ``not_enrolled``, ``in_progress`` or
+    ``completed`` courses, and ``total`` counts that filtered set.
+    ``enrollment_counts`` sizes every tab for the same ``search``, whatever
+    ``enrollment`` and the page are. Each item adds ``module_count`` and
+    ``total_video_lessons`` to the course fields ``GET /courses/{id}`` returns.
+    """
+    return await service.catalog_list(user.id, query)
 
 
 @router.get("/courses/{course_id}", response_model=CatalogCourse)
@@ -40,6 +50,16 @@ async def lessons(module_id: UUID, query: Annotated[Pagination, Query()], servic
 
 
 @router.get("/lessons/{lesson_id}", response_model=CatalogLessonContent)
-async def lesson(lesson_id: UUID, service: LessonDependency) -> CatalogLessonContent:
-    """Published lesson content; is_preview does not bypass authentication."""
-    return await service.catalog_get(lesson_id)
+async def lesson(lesson_id: UUID, user: CatalogUser, service: LessonDependency) -> CatalogLessonContent:
+    """A published lesson's content, for a member enrolled in its course.
+
+    Enrollment is required here as it already is for the course tree and for
+    stored files, and for the same reason: the lesson body is the course. The
+    outline endpoints above stay open to any signed-in member, which is what
+    lets someone decide whether to enroll - metadata, never content.
+
+    `is_preview` grants no exemption. It is a presentation flag: nothing in the
+    service layer has ever read it for authorization, and a security fix is not
+    the place to give it a new meaning.
+    """
+    return await service.catalog_get(user.id, lesson_id)

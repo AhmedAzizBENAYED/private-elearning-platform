@@ -1,0 +1,161 @@
+/* Catalogue board: page header with the brand rule, a toolbar carrying the
+ * 340px search field, the result count, then the card grid.
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: var(--fs-h1);
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.lede {
+  margin-top: 4px;
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: var(--text-muted);
+}
+
+.rule {
+  display: flex;
+  height: 4px;
+  width: 100%;
+  margin-top: var(--space-4);
+}
+
+.ruleAccent {
+  width: 240px;
+  max-width: 45%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.ruleMuted {
+  flex: 1;
+  background: var(--color-gray-400);
+  margin-left: var(--space-2);
+}
+
+/* The board's toolbar sits on a rule: the enrollment tabs at its left, their
+ * underline on the rule itself, and the 340px search field at its right. */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.tabs {
+  min-width: 0;
+  /* The tabs' own rule lies on the toolbar's, not a pixel above it. */
+  margin-bottom: -1px;
+}
+
+.search {
+  width: 340px;
+  max-width: 100%;
+  margin-bottom: var(--space-2);
+}
+
+/* Below 1024px the two no longer share a row: the search comes first, full
+ * width, and the tabs keep the rule under them (Catalogue-Mobile's order). */
+@media (max-width: 1023px) {
+  .search {
+    order: -1;
+    width: 100%;
+  }
+
+  .tabs {
+    flex-basis: 100%;
+  }
+}
+
+.count {
+  margin: var(--space-5) 0;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.stateCard {
+  margin-top: var(--space-2);
+}
+
+/* Matches CourseGrid so the placeholders occupy the final layout. */
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 600px) {
+  .skeletonGrid {
+    grid-template-columns: repeat(2, minmax(min(260px, 100%), 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .skeletonGrid {
+    grid-template-columns: repeat(3, minmax(min(260px, 100%), 1fr));
+  }
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-8);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-body-sm);
+  color: var(--text-body);
+}
+
+.noticeIcon {
+  color: var(--color-danger);
+  flex-shrink: 0;
+}
+
+@media (max-width: 599px) {
+  .title {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .lede {
+    font-size: var(--fs-body-sm);
+    line-height: 22px;
+  }
+
+  /* A phone draws chips under the search, with no rule. */
+  .toolbar {
+    border-bottom: 0;
+    gap: var(--space-3);
+  }
+
+  .tabs {
+    margin-bottom: 0;
+  }
+
+  .search {
+    margin-bottom: 0;
+  }
+}

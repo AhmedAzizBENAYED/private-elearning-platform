@@ -1,0 +1,24 @@
+/* DS 05 - Textarea: the shared surface, but grown by rows and vertically
+ * resizable, with the 26px reading line-height the board uses for body copy.
+ */
+
+.textarea {
+  display: block;
+  height: auto;
+  padding: var(--space-3) var(--field-px);
+  line-height: 26px;
+  resize: vertical;
+}
+
+.counter {
+  align-self: flex-end;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.counterOver {
+  color: var(--color-danger);
+  font-weight: 600;
+}

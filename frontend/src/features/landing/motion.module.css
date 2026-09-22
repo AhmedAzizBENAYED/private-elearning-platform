@@ -1,0 +1,175 @@
+/* Scroll-driven reveals shared by the landing sections (Landing boards).
+ *
+ * The boards drive these with CSS scroll timelines - `animation-timeline:
+ * view()` - not with timers: an element plays as it crosses the viewport and
+ * rewinds if scrolled back, and the browser does the work off the main thread,
+ * with no scroll listener and no React render. The same gate as the boards:
+ *
+ *   - `@supports (animation-timeline: view())`: a browser without scroll
+ *     timelines shows the still page, exactly as LANDING-02 left it;
+ *   - `prefers-reduced-motion: no-preference`: DS 09 "Nothing moves under
+ *     prefers-reduced-motion" - the final state, at once.
+ *
+ * `backwards` fill only: before an element's range it holds the first frame,
+ * and after it the element's own styles apply. Nothing here changes layout -
+ * only opacity, transform and clip-path.
+ */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes riseLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-36px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes riseRight {
+  from {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes unfold {
+  from {
+    opacity: 0;
+    transform: perspective(1400px) rotateX(9deg) translateY(48px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes clipIn {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateY(34px);
+  }
+  to {
+    transform: translateY(-34px);
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: rise linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 62%;
+    }
+
+    .fromLeft {
+      animation-name: riseLeft;
+    }
+
+    .fromRight {
+      animation-name: riseRight;
+    }
+
+    .pop {
+      animation-name: pop;
+    }
+
+    .unfold {
+      animation: unfold linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 72%;
+    }
+
+    .clip {
+      animation: clipIn linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 78%;
+    }
+
+    .line {
+      transform-origin: left;
+      animation: grow linear backwards;
+      animation-timeline: view();
+      animation-range: entry 10% entry 85%;
+    }
+
+    /* The blue blocks drift against the page while it scrolls. */
+    .parallax {
+      animation: drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+
+    .parallaxReverse {
+      animation: drift linear both reverse;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+
+    /* Icons drawn stroke by stroke; needs `<Icon drawable>`. */
+    .draw svg :is(path, line, polyline, circle, rect, polygon) {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: draw linear both;
+      animation-timeline: view();
+      animation-range: entry 15% entry 92%;
+    }
+
+    /* The How it works rail fills as the steps come into view. */
+    .fill {
+      transform-origin: left;
+      animation: grow linear both;
+      animation-timeline: view();
+      animation-range: entry 35% cover 55%;
+    }
+  }
+}

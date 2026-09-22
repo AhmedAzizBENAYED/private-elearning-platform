@@ -1,0 +1,99 @@
+/* The shared control surface from DS 05: one 48px box, 1px --border-control,
+ * 4px radius, that thickens to 2px navy on focus and 2px danger on error.
+ * TextField, Select and Textarea all render this box so the three controls
+ * cannot drift apart.
+ */
+
+.surface {
+  width: 100%;
+  min-width: 0;
+  background: var(--bg-surface);
+  border: var(--field-border-w) solid var(--border-control);
+  border-radius: var(--control-radius);
+  box-sizing: border-box;
+}
+
+/* Single-line controls; Textarea omits this and grows with its rows. */
+.row {
+  display: flex;
+  align-items: center;
+  height: var(--field-h);
+}
+
+/* The inner <input> carries no border or outline of its own, so the ring has
+ * to be drawn on this box. :focus-within covers both the control itself and an
+ * affordance rendered beside it (the password reveal button). */
+.surface:focus-within {
+  border-width: var(--field-border-w-active);
+  border-color: var(--action-primary);
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.invalid {
+  border-width: var(--field-border-w-active);
+  border-color: var(--color-danger);
+}
+
+.disabled {
+  background: var(--bg-disabled);
+  border-color: var(--border-disabled);
+}
+
+/* Read-only (Profile-Edit "Account information"): still readable and
+ * selectable, but visibly not a place to type - a lighter fill and border. */
+.surface:has(> .control[readonly]) {
+  background: var(--bg-app);
+  border-color: var(--color-gray-300);
+}
+
+/* The editable element inside the box. */
+.control {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  color: var(--text-primary);
+  padding-inline: var(--field-px);
+}
+
+.control:disabled {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  /* Safari otherwise fades disabled field text below the contrast floor. */
+  -webkit-text-fill-color: var(--text-disabled);
+  opacity: 1;
+}
+
+.control[readonly] {
+  color: var(--text-body);
+}
+
+.control::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+/* An icon or button sharing the box with the control. */
+.adornment {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  padding-inline-start: var(--field-px);
+  padding-inline-end: var(--space-2);
+}
+
+/* When an adornment already provides the inset, the control must not add its
+ * own or the text drifts away from the glyph. */
+.controlFlush {
+  padding-inline-start: 0;
+}
+
+.controlFlushEnd {
+  padding-inline-end: 0;
+}

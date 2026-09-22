@@ -88,6 +88,7 @@ async def lesson_resource(
 })
 async def lesson_resource_content(
     lesson_id: UUID, access: MediaUser, service: ResourceDependency,
+    session: DatabaseSession,
     range_header: Annotated[str | None, Header(alias="Range")] = None,
 ):
     """Relay the bytes after authorizing, or redirect when the provider allows it.
@@ -105,6 +106,12 @@ async def lesson_resource_content(
     resource, grant, stream = await service.content(
         access.user.id, lesson_id, parse_range(range_header), video_only=access.via_playback,
     )
+    # Authorization is finished and nothing below reads the database, while the
+    # body that follows can take as long as the member takes to watch. The
+    # session is therefore closed here rather than by the dependency, which the
+    # framework only unwinds once the whole response has been sent: holding it
+    # would pin a pooled connection, idle in transaction, for the whole stream.
+    await session.close()
     if stream is None:
         return RedirectResponse(grant.url, status_code=307, headers={"Cache-Control": "no-store"})
     headers = {

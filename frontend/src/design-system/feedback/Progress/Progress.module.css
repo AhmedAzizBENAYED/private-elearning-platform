@@ -1,0 +1,90 @@
+/* DS 06 - Progress. Track gray-200, fill brand blue, navy once complete, so
+ * "finished" reads as a change of shape and weight rather than only a length.
+ */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.label {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+.value {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--action-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  width: 100%;
+  background: var(--progress-track);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-full);
+  transition: width 200ms ease;
+}
+
+.complete {
+  background: var(--action-primary);
+}
+
+.caption {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    transition: none;
+  }
+}
+
+/* Indeterminate: a shuttle that sweeps the track. Used when the work is
+ * running but its extent is genuinely unknown - a fetch upload reports no
+ * progress - so the bar shows activity without claiming a figure.
+ */
+.indeterminate {
+  width: 40%;
+  animation: progress-sweep 1.4s ease-in-out infinite;
+}
+
+@keyframes progress-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indeterminate {
+    width: 100%;
+    animation: none;
+    opacity: 0.55;
+  }
+}

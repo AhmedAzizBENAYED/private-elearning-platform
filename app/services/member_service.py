@@ -66,24 +66,41 @@ class MemberService:
             raise BusinessError(404, "Member not found")
         return user
 
-    async def create(self, payload: MemberCreate) -> MemberCreated:
-        token, expires_at = self._new_activation()
+    async def create(self, payload: MemberCreate) -> MemberResponse:
+        """Open an active MEMBER account with the password the administrator chose.
+
+        The account can sign in immediately: no invitation is issued and no
+        activation token is stored. Role and status are set here and nowhere
+        else - the request schema cannot carry them.
+
+        The password is hashed before the transaction opens, exactly as
+        ``setup_password`` does, so a slow Argon2 run never holds a row lock,
+        and it runs under the same limiter that bounds concurrent hashing.
+        """
+        password_hash = await to_thread.run_sync(
+            hash_password, payload.password.get_secret_value(), limiter=self.password_limiter,
+        )
         async with self._write():
             await self._unique_email(str(payload.email))
             user = User(
-                **payload.model_dump(), role=UserRole.MEMBER, is_active=True,
-                hashed_password=PENDING_PASSWORD,
-                activation_token_hash=hashlib.sha256(token.encode()).hexdigest(),
-                activation_expires_at=expires_at,
+                **payload.model_dump(exclude={"password"}),
+                role=UserRole.MEMBER, is_active=True, hashed_password=password_hash,
+                activation_token_hash=None, activation_expires_at=None,
             )
             self.members.session.add(user)
             await self.members.session.flush()
             await self.members.session.refresh(user)
             result = MemberResponse.model_validate(user)
-        return await self._deliver_activation(result, token, expires_at)
+        return result
 
     async def reissue_activation(self, user_id: UUID) -> MemberCreated:
-        """Replace an expired/lost invitation; never reset an established password."""
+        """Replace an expired/lost invitation; never reset an established password.
+
+        Legacy since MEMBERS-01: new accounts are created with a password and
+        never wait for one, so this only serves an account opened under the
+        former invitation flow. An account created with a password is refused
+        with 409 by the check below - reissuing can never replace a password.
+        """
         token, expires_at = self._new_activation()
         async with self._write():
             user = await self._member(user_id, lock=True)

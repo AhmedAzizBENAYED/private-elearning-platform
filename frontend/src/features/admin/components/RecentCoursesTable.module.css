@@ -1,0 +1,137 @@
+/* "Recently created courses" (Admin-Dashboard).
+ *
+ * The board draws a 1px card holding a 44px header band and 68px rows. The
+ * widths below are the design's, applied to <col>-less table cells so the
+ * browser still lays the table out when a title is long: Course takes what is
+ * left, every other column keeps the width it was drawn at.
+ */
+
+/* The one element allowed to scroll sideways, as on the other admin tables. */
+.scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  /* Below this the six columns cannot hold their drawn widths, so the card
+     scrolls rather than crushing the title or wrapping the date. */
+  min-width: 760px;
+}
+
+.table thead th {
+  height: 44px;
+  padding: 0 var(--space-4);
+  text-align: left;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-body);
+  background: var(--color-gray-50);
+  border-bottom: 1px solid var(--border-default);
+  white-space: nowrap;
+}
+
+.table tbody td,
+.table tbody th {
+  height: 68px;
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--color-gray-100);
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  color: var(--text-body);
+  text-align: left;
+  font-weight: 400;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td,
+.table tbody tr:last-child th {
+  border-bottom: 0;
+}
+
+.table tbody tr:hover {
+  background: var(--color-gray-50);
+}
+
+/* Column widths, as drawn. Course is the only elastic one. */
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  width: 140px;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3),
+.table th:nth-child(4),
+.table td:nth-child(4) {
+  width: 96px;
+}
+
+.table th:nth-child(5),
+.table td:nth-child(5) {
+  width: 140px;
+}
+
+.table th:nth-child(6),
+.table td:nth-child(6) {
+  width: 120px;
+}
+
+/* The cell stays a table cell so the column widths below still apply; the
+   flex row lives inside it. */
+.courseCell {
+  min-width: 0;
+}
+
+.course {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* The tonal block the design shows when a course has no usable image; an
+   <img> covers it when one loads. */
+.thumb {
+  flex-shrink: 0;
+  width: 64px;
+  height: 36px;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  background: var(--color-navy);
+}
+
+.thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.title {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  /* A long title wraps inside its cell rather than being cut off: the whole
+     point of the column is to recognise the course. */
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.number {
+  font-variant-numeric: tabular-nums;
+}
+
+.date {
+  white-space: nowrap;
+}
+
+.open {
+  text-align: right;
+}

@@ -1,0 +1,267 @@
+/* Learning sidebar: "Course content", the course progress bar, then module
+ * sections whose lessons are links (DS 08 lesson item, in its navigable form).
+ */
+
+.outline {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.title {
+  font-size: var(--fs-h4);
+  line-height: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.module + .module {
+  border-top: 1px solid var(--border-default);
+}
+
+.moduleHeader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-5);
+  background: var(--bg-app);
+}
+
+/* Below 1024px the title is a disclosure button; its hit area is stretched
+   over the whole header, number, counter and chevron included. */
+.moduleToggle {
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.moduleToggle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.moduleToggle:focus-visible {
+  outline: none;
+}
+
+.moduleHeader:has(.moduleToggle:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: calc(-1 * var(--focus-ring-width));
+}
+
+.moduleChevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.moduleNumber {
+  /* Secondary to the module title here too, as on the details page. */
+  font-size: var(--fs-h2);
+  line-height: 1;
+  font-weight: 800;
+  color: var(--color-blue-500);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.moduleTitle {
+  flex: 1 1 140px;
+  min-width: 0;
+  font-size: var(--fs-body);
+  line-height: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.moduleCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* A finished module: the counter turns navy, semi-bold, after a check. */
+.moduleComplete {
+  color: var(--action-primary);
+  font-weight: 600;
+}
+
+.emptyModule {
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+.lessons {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+.lesson {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  /* A comfortable target for a list people tap through repeatedly. */
+  min-height: var(--tap-target);
+  box-sizing: border-box;
+  color: var(--text-body);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.lessons li:last-child .lesson {
+  border-bottom: 0;
+}
+
+.lesson:hover {
+  background: var(--color-gray-50);
+}
+
+.current {
+  background: var(--bg-current);
+  color: var(--text-primary);
+}
+
+/* Three distinct shapes, so the state survives greyscale and high contrast. */
+.marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Keeps a non-video row's title aligned with the marked rows. */
+.markerSpacer {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.markerCompleted {
+  background: var(--bg-inverse);
+  color: var(--text-inverse);
+}
+
+.markerCurrent {
+  border: 2px solid var(--accent);
+  background: var(--bg-surface);
+}
+
+.markerCurrent::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.markerNotStarted {
+  border: 2px solid var(--color-gray-400);
+  background: var(--bg-surface);
+}
+
+.lessonBody {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+}
+
+/* "NOW PLAYING" / "VIEWING", under the current lesson's title (DS 08). */
+.nowLabel {
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--action-primary);
+}
+
+/* The markers' key, at the foot of the panel (DS 08). */
+.legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding: 14px var(--space-5);
+  border-top: 1px solid var(--border-default);
+  background: var(--color-gray-50);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-body);
+}
+
+.lessonTitle {
+  overflow-wrap: anywhere;
+}
+
+/* DS 08 lesson item: a completed title is semi-bold, the current one bold
+   navy - and a completed lesson that is open reads as the current one, its
+   check still in place. */
+.completed .lessonTitle {
+  font-weight: 600;
+}
+
+.current .lessonTitle {
+  font-weight: 700;
+  color: var(--action-primary);
+}
+
+.duration {
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+@media (max-width: 599px) {
+  .head,
+  .moduleHeader,
+  .lesson,
+  .emptyModule {
+    padding-inline: var(--space-4);
+  }
+
+  /* Learning-Mobile draws no legend. */
+  .legend {
+    display: none;
+  }
+}

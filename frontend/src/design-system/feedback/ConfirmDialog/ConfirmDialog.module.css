@@ -1,0 +1,34 @@
+/* The confirmation's content (DS 06). The scrim, panel and positioning are
+ * the shared modal shell in ../Dialog. */
+
+.title {
+  margin: 0;
+  font-size: var(--fs-h4);
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.body {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-body);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+@media (max-width: 599px) {
+  /* Full-width actions, stacked with the cancelling one last under the thumb. */
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .actions > * {
+    width: 100%;
+  }
+}

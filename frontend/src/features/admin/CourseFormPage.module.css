@@ -1,0 +1,112 @@
+/* The course form, shared by create and edit. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+  max-width: 760px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+}
+
+.crumb {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.crumb:hover {
+  text-decoration: underline;
+}
+
+.separator {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.current {
+  color: var(--text-primary);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-h2);
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.formError {
+  padding: var(--space-4);
+  border: 1px solid var(--color-danger-200);
+  background: var(--color-danger-50);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--color-danger-800);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (max-width: 599px) {
+  .title {
+    font-size: var(--fs-h3);
+    line-height: 32px;
+  }
+
+  .form {
+    padding: var(--space-4);
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .actions > * {
+    width: 100%;
+  }
+}
+

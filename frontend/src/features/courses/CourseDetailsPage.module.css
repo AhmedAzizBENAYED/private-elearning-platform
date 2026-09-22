@@ -1,0 +1,113 @@
+/* Course details: breadcrumb, hero, enrollment panel, then the outline.
+ * One column on a phone; the panel joins the hero column from the medium
+ * breakpoint, as the board draws it.
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+.crumbLink {
+  color: var(--text-link);
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target-dense);
+}
+
+.crumbSeparator {
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+.crumbCurrent {
+  color: var(--text-primary);
+  font-weight: 600;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.contentHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.contentTitle {
+  font-size: var(--fs-h2);
+  line-height: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.contentMeta {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.lockNote {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--bg-current);
+  border: 1px solid var(--color-blue-200);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-body);
+}
+
+.lockIcon {
+  color: var(--color-blue-500);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.outlineUnavailable {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+@media (min-width: 1024px) {
+  .page {
+    gap: var(--space-8);
+  }
+}

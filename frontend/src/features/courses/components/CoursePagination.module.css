@@ -1,0 +1,25 @@
+/* Pager under the catalogue grid. Built from DS 05 buttons and DS 04 spacing;
+ * no new visual language, because the boards define none for this control.
+ */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-10);
+  flex-wrap: wrap;
+}
+
+.status {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  min-width: 10ch;
+}
+
+.status strong {
+  color: var(--text-primary);
+}

@@ -8,6 +8,7 @@ from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
+from app.storage.models import StorageProvider
 
 
 class CourseStatus(StrEnum):
@@ -28,6 +29,13 @@ class Course(Base):
             "(status = 'ARCHIVED' AND published_at IS NOT NULL AND archived_at IS NOT NULL "
             "AND archived_at >= published_at)", name="ck_courses_lifecycle",
         ),
+        # An uploaded thumbnail is described completely or not at all.
+        CheckConstraint(
+            "(thumbnail_storage_provider IS NULL AND thumbnail_storage_key IS NULL "
+            "AND thumbnail_provider_reference IS NULL) OR "
+            "(thumbnail_storage_provider IS NOT NULL AND thumbnail_storage_key IS NOT NULL "
+            "AND thumbnail_provider_reference IS NOT NULL)", name="ck_courses_thumbnail_object",
+        ),
     )
 
     id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
@@ -35,6 +43,17 @@ class Course(Base):
     slug: Mapped[str] = mapped_column(String(200), unique=True, index=True)
     description: Mapped[str] = mapped_column(Text)
     thumbnail_url: Mapped[str | None] = mapped_column(String(2048))
+    # Set only while ``thumbnail_url`` addresses a file uploaded through
+    # ``PUT /admin/courses/{id}/thumbnail`` (BE-THUMBNAIL-UPLOAD-01); an external
+    # URL leaves all three empty. Never part of a response: the provider handle
+    # is opaque and stays server-side, exactly as for lesson resources.
+    thumbnail_storage_provider: Mapped[StorageProvider | None] = mapped_column(
+        Enum(StorageProvider, name="course_thumbnail_storage_provider", native_enum=False,
+             create_constraint=True, validate_strings=True, length=32,
+             values_callable=lambda enum: [member.value for member in enum]),
+    )
+    thumbnail_storage_key: Mapped[str | None] = mapped_column(String(512))
+    thumbnail_provider_reference: Mapped[str | None] = mapped_column(String(512))
     status: Mapped[CourseStatus] = mapped_column(
         Enum(CourseStatus, name="course_status", native_enum=False, create_constraint=True,
              validate_strings=True, length=16),

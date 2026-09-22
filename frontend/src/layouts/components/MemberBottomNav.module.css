@@ -1,0 +1,52 @@
+/* DS 07 "Header & bottom navigation — mobile": a 64px bar fixed to the bottom,
+ * three equal cells, active cell = navy bold + 3px blue top rule.
+ */
+
+.container {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 30;
+}
+
+.bar {
+  display: flex;
+  width: 100%;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-default);
+  /* Keep the cells clear of an iOS home indicator. */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.item {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  height: var(--bottom-nav-h);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  /* Reserved at rest so the active rule does not shift the row. */
+  border-top: 3px solid transparent;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.active {
+  color: var(--action-primary);
+  font-weight: 700;
+  border-top-color: var(--accent);
+}
+
+.label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

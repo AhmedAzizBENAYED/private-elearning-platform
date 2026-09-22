@@ -19,6 +19,8 @@ EXTENSIONS: dict[str, str] = {
     "video/webm": ".webm",
     "video/quicktime": ".mov",
     "application/pdf": ".pdf",
+    "image/png": ".png",
+    "image/jpeg": ".jpg",
 }
 
 

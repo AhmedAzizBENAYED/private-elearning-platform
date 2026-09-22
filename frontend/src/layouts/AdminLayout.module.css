@@ -1,0 +1,84 @@
+/* Admin shell: brand strip, then sidebar + (72px top bar over content).
+ * Content sits on the app background with DS 04's 40px page margins.
+ */
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-app);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  /* Without this a wide table stretches the flex item instead of scrolling. */
+  min-width: 0;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: var(--header-h);
+  padding-inline: var(--space-10);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Admin-Tablet: the account chip, pushed to the right of the top bar. */
+.account {
+  margin-inline-start: auto;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+.container {
+  padding: var(--space-10) var(--space-10) var(--space-14, var(--space-16));
+  box-sizing: border-box;
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim);
+  z-index: 40;
+}
+
+.drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 41;
+}
+
+@media (max-width: 1023px) {
+  .topBar,
+  .container {
+    padding-inline: var(--space-6);
+  }
+}
+
+@media (max-width: 599px) {
+  .topBar {
+    height: 60px;
+    padding-inline: var(--space-4);
+  }
+
+  .container {
+    padding: var(--space-6) var(--space-4) var(--space-10);
+  }
+}

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Handoff tokens</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+@keyframes dcspin{to{transform:rotate(360deg)}}
+a{color:#1A4A6B}
+a:hover{color:#133A56}
+</style>
+</helmet>
+<div id="root" style="width:1440px;height:1549px;display:flex;flex-direction:column;background:#FFFFFF;color:#131313;font-family:'Montserrat',Arial,sans-serif;font-size:16px;line-height:26px;overflow:hidden;position:relative;">
+<div style="padding:56px 64px 0"><div style="display:flex;align-items:flex-end;gap:24px"><span style="font-size:72px;line-height:72px;font-weight:800;letter-spacing:-0.02em;color:#3594D6;font-variant-numeric:lining-nums">10</span><div style="display:flex;flex-direction:column;gap:2px"><h1 style="margin:0;font-size:32px;line-height:40px;font-weight:700;letter-spacing:-0.01em;color:#131313;font-size:40px;line-height:48px;font-weight:800">Handoff · tokens</h1><div style="margin:0;font-size:16px;line-height:26px;font-weight:400;color:#615F5F">Copy-ready CSS custom properties and TypeScript types, generated from the same values as the design.</div></div></div><div style="margin-top:24px"><div style="display:flex;height:4px;width:100%;flex-shrink:0"><div style="width:320px;background:#3594D6;flex-shrink:0"></div><div style="flex:1;background:#908F8F;margin-left:8px"></div></div></div></div><div style="padding:0 64px 72px;flex:1"><div style="display:flex;align-items:flex-start;gap:48px;margin-top:40px"><div style="display:flex;flex-direction:column;gap:12px"><h2 style="margin:0;font-size:20px;line-height:28px;font-weight:600;color:#131313">tokens.css</h2><pre style="margin:0;padding:20px 22px;background:#1C1C1C;color:#E8EEF3;border-radius:6px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:19px;white-space:pre;overflow:hidden;width:631px;box-sizing:border-box">:root {
+  /* Brand (official) */
+  --color-blue-500: #3594D6;   /* Pantone 2925 C */
+  --color-gray-600: #615F5F;   /* Cool Gray 10 C */
+  --color-navy: #1A4A6B;       /* Pantone 7694 C */
+  --color-blue-300: #71B4E2;
+  --color-charcoal: #3A3939;   /* Pantone 447 C */
+  --color-gray-400: #908F8F;   /* Pantone 877 C */
+  --color-black: #131313;
+
+  /* Derived tints (tone on tone) */
+  --color-navy-700: #133A56;
+  --color-navy-800: #0E2C43;
+  --color-blue-100: #D5E8F6;
+  --color-blue-50: #EAF4FB;
+  --color-gray-50: #F5F6F7;
+  --color-gray-100: #ECEBEB;
+  --color-gray-200: #DAD9D9;
+  --color-gray-300: #C3C2C2;
+
+  /* Functional extension */
+  --color-danger: #B3261E;
+  --color-danger-50: #FCEBEA;
+  --color-danger-200: #E8A9A5;
+
+  /* Semantic */
+  --bg-app: var(--color-gray-50);
+  --bg-surface: #fff;
+  --bg-current: var(--color-blue-50);
+  --bg-inverse: var(--color-navy);
+  --text-primary: var(--color-black);
+  --text-body: var(--color-charcoal);
+  --text-muted: var(--color-gray-600);
+  --text-link: var(--color-navy);
+  --text-inverse: #fff;
+  --border-default: var(--color-gray-200);
+  --border-control: var(--color-gray-400);
+  --action-primary: var(--color-navy);
+  --action-primary-hover: var(--color-navy-700);
+  --accent: var(--color-blue-500);
+  --focus-ring: 0 0 0 3px var(--color-blue-500);
+
+  /* Type */
+  --font-sans: &#x27;Montserrat&#x27;, Arial, sans-serif;
+  --fs-caption: 12px; --fs-body-sm: 14px; --fs-body: 16px;
+  --fs-h4: 18px; --fs-h3: 20px; --fs-h2: 24px; --fs-h1: 32px;
+  --fs-stat: 48px; --fs-display: 56px; --fs-numeral: 96px;
+
+  /* Space (4px base) */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --space-12: 48px; --space-16: 64px; --space-20: 80px; --space-24: 96px;
+
+  /* Shape &amp; elevation */
+  --radius-xs: 2px; --radius-sm: 4px; --radius-md: 6px;
+  --radius-lg: 8px; --radius-full: 999px;
+  --shadow-raised: 0 8px 24px rgba(19,19,19,.16);
+  --shadow-overlay: 0 16px 48px rgba(19,19,19,.28);
+
+  /* Layout */
+  --container: 1200px; --header-h: 72px; --strip-h: 8px;
+  --outline-w: 400px; --outline-w-laptop: 340px; --sidebar-w: 248px;
+}</pre></div><div style="display:flex;flex-direction:column;gap:12px"><h2 style="margin:0;font-size:20px;line-height:28px;font-weight:600;color:#131313">tokens.ts</h2><pre style="margin:0;padding:20px 22px;background:#1C1C1C;color:#E8EEF3;border-radius:6px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:19px;white-space:pre;overflow:hidden;width:631px;box-sizing:border-box">export const bp = { sm: 600, md: 1024, lg: 1280, xl: 1600 } as const;
+
+export type CourseStatus = &#x27;DRAFT&#x27; | &#x27;PUBLISHED&#x27; | &#x27;ARCHIVED&#x27;;
+export type LessonType   = &#x27;VIDEO&#x27; | &#x27;DOCUMENT&#x27; | &#x27;TEXT&#x27; | &#x27;LINK&#x27;;
+export type Role         = &#x27;ADMIN&#x27; | &#x27;MEMBER&#x27;;
+export type LessonState  = &#x27;completed&#x27; | &#x27;current&#x27; | &#x27;not-started&#x27;;
+export type CourseState  = &#x27;not-enrolled&#x27; | &#x27;in-progress&#x27; | &#x27;completed&#x27;;
+
+type Badge = { label: string; icon: string; style: string };
+export const statusBadge: Record&lt;CourseStatus, Badge&gt; = {
+  DRAFT:     { label: &#x27;DRAFT&#x27;, icon: &#x27;edit&#x27;,
+               style: &#x27;dashed outline, white bg&#x27; },
+  PUBLISHED: { label: &#x27;PUBLISHED&#x27;, icon: &#x27;check-circle&#x27;,
+               style: &#x27;blue-50 bg, navy text&#x27; },
+  ARCHIVED:  { label: &#x27;ARCHIVED&#x27;, icon: &#x27;archive&#x27;,
+               style: &#x27;gray-100 bg, gray-600 text&#x27; },
+};
+
+export const lessonIcon: Record&lt;LessonType, string&gt; = {
+  VIDEO: &#x27;video&#x27;, DOCUMENT: &#x27;doc&#x27;, TEXT: &#x27;text&#x27;, LINK: &#x27;link&#x27;,
+};
+
+// only VIDEO lessons count toward progress and completion
+export const countsForProgress = (t: LessonType) =&gt; t === &#x27;VIDEO&#x27;;</pre><div style="margin-top:16px"><div style="border:1.5px dashed #3A3939;background:#FFFDF6;padding:10px 12px;border-radius:4px;width:640px;box-sizing:border-box"><div style="font-size:10px;line-height:14px;font-weight:800;letter-spacing:.06em;color:#3A3939;margin-bottom:4px">DEV NOTE</div><div style="font-size:12px;line-height:18px;color:#3A3939;font-weight:500">Suggested structure: <b>src/design-system/</b> (tokens, primitives, components) · <b>src/features/member/</b> · <b>src/features/admin/</b> · <b>src/api/</b> (one typed client using base /api/v1 and the Bearer token; the UI never imports a storage-provider SDK).</div></div></div><div style="margin-top:12px"><div style="border:1.5px dashed #3A3939;background:#FFFDF6;padding:10px 12px;border-radius:4px;width:631px;box-sizing:border-box"><div style="font-size:10px;line-height:14px;font-weight:800;letter-spacing:.06em;color:#3A3939;margin-bottom:4px">DEV NOTE</div><div style="font-size:12px;line-height:18px;color:#3A3939;font-weight:500">Fonts: self-host Montserrat 400–900 (woff2, latin + latin-ext) with <b>font-display: swap</b>. Icons: the 50-odd inline SVGs on board DS 04 can be exported as a sprite or a small React icon set.</div></div></div></div></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1549}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

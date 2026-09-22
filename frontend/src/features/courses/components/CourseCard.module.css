@@ -1,0 +1,122 @@
+/* Dashboard / Catalogue course card: 216px media band, 20px body, badge,
+ * clamped title and description, progress, full-width CTA pinned to the foot.
+ */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-sizing: border-box;
+  /* Cards in a row share a height; the CTA aligns via margin-top:auto. */
+  height: 100%;
+}
+
+.media {
+  position: relative;
+  height: 216px;
+  background: var(--bg-inverse);
+  flex-shrink: 0;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--color-blue-300);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--space-5);
+  flex: 1;
+  min-width: 0;
+}
+
+.badgeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  margin-top: 2px;
+  font-size: var(--fs-h4);
+  line-height: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  /* Two lines, with the height reserved so cards in a row stay aligned. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 52px;
+}
+
+.titleLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.titleLink:hover {
+  text-decoration: underline;
+}
+
+.description {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 44px;
+}
+
+/* "3 modules · 11 videos" (Catalogue): caption size, each figure with its
+ * glyph, wrapping rather than overflowing a narrow card. */
+.size {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-4);
+  row-gap: var(--space-1);
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-body);
+}
+
+.sizeItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  white-space: nowrap;
+}
+
+.sizeIcon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.progress {
+  margin-top: 4px;
+}
+
+.action {
+  margin-top: auto;
+  padding-top: var(--space-2);
+}

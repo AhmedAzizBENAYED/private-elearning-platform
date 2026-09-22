@@ -1,0 +1,135 @@
+/* DS 07 header user block: avatar + name/role + chevron, with the sign-out
+ * disclosure the Backend-Gaps board limits it to.
+ */
+
+.container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  /* The board's block is 40px tall; the tap area is the full header row. */
+  min-height: var(--tap-target);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--control-radius);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.trigger:hover {
+  background: var(--color-gray-50);
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.role {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.menu {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + var(--space-2));
+  min-width: 200px;
+  padding: var(--space-1);
+  background: var(--bg-surface);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--control-radius);
+  box-shadow: var(--shadow-raised);
+  z-index: 20;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  height: var(--nav-item-h);
+  padding-inline: var(--field-px);
+  border-radius: var(--control-radius);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  color: var(--text-body);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: var(--color-blue-50);
+  color: var(--action-primary);
+}
+
+/* On the navy sidebar the same block inverts. */
+.dark .trigger:hover {
+  background: var(--on-dark-disabled-bg);
+}
+
+.dark .name {
+  color: var(--text-inverse);
+}
+
+.dark .role {
+  color: var(--on-navy-overline);
+}
+
+.dark .chevron {
+  color: var(--on-navy-overline);
+}
+
+/* The name and role are dropped below the sm breakpoint: the mobile header
+ * carries the avatar alone (DS 07). Hidden from sight only - the avatar is
+ * `aria-hidden`, so the name is what names the button; `display: none` would
+ * leave a chip with no accessible name. */
+@media (max-width: 599px) {
+  .container:not(.dark) .identity {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .container:not(.dark) .chevron {
+    display: none;
+  }
+}
+
+/* The learning page's tablet bar: the avatar alone (Learning-Tablet). The
+ * name stays the button's accessible name, as it does below 600px. */
+.compact .identity {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.compact .chevron {
+  display: none;
+}

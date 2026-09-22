@@ -1,0 +1,198 @@
+/* The DOCUMENT lesson body (Learning-Document).
+ *
+ * Card chrome, glyph, type chip and action pair come from the design export's
+ * document panel; the inline frame is the same card with the preview inside it
+ * instead of a second description.
+ */
+
+.viewer {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-default);
+  min-width: 0;
+}
+
+.headerGlyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-blue-500);
+  flex-shrink: 0;
+}
+
+.filename {
+  font-size: var(--fs-body);
+  line-height: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  /* A long filename is truncated rather than allowed to widen the card. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.chip {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--bg-current);
+  color: var(--color-blue-500);
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.size {
+  margin-left: auto;
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* The browser's own PDF viewer. Tall enough to read a page without scrolling
+ * the page around it, and capped against the viewport so the actions below stay
+ * reachable on a short screen. */
+.frame {
+  width: 100%;
+  height: min(720px, 70vh);
+  min-height: 360px;
+  border: 0;
+  display: block;
+  background: var(--bg-app);
+}
+
+.fallback,
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-6);
+}
+
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 88px;
+  border-radius: var(--radius-md);
+  background: var(--bg-current);
+  border: 2px solid var(--color-blue-500);
+  color: var(--color-blue-500);
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: var(--fs-h3);
+  line-height: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.body {
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: var(--text-body);
+  max-width: 60ch;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  padding-bottom: var(--space-2);
+}
+
+.note {
+  padding: 0 var(--space-5) var(--space-5);
+  font-size: var(--fs-caption);
+  line-height: 18px;
+  color: var(--text-muted);
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border: 1px solid var(--color-danger-200);
+  background: var(--color-danger-50);
+  border-radius: var(--radius-md);
+}
+
+.errorTitle {
+  font-size: var(--fs-body);
+  line-height: 24px;
+  font-weight: 700;
+  color: var(--color-danger-800);
+}
+
+.errorBody {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--color-danger-700);
+  margin-bottom: var(--space-2);
+}
+
+@media (max-width: 599px) {
+  .header {
+    padding: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .size {
+    margin-left: 0;
+  }
+
+  .fallback,
+  .card {
+    padding: var(--space-4);
+  }
+
+  .actions {
+    padding: var(--space-4);
+    padding-bottom: 0;
+  }
+
+  .note {
+    padding: var(--space-3) var(--space-4) var(--space-4);
+  }
+
+  /* Both actions span the row rather than crowding onto one line. */
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}

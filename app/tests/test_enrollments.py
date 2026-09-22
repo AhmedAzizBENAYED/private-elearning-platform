@@ -232,7 +232,9 @@ async def test_list_is_private_paginated_and_not_n_plus_one(auth_client, auth_se
     assert len(statements) <= 3  # Current user, total enrollment count, aggregate page.
     summary = response.json()["items"][0]
     assert summary["progress_percent"] == 50 and summary["completed"] is False
-    assert set(summary) == {"enrollment_id", "course_id", "title", "slug", "thumbnail_url", "enrolled_at", "completed_at", "progress_percent", "completed"}
+    # BE-COURSE-CATALOG-01 (G05): the three counts behind the percentage join the row.
+    assert set(summary) == {"enrollment_id", "course_id", "title", "slug", "thumbnail_url", "enrolled_at", "completed_at", "progress_percent", "completed",
+                            "module_count", "total_video_lessons", "completed_video_lessons"}
     second = await build_course(auth_client, admin_headers, videos=0)
     await enroll(auth_client, member_headers, second["course"]["id"])
     response = await auth_client.get("/api/v1/me/enrollments", headers=member_headers, params={"page_size": 1, "page": 2})

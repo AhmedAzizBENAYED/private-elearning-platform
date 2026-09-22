@@ -1,0 +1,76 @@
+/* The course listing (Admin-Courses). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-h2);
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: var(--text-muted);
+}
+
+.search {
+  max-width: 420px;
+}
+
+.count {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.error {
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-danger-200);
+  background: var(--color-danger-50);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--color-danger-800);
+}
+
+@media (max-width: 599px) {
+  .title {
+    font-size: var(--fs-h3);
+    line-height: 32px;
+  }
+
+  .search {
+    max-width: none;
+  }
+}

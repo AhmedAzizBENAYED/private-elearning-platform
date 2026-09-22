@@ -141,4 +141,7 @@ async def test_database_health_does_not_swallow_cancellation() -> None:
 
 def test_identity_model_is_registered() -> None:
     load_models()
-    assert set(Base.metadata.tables) == {"users", "courses", "modules", "lessons", "enrollments", "progress", "lesson_resources"}
+    assert set(Base.metadata.tables) == {"users", "courses", "modules", "lessons", "enrollments", "progress",
+                                          "lesson_resources", "revoked_refresh_tokens",
+                                          # BE-LEARNING-TRACKING-01: the learning-event log.
+                                          "learning_events"}

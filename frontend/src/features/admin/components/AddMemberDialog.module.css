@@ -1,0 +1,97 @@
+/* "Add a member" (Admin-Members-States). The panel itself - 520px, white,
+ * 8px radius, 24px padding, 16px between blocks - is the shared Dialog shell
+ * in its `wide` width; this file is the content. */
+
+/* 40px tinted disc, heading, close: one row, 14px apart. */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.glyph {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-blue-50);
+  color: var(--color-navy);
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--fs-h4);
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* The board's server-error banner: danger-50 fill, danger-200 edge. */
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: 14px var(--space-4);
+  background: var(--color-danger-50);
+  border: 1px solid var(--color-danger-200);
+  border-radius: var(--radius-md);
+}
+
+.bannerGlyph {
+  flex-shrink: 0;
+  display: flex;
+  color: var(--color-danger);
+}
+
+.bannerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bannerTitle {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.bannerBody {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  color: var(--text-body);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+/* The board draws no phone version of this dialog. It follows the project's
+   existing dialog convention (ConfirmDialog): full-width actions, stacked
+   with the cancelling one last, under the thumb. */
+@media (max-width: 599px) {
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .actions > * {
+    width: 100%;
+  }
+}

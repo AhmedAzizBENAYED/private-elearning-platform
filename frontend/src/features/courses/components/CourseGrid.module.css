@@ -1,0 +1,34 @@
+/* DS 04: 3 course cards per row >= 1280, 2 from 600, 1 below. The min() guard
+ * keeps a track from exceeding the container on a narrow phone.
+ */
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: stretch;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  min-width: 0;
+}
+
+.item > * {
+  width: 100%;
+}
+
+@media (min-width: 600px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(min(260px, 100%), 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(min(260px, 100%), 1fr));
+  }
+}

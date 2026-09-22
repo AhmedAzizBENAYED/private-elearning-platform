@@ -1,0 +1,34 @@
+/* DS 06 - Avatar: two initials on a flat disc. Sizes 24 / 32 / 40 / 56. */
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.default {
+  background: var(--color-charcoal);
+  color: var(--text-inverse);
+}
+
+/* DS 07 - the member header's user menu. */
+.brand {
+  background: var(--action-primary);
+  color: var(--text-inverse);
+}
+
+.accent {
+  background: var(--color-blue-300);
+  color: var(--action-primary);
+}
+
+/* DS 06: "Inactive - gray-400 fill". Black text keeps the contrast ratio. */
+.inactive {
+  background: var(--color-gray-400);
+  color: var(--color-black);
+}

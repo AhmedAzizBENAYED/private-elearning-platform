@@ -1,0 +1,59 @@
+/* DS 07 "Sidebar — admin": items 48px high, 20px icon, 15/600, 4px gap.
+ * Active = white pill + navy bold text.
+ */
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.rail {
+  align-items: center;
+  gap: 6px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: var(--nav-item-h);
+  padding-inline: var(--space-4);
+  border-radius: var(--control-radius);
+  background: transparent;
+  color: var(--text-inverse);
+  font-size: var(--fs-control-md);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.item:hover {
+  background: var(--on-dark-disabled-bg);
+  color: var(--text-inverse);
+}
+
+.active,
+.active:hover {
+  background: var(--bg-surface);
+  color: var(--action-primary);
+  font-weight: 700;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Rail: a 48px square per item, no label. */
+.rail .item {
+  width: var(--nav-item-h);
+  justify-content: center;
+  padding-inline: 0;
+}
+
+/* Drawer: taller rows and 16px type for touch (DS "Admin mobile navigation"). */
+.drawer .item {
+  height: 52px;
+  font-size: var(--fs-body);
+}

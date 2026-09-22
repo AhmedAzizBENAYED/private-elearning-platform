@@ -1,0 +1,720 @@
+/* My profile and Edit profile (Profile, Profile-Edit, Admin-Profile*,
+ * Profile-Mobile, Profile-Edit-Mobile, Profile-Tablet and Password-States
+ * boards). Page padding and width come from the member / admin shells.
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------- heading */
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.crumb {
+  color: var(--text-link);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.separator {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.current {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-6);
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-h1);
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+/* Focus is moved here after a save; the ring would be noise on a heading. */
+.title:focus {
+  outline: none;
+}
+
+.lede {
+  margin: var(--space-1) 0 0;
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: var(--text-muted);
+}
+
+.headAction {
+  flex-shrink: 0;
+}
+
+/* Profile-Mobile / Admin-Profile-Mobile: "Edit profile" then "Sign out", full
+ * width, 12px apart, closing the page. */
+.mobileActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.mobileActions > * {
+  width: 100%;
+}
+
+.rule {
+  display: flex;
+  height: 4px;
+  width: 100%;
+  margin-top: var(--space-4);
+}
+
+.ruleAccent {
+  width: 240px;
+  max-width: 45%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.ruleMuted {
+  flex: 1;
+  background: var(--color-gray-400);
+  margin-left: var(--space-2);
+}
+
+/* ------------------------------------------------------------------ cards */
+
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: var(--fs-h3);
+  line-height: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cardTitleMd {
+  margin: 0;
+  font-size: var(--fs-h4);
+  line-height: 26px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cardTitleSm {
+  margin: 0;
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.caption {
+  margin: 0;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+/* -------------------------------------------------------------- read view */
+
+.viewGrid {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+  margin-top: var(--space-10);
+  margin-bottom: var(--space-6);
+}
+
+.identityCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  text-align: center;
+}
+
+.identityName {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-h2);
+  line-height: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.identityEmail {
+  margin: 0 0 var(--space-1);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+.identityCard .caption {
+  margin-top: 6px;
+}
+
+.roleChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  background: var(--color-blue-50);
+  border: 1px solid var(--color-blue-300);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--action-primary);
+  white-space: nowrap;
+}
+
+.rows {
+  margin: var(--space-2) 0 0;
+}
+
+.row {
+  display: grid;
+  /* The label column gives way before the value does: at 1024 the card beside
+     the identity card is ~276px wide, and a 180px label left the role chip
+     ("ADMINISTRATOR", which never wraps) too little room - it pushed the page
+     1px wider than the window. From 1280 the label keeps its full 180px. */
+  grid-template-columns: minmax(96px, 180px) minmax(min-content, 1fr);
+  gap: var(--space-4);
+  padding: 14px 0;
+  align-items: center;
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.row:first-child {
+  border-top: 0;
+}
+
+.rowLabel {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.rowValue {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin: 0;
+  min-width: 0;
+  font-size: var(--fs-body);
+  line-height: 24px;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.locked {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+}
+
+.breakAll {
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.securityCard {
+  border-left: 6px solid var(--action-primary);
+}
+
+.securityHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.shield {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--action-primary);
+  color: var(--text-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.passwordRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.dots {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 24px;
+  letter-spacing: 0.12em;
+  color: var(--text-primary);
+}
+
+/* -------------------------------------------------------------- edit view */
+
+.editStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin-top: var(--space-10);
+}
+
+.editStack .securityCard,
+.editStack .card:nth-child(2) {
+  padding: 28px;
+}
+
+.profileForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.step {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--color-blue-50);
+  border: 1px solid var(--color-blue-300);
+  color: var(--action-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.nameFields {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.nameFields > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.accountFields {
+  display: grid;
+  grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+  margin-top: var(--space-4);
+}
+
+.readOnlyGlyph {
+  display: flex;
+  align-items: center;
+  padding-inline: 0 var(--field-px);
+  color: var(--text-muted);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-default);
+}
+
+.footerStatus:empty {
+  display: none;
+}
+
+.footerSpacer {
+  flex: 1;
+}
+
+.footerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.statusText {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  color: var(--action-primary);
+}
+
+.statusMuted {
+  margin: 0;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.unsaved {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  color: var(--action-primary);
+}
+
+.unsavedDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--action-primary);
+}
+
+/* ---------------------------------------------------------------- password */
+
+.passwordSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-default);
+}
+
+.subTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.subTitle svg {
+  color: var(--action-primary);
+}
+
+.sectionBody {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+.passwordForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-top: var(--space-2);
+}
+
+.passwordGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.passwordFields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.requirements {
+  background: var(--bg-app);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) 18px;
+}
+
+.requirementsTitle {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.requirementList {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Met or not is said by the icon and by hidden text - never colour alone. */
+.requirement {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  font-weight: 500;
+  color: var(--text-body);
+}
+
+.requirement svg {
+  margin-top: 2px;
+  color: var(--text-muted);
+}
+
+.met svg {
+  color: var(--action-primary);
+}
+
+/* ------------------------------------------------------ banners and notices */
+
+.banner,
+.success {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: 14px var(--space-4);
+  border-radius: var(--radius-md);
+}
+
+.banner {
+  background: var(--color-danger-50);
+  border: 1px solid var(--color-danger-200);
+}
+
+.success {
+  background: var(--color-blue-50);
+  border: 1px solid var(--color-blue-300);
+}
+
+.success:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.bannerGlyph {
+  flex-shrink: 0;
+  display: flex;
+  color: var(--color-danger);
+}
+
+.successGlyph {
+  flex-shrink: 0;
+  display: flex;
+  color: var(--action-primary);
+}
+
+.bannerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bannerTitle {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.bannerBody {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 20px;
+  color: var(--text-body);
+}
+
+/* ------------------------------------------------------ strength meter */
+
+/* "New password" and its meter, one block: the meter sits 6px under it. */
+.newPassword {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.strength {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.strengthBars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.strengthBar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-default);
+}
+
+/* Weak: one red bar; fair: two blue; strong: three navy (Password-States). */
+.strengthBar.weak {
+  background: var(--color-danger);
+}
+
+.strengthBar.fair {
+  background: var(--color-blue-500);
+}
+
+.strengthBar.strong {
+  background: var(--action-primary);
+}
+
+.strengthVerdict {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.strengthHint {
+  margin: 0;
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------- responsive */
+
+/* Tablet (Profile-Tablet 768): one column, requirements under the fields. */
+@media (max-width: 1023px) {
+  .viewGrid,
+  .passwordGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .viewGrid {
+    gap: var(--space-6);
+  }
+}
+
+@media (max-width: 767px) {
+  .accountFields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Phone (Profile-Mobile, Profile-Edit-Mobile 390): single column,
+ * full-width buttons, the primary action first. */
+@media (max-width: 599px) {
+  .head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+  }
+
+  .title {
+    font-size: var(--fs-h2);
+    line-height: 32px;
+  }
+
+  .viewGrid,
+  .editStack {
+    margin-top: var(--space-6);
+  }
+
+  .card,
+  .editStack .securityCard,
+  .editStack .card:nth-child(2) {
+    padding: var(--space-5);
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+
+  .nameFields {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .footerSpacer {
+    display: none;
+  }
+
+  .footerActions {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+
+  .footerActions > * {
+    width: 100%;
+  }
+}

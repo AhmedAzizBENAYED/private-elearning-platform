@@ -1,0 +1,72 @@
+/* The enrollment / progress card that sits under the hero (Course-Details-New,
+ * -Enrolled and -States).
+ */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.headline {
+  font-size: var(--fs-h4);
+  line-height: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.help {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+/* The CTA is a router Link wearing the button's own classes, so navigating
+ * stays a real link (and a real navigation) without duplicating the styling. */
+.cta {
+  margin-top: var(--space-1);
+  /* A long lesson title must wrap inside the control, not spill out of it. */
+  text-align: left;
+  white-space: normal;
+  height: auto;
+  min-height: var(--control-h-lg);
+  padding-block: var(--space-3);
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-4);
+  border: 1px solid var(--color-danger-200);
+  background: var(--color-danger-50);
+  border-radius: var(--radius-sm);
+}
+
+.errorTitle {
+  font-size: var(--fs-body);
+  line-height: 24px;
+  font-weight: 700;
+  color: var(--color-danger-800);
+}
+
+.errorBody {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--color-danger-700);
+}
+
+.back {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target-dense);
+  font-size: var(--fs-body-sm);
+  color: var(--text-link);
+}

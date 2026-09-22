@@ -1,0 +1,374 @@
+/* Login board: a 720px navy panel with the logo, the photo band and its
+ * caption, beside a white panel holding a 440px form.
+ * Login-Mobile stacks the same parts: strip, navy logo band, 132px photo
+ * band with the caption, then the form.
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-surface);
+}
+
+.brandStrip {
+  display: flex;
+  height: var(--strip-h);
+  flex-shrink: 0;
+}
+
+.brandAccent {
+  width: 96px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.brandMuted {
+  flex: 1;
+  background: var(--color-gray-400);
+  margin-left: var(--space-2);
+}
+
+.split {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  min-height: 0;
+}
+
+/* -- left: brand panel --------------------------------------------------- */
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  width: 720px;
+  /* Shrinks on a laptop rather than squeezing the form below 440px. */
+  max-width: 50%;
+  background: var(--bg-inverse);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.asideHead {
+  display: flex;
+  align-items: center;
+  height: 132px;
+  padding: 36px 56px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.logo {
+  width: 148px;
+  height: auto;
+  display: block;
+}
+
+.asideMedia {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  display: block;
+}
+
+.caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: var(--space-16);
+  padding: 36px 56px 40px;
+  background: rgba(26, 74, 107, .93);
+}
+
+.captionOverline {
+  font-size: var(--fs-caption);
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-inverse);
+  opacity: .92;
+}
+
+.captionTitle {
+  margin-top: 10px;
+  max-width: 560px;
+  font-size: 44px;
+  line-height: 52px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-inverse);
+}
+
+.captionBody {
+  margin-top: 14px;
+  max-width: 520px;
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: #E8EEF3;
+}
+
+/* -- back to home --------------------------------------------------------- */
+
+/* Login / Login-Mobile boards: arrow + "Back to home", 15/700 navy, 44px tall. */
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  color: var(--action-primary);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: var(--control-radius);
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+/* Beside the form: the panel's top-left corner (top 32, left 48). */
+.backCorner {
+  position: absolute;
+  top: var(--space-8);
+  left: var(--space-12);
+}
+
+/* Stacked: a white row under the navy logo band, before the photo band. */
+.backRow {
+  background: var(--bg-surface);
+  padding: var(--space-2) 0 0 var(--space-3);
+}
+
+/* -- right: form --------------------------------------------------------- */
+
+.panel {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12);
+  background: var(--bg-surface);
+  min-width: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 440px;
+  max-width: 100%;
+}
+
+.title {
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.titleRule {
+  display: flex;
+  height: 4px;
+  margin-top: 14px;
+}
+
+.titleRuleAccent {
+  width: 96px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.titleRuleMuted {
+  flex: 1;
+  background: var(--color-gray-400);
+  margin-left: var(--space-2);
+}
+
+.lede {
+  margin-top: 18px;
+  font-size: var(--fs-body);
+  line-height: 26px;
+  color: var(--text-muted);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-top: var(--space-8);
+}
+
+.submit {
+  margin-top: var(--space-2);
+}
+
+.foot {
+  margin-top: var(--space-7, 28px);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+.mail {
+  color: var(--text-link);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* -- messages ------------------------------------------------------------ */
+
+.alert,
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--control-radius);
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+}
+
+.alert {
+  background: var(--color-danger-50);
+  border: 2px solid var(--color-danger-200);
+  color: var(--text-body);
+}
+
+.alertIcon {
+  color: var(--color-danger);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.alertTitle {
+  display: block;
+  color: var(--color-danger);
+}
+
+.notice {
+  background: var(--color-blue-50);
+  border: 2px solid var(--color-blue-100);
+  color: var(--text-body);
+}
+
+.noticeIcon {
+  color: var(--action-primary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.noticeTitle {
+  display: block;
+  color: var(--action-primary);
+}
+
+/* -- responsive ---------------------------------------------------------- */
+
+/* The Login board has no brand strip beside the form; Login-Mobile opens with
+   one, and the stacked tablet layout follows the mobile board. */
+@media (min-width: 1024px) {
+  .brandStrip {
+    display: none;
+  }
+}
+
+/* Below the md breakpoint the brand panel becomes a band above the form. */
+@media (max-width: 1023px) {
+  .split {
+    flex-direction: column;
+  }
+
+  .aside {
+    width: 100%;
+    max-width: none;
+  }
+
+  .asideHead {
+    height: 104px;
+    padding: 0 var(--space-6);
+  }
+
+  .asideMedia {
+    height: 160px;
+    flex: none;
+  }
+
+  .photo {
+    object-position: 50% 70%;
+  }
+
+  .caption {
+    bottom: 0;
+    padding: 14px var(--space-6);
+  }
+
+  .captionTitle {
+    margin-top: 0;
+    font-size: 22px;
+    line-height: 30px;
+  }
+
+  .captionOverline,
+  .captionBody {
+    display: none;
+  }
+
+  .panel {
+    padding: var(--space-8) var(--space-6) var(--space-12);
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 599px) {
+  .brandStrip {
+    height: 6px;
+  }
+
+  .asideHead {
+    height: 104px;
+    padding-inline: var(--space-6);
+  }
+
+  .logo {
+    width: 128px;
+  }
+
+  .asideMedia {
+    height: 132px;
+  }
+
+  .captionTitle {
+    font-size: 17px;
+    line-height: 24px;
+  }
+
+  .panel {
+    padding: var(--space-8) var(--space-6) var(--space-10);
+  }
+
+  .title {
+    font-size: 30px;
+    line-height: 38px;
+  }
+
+  .titleRuleAccent {
+    width: 72px;
+  }
+
+  .lede {
+    margin-top: 14px;
+    font-size: var(--fs-body-sm);
+    line-height: 22px;
+  }
+}

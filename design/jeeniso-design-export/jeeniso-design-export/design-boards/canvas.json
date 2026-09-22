@@ -1,0 +1,535 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-09-19T18:17:39Z"
+ },
+ "title": "JEENISo Learning Platform — UI/UX",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Main.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1102,
+   "title": "Overview"
+  },
+  "Charte-Analysis.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1285,
+   "title": "Charte analysis"
+  },
+  "Flows.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1613,
+   "title": "Screen map and flows"
+  },
+  "Backend-Gaps.dc.html": {
+   "x": 4560,
+   "y": 0,
+   "w": 1440,
+   "h": 2033,
+   "title": "Backend gaps"
+  },
+  "Data-Needs.dc.html": {
+   "x": 6080,
+   "y": 0,
+   "w": 1440,
+   "h": 1656,
+   "title": "Data needs and routing"
+  },
+  "DS-01-Brand.dc.html": {
+   "x": 0,
+   "y": 2453,
+   "w": 1440,
+   "h": 2712,
+   "title": "DS 01 Brand"
+  },
+  "DS-02-Colors.dc.html": {
+   "x": 1520,
+   "y": 2453,
+   "w": 1440,
+   "h": 2300,
+   "title": "DS 02 Colors"
+  },
+  "DS-03-Typography.dc.html": {
+   "x": 3040,
+   "y": 2453,
+   "w": 1440,
+   "h": 2042,
+   "title": "DS 03 Typography"
+  },
+  "DS-04-Layout.dc.html": {
+   "x": 4560,
+   "y": 2453,
+   "w": 1440,
+   "h": 2710,
+   "title": "DS 04 Spacing and layout"
+  },
+  "DS-05-Actions-Forms.dc.html": {
+   "x": 0,
+   "y": 5585,
+   "w": 1440,
+   "h": 2376,
+   "title": "DS 05 Actions and forms"
+  },
+  "DS-06-Feedback.dc.html": {
+   "x": 1520,
+   "y": 5585,
+   "w": 1440,
+   "h": 2590,
+   "title": "DS 06 Feedback and overlays"
+  },
+  "DS-07-Navigation-Data.dc.html": {
+   "x": 3040,
+   "y": 5585,
+   "w": 1440,
+   "h": 1922,
+   "title": "DS 07 Navigation and data"
+  },
+  "DS-08-Learning.dc.html": {
+   "x": 4560,
+   "y": 5585,
+   "w": 1440,
+   "h": 3164,
+   "title": "DS 08 Learning components"
+  },
+  "Handoff-Tokens.dc.html": {
+   "x": 0,
+   "y": 9169,
+   "w": 1440,
+   "h": 1549,
+   "title": "Handoff tokens"
+  },
+  "Handoff-Components.dc.html": {
+   "x": 1520,
+   "y": 9169,
+   "w": 1440,
+   "h": 1631,
+   "title": "Handoff components"
+  },
+  "Handoff-A11y.dc.html": {
+   "x": 3040,
+   "y": 9169,
+   "w": 1440,
+   "h": 1061,
+   "title": "Handoff accessibility"
+  },
+  "Login.dc.html": {
+   "x": 0,
+   "y": 11220,
+   "w": 1440,
+   "h": 900,
+   "title": "Login",
+   "is_interactive": true
+  },
+  "Login-States.dc.html": {
+   "x": 1520,
+   "y": 11220,
+   "w": 1440,
+   "h": 1682,
+   "title": "Login states"
+  },
+  "Dashboard.dc.html": {
+   "x": 3040,
+   "y": 11220,
+   "w": 1440,
+   "h": 2562,
+   "title": "Member dashboard",
+   "is_interactive": true
+  },
+  "Dashboard-States.dc.html": {
+   "x": 4560,
+   "y": 11220,
+   "w": 1440,
+   "h": 796,
+   "title": "Dashboard states"
+  },
+  "Catalogue.dc.html": {
+   "x": 6080,
+   "y": 11220,
+   "w": 1440,
+   "h": 1589,
+   "title": "Course catalogue",
+   "is_interactive": true
+  },
+  "Catalogue-States.dc.html": {
+   "x": 7600,
+   "y": 11220,
+   "w": 1440,
+   "h": 986,
+   "title": "Catalogue states"
+  },
+  "Course-Details-New.dc.html": {
+   "x": 0,
+   "y": 14202,
+   "w": 1440,
+   "h": 1720,
+   "title": "Course details not enrolled",
+   "is_interactive": true
+  },
+  "Course-Details-Enrolled.dc.html": {
+   "x": 1520,
+   "y": 14202,
+   "w": 1440,
+   "h": 1664,
+   "title": "Course details enrolled",
+   "is_interactive": true
+  },
+  "Course-Details-States.dc.html": {
+   "x": 3040,
+   "y": 14202,
+   "w": 1440,
+   "h": 1897,
+   "title": "Course details states"
+  },
+  "Learning-Video.dc.html": {
+   "x": 4560,
+   "y": 14202,
+   "w": 1440,
+   "h": 1175,
+   "title": "Learning video",
+   "is_interactive": true
+  },
+  "Learning-Video-States.dc.html": {
+   "x": 6080,
+   "y": 14202,
+   "w": 1440,
+   "h": 1052,
+   "title": "Learning video states"
+  },
+  "Learning-Text.dc.html": {
+   "x": 0,
+   "y": 16519,
+   "w": 1440,
+   "h": 1175,
+   "title": "Learning text lesson"
+  },
+  "Learning-Document.dc.html": {
+   "x": 1520,
+   "y": 16519,
+   "w": 1440,
+   "h": 1175,
+   "title": "Learning document lesson"
+  },
+  "Learning-Link.dc.html": {
+   "x": 3040,
+   "y": 16519,
+   "w": 1440,
+   "h": 1175,
+   "title": "Learning link lesson"
+  },
+  "Course-Completed.dc.html": {
+   "x": 4560,
+   "y": 16519,
+   "w": 1440,
+   "h": 1172,
+   "title": "Course completed"
+  },
+  "Access-States.dc.html": {
+   "x": 6080,
+   "y": 16519,
+   "w": 1440,
+   "h": 900,
+   "title": "Access and error states"
+  },
+  "Learning-Laptop.dc.html": {
+   "x": 0,
+   "y": 18114,
+   "w": 1280,
+   "h": 1195,
+   "title": "Learning laptop 1280"
+  },
+  "Learning-Tablet.dc.html": {
+   "x": 1360,
+   "y": 18114,
+   "w": 768,
+   "h": 1574,
+   "title": "Learning tablet 768"
+  },
+  "Login-Mobile.dc.html": {
+   "x": 2208,
+   "y": 18114,
+   "w": 390,
+   "h": 844,
+   "title": "Login mobile",
+   "is_interactive": true
+  },
+  "Dashboard-Mobile.dc.html": {
+   "x": 2678,
+   "y": 18114,
+   "w": 390,
+   "h": 2611,
+   "title": "Dashboard mobile",
+   "is_interactive": true
+  },
+  "Catalogue-Mobile.dc.html": {
+   "x": 3148,
+   "y": 18114,
+   "w": 390,
+   "h": 2030,
+   "title": "Catalogue mobile"
+  },
+  "Details-Mobile.dc.html": {
+   "x": 3618,
+   "y": 18114,
+   "w": 390,
+   "h": 1280,
+   "title": "Course details mobile",
+   "is_interactive": true
+  },
+  "Learning-Mobile.dc.html": {
+   "x": 4088,
+   "y": 18114,
+   "w": 390,
+   "h": 1376,
+   "title": "Learning mobile"
+  },
+  "Completion-Mobile.dc.html": {
+   "x": 4558,
+   "y": 18114,
+   "w": 390,
+   "h": 844,
+   "title": "Completion mobile"
+  },
+  "Admin-Dashboard.dc.html": {
+   "x": 0,
+   "y": 21145,
+   "w": 1440,
+   "h": 986,
+   "title": "Admin dashboard",
+   "is_interactive": true
+  },
+  "Admin-Members.dc.html": {
+   "x": 1520,
+   "y": 21145,
+   "w": 1440,
+   "h": 1016,
+   "title": "Admin members",
+   "is_interactive": true
+  },
+  "Admin-Members-States.dc.html": {
+   "x": 3040,
+   "y": 21145,
+   "w": 1440,
+   "h": 2860,
+   "title": "Admin members states"
+  },
+  "Admin-Courses.dc.html": {
+   "x": 4560,
+   "y": 21145,
+   "w": 1440,
+   "h": 1129,
+   "title": "Admin courses",
+   "is_interactive": true
+  },
+  "Admin-Courses-States.dc.html": {
+   "x": 6080,
+   "y": 21145,
+   "w": 1440,
+   "h": 1682,
+   "title": "Admin courses states"
+  },
+  "Admin-Course-Editor.dc.html": {
+   "x": 0,
+   "y": 24425,
+   "w": 1440,
+   "h": 1195,
+   "title": "Admin course editor",
+   "is_interactive": true
+  },
+  "Admin-Editor-States.dc.html": {
+   "x": 1520,
+   "y": 24425,
+   "w": 1440,
+   "h": 1690,
+   "title": "Admin editor states"
+  },
+  "Admin-Lesson-Editor.dc.html": {
+   "x": 3040,
+   "y": 24425,
+   "w": 1440,
+   "h": 1067,
+   "title": "Admin lesson editor",
+   "is_interactive": true
+  },
+  "Admin-Lesson-Types.dc.html": {
+   "x": 4560,
+   "y": 24425,
+   "w": 1440,
+   "h": 2292,
+   "title": "Admin lesson types and uploads"
+  },
+  "Admin-Tablet.dc.html": {
+   "x": 0,
+   "y": 27137,
+   "w": 820,
+   "h": 900,
+   "title": "Admin tablet courses"
+  },
+  "Admin-Mobile-Courses.dc.html": {
+   "x": 900,
+   "y": 27137,
+   "w": 390,
+   "h": 1220,
+   "title": "Admin mobile courses"
+  },
+  "Admin-Mobile-Nav.dc.html": {
+   "x": 1370,
+   "y": 27137,
+   "w": 390,
+   "h": 844,
+   "title": "Admin mobile navigation"
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "Charte-Analysis.dc.html",
+  "Flows.dc.html",
+  "Backend-Gaps.dc.html",
+  "Data-Needs.dc.html",
+  "DS-01-Brand.dc.html",
+  "DS-02-Colors.dc.html",
+  "DS-03-Typography.dc.html",
+  "DS-04-Layout.dc.html",
+  "DS-05-Actions-Forms.dc.html",
+  "DS-06-Feedback.dc.html",
+  "DS-07-Navigation-Data.dc.html",
+  "DS-08-Learning.dc.html",
+  "Handoff-Tokens.dc.html",
+  "Handoff-Components.dc.html",
+  "Handoff-A11y.dc.html",
+  "Login.dc.html",
+  "Login-States.dc.html",
+  "Dashboard.dc.html",
+  "Dashboard-States.dc.html",
+  "Catalogue.dc.html",
+  "Catalogue-States.dc.html",
+  "Course-Details-New.dc.html",
+  "Course-Details-Enrolled.dc.html",
+  "Course-Details-States.dc.html",
+  "Learning-Video.dc.html",
+  "Learning-Video-States.dc.html",
+  "Learning-Text.dc.html",
+  "Learning-Document.dc.html",
+  "Learning-Link.dc.html",
+  "Course-Completed.dc.html",
+  "Access-States.dc.html",
+  "Learning-Laptop.dc.html",
+  "Learning-Tablet.dc.html",
+  "Login-Mobile.dc.html",
+  "Dashboard-Mobile.dc.html",
+  "Catalogue-Mobile.dc.html",
+  "Details-Mobile.dc.html",
+  "Learning-Mobile.dc.html",
+  "Completion-Mobile.dc.html",
+  "Admin-Dashboard.dc.html",
+  "Admin-Members.dc.html",
+  "Admin-Members-States.dc.html",
+  "Admin-Courses.dc.html",
+  "Admin-Courses-States.dc.html",
+  "Admin-Course-Editor.dc.html",
+  "Admin-Editor-States.dc.html",
+  "Admin-Lesson-Editor.dc.html",
+  "Admin-Lesson-Types.dc.html",
+  "Admin-Tablet.dc.html",
+  "Admin-Mobile-Courses.dc.html",
+  "Admin-Mobile-Nav.dc.html"
+ ],
+ "notes": {
+  "row0": {
+   "x": 0,
+   "y": -260,
+   "text": "Start here — overview, charte analysis, flows, gaps",
+   "kind": "title1",
+   "maxW": 7520
+  },
+  "row1": {
+   "x": 0,
+   "y": 2193,
+   "text": "Design system — foundations (charte → tokens)",
+   "kind": "title1",
+   "maxW": 6000
+  },
+  "row2": {
+   "x": 0,
+   "y": 5325,
+   "text": "Design system — components",
+   "kind": "title1",
+   "maxW": 6000
+  },
+  "row3": {
+   "x": 0,
+   "y": 8909,
+   "text": "Handoff — tokens, components, accessibility",
+   "kind": "title1",
+   "maxW": 4480
+  },
+  "row4": {
+   "x": 0,
+   "y": 10960,
+   "text": "Member — login, dashboard, catalogue (desktop 1440)",
+   "kind": "title1",
+   "maxW": 9040
+  },
+  "row5": {
+   "x": 0,
+   "y": 13942,
+   "text": "Member — course details & learning (desktop 1440)",
+   "kind": "title1",
+   "maxW": 7520
+  },
+  "row6": {
+   "x": 0,
+   "y": 16259,
+   "text": "Member — other lesson types, completion, access (desktop 1440)",
+   "kind": "title1",
+   "maxW": 7520
+  },
+  "row7": {
+   "x": 0,
+   "y": 17854,
+   "text": "Responsive — laptop, tablet, mobile (member)",
+   "kind": "title1",
+   "maxW": 4948
+  },
+  "row8": {
+   "x": 0,
+   "y": 20885,
+   "text": "Admin — dashboard, members, courses (desktop 1440)",
+   "kind": "title1",
+   "maxW": 7520
+  },
+  "row9": {
+   "x": 0,
+   "y": 24165,
+   "text": "Admin — course editor & lesson editor (desktop 1440)",
+   "kind": "title1",
+   "maxW": 6000
+  },
+  "row10": {
+   "x": 0,
+   "y": 26877,
+   "text": "Admin — tablet & mobile",
+   "kind": "title1",
+   "maxW": 1760
+  },
+  "start": {
+   "x": 0,
+   "y": -720,
+   "w": 520,
+   "maxH": 240,
+   "size": "m",
+   "color": "blue",
+   "text": "Start with “Overview” and “Charte analysis”. For the clickable prototype open “Login” (or any board marked interactive) in Play. Every API assumption and missing feature is listed in “Backend gaps”."
+  }
+ },
+ "designSystems": []
+}

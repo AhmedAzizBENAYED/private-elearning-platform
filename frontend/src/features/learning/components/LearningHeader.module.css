@@ -1,0 +1,65 @@
+/* Learning context bar: breadcrumb on the left, course progress on the right
+ * (Learning-Laptop). Wraps rather than truncating on a narrow screen.
+ */
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  min-width: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}
+
+.crumbLink {
+  color: var(--text-link);
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target-dense);
+  overflow-wrap: anywhere;
+}
+
+.separator {
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+.crumbCurrent {
+  color: var(--text-primary);
+  font-weight: 600;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.progress {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.percent {
+  font-size: var(--fs-h3);
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.videos {
+  font-size: var(--fs-body-sm);
+  line-height: 22px;
+  color: var(--text-muted);
+}

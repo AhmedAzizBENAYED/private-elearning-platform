@@ -12,16 +12,20 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.database.session import DatabaseSession
 from app.models.user import User, UserRole
 from app.repositories.user_repository import UserRepository
+from app.repositories.revoked_token_repository import RevokedTokenRepository
 from app.services.auth_service import AuthenticationError, AuthService
 from app.repositories.member_repository import MemberRepository
 from app.services.member_service import MemberService
+from app.repositories.profile_repository import ProfileRepository
+from app.services.profile_service import ProfileService
 
 bearer = HTTPBearer(auto_error=False)
 
 
 def get_auth_service(request: Request, session: DatabaseSession) -> AuthService:
     return AuthService(
-        request.app.state.settings, UserRepository(session), request.app.state.password_limiter
+        request.app.state.settings, UserRepository(session),
+        request.app.state.password_limiter, RevokedTokenRepository(session),
     )
 
 
@@ -37,6 +41,13 @@ def get_member_service(request: Request, session: DatabaseSession) -> MemberServ
 
 
 MemberServiceDependency = Annotated[MemberService, Depends(get_member_service)]
+
+
+def get_profile_service(request: Request, session: DatabaseSession) -> ProfileService:
+    return ProfileService(ProfileRepository(session), request.app.state.password_limiter)
+
+
+ProfileServiceDependency = Annotated[ProfileService, Depends(get_profile_service)]
 
 
 def unauthorized(detail: str = "Invalid authentication credentials") -> HTTPException:
