@@ -23,3 +23,6 @@ dist/
 .DS_Store
 Thumbs.db
 *.log
+
+# Design exports (kept outside the repository)
+design/
